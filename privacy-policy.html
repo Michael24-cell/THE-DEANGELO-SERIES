@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — The Deangelo Series</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;0,600;1,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#0A0A0A;
+    --white:#FFFFFF;
+    --bone:#F5F5F1;
+    --bone-tint:#ECECE6;
+    --bone-warm:#EFEDE5;
+    --bone-deep:#E5E4DD;
+    --hairline-light:rgba(255,255,255,.10);
+    --hairline-dark:rgba(10,10,10,.10);
+    --hairline-dark-strong:rgba(10,10,10,.22);
+    --ink-dim:rgba(10,10,10,.55);
+    --ink-mute:rgba(10,10,10,.45);
+    --paper-dim:rgba(255,255,255,.55);
+    --font-serif:'Cormorant Garamond',serif;
+    --font-sans:'Inter',sans-serif;
+    --max:1400px;
+    --read:760px;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{background:var(--black);color:var(--white);font-family:var(--font-sans);-webkit-font-smoothing:antialiased;line-height:1.55}
+  body{overflow-x:hidden}
+  a{color:inherit;text-decoration:none;transition:opacity 220ms ease}
+  a:hover{opacity:.6}
+
+  /* ── NAV (carbon copy of homepage) ─────────────────────────── */
+  nav#navbar{
+    position:fixed;inset:0 0 auto 0;
+    display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+    padding:24px 48px;z-index:1000;
+    background:transparent;transition:background 400ms ease,border-color 400ms ease;
+    text-transform:uppercase;letter-spacing:.2em;font-size:11px;font-weight:500;
+    border-bottom:1px solid transparent;
+  }
+  nav#navbar.scrolled{background:rgba(10,10,10,.96);border-bottom-color:var(--hairline-light)}
+  .nav-brand{font-size:13px;letter-spacing:.4em;font-weight:400;text-align:center}
+  .nav-links,.nav-cart{display:flex;gap:32px}
+  .nav-cart{justify-content:flex-end}
+
+  /* ── HEADER (black) ────────────────────────────────────────── */
+  header.policy-header{
+    background:var(--black);color:var(--white);
+    padding:140px 48px 48px;
+    border-bottom:1px solid var(--hairline-light);
+  }
+  .policy-header-inner{
+    max-width:var(--max);margin:0 auto;
+    display:grid;grid-template-columns:1fr auto;gap:64px;align-items:end;
+  }
+  .eyebrow{
+    font-family:var(--font-sans);font-size:11px;font-weight:400;
+    text-transform:uppercase;letter-spacing:.5em;opacity:.55;
+  }
+  .policy-title{
+    font-family:var(--font-serif);font-weight:500;
+    font-size:clamp(2.4rem,4.6vw,4rem);
+    line-height:1;letter-spacing:-.01em;
+    margin:20px 0 0;
+  }
+  .policy-title em{font-style:italic;font-weight:300;opacity:.85}
+  .policy-meta{
+    font-family:var(--font-sans);font-size:11px;letter-spacing:.3em;text-transform:uppercase;
+    text-align:right;color:var(--paper-dim);
+    display:flex;flex-direction:column;gap:8px;line-height:1.4;
+  }
+  .policy-meta span:last-child{color:var(--white);opacity:.85}
+
+  /* breadcrumb */
+  .crumb{
+    max-width:var(--max);margin:24px auto 0;
+    font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--paper-dim);
+  }
+  .crumb a:hover{opacity:.85}
+  .crumb .sep{opacity:.4;margin:0 10px}
+
+  /* ── BODY (bone) ───────────────────────────────────────────── */
+  main.policy{
+    background:var(--bone);color:var(--black);
+    padding:72px 48px 96px;
+  }
+  .policy-inner{
+    max-width:var(--read);margin:0 auto;
+  }
+
+  /* lede */
+  .lede{
+    font-family:var(--font-sans);font-weight:300;font-style:normal;
+    font-size:1rem;line-height:1.65;
+    color:var(--ink-dim);
+    margin-bottom:48px;
+    max-width:64ch;
+  }
+
+  /* index / table of contents */
+  .index{
+    margin-bottom:72px;
+    border-top:1px solid var(--hairline-dark-strong);
+  }
+  .index-label{
+    font-size:10px;letter-spacing:.4em;text-transform:uppercase;
+    color:var(--ink-mute);
+    padding:16px 0 20px;
+  }
+  .index ol{list-style:none;counter-reset:none}
+  .index li{
+    display:grid;grid-template-columns:40px 1fr auto;
+    align-items:baseline;gap:20px;
+    padding:12px 0;
+    border-top:1px solid var(--hairline-dark);
+    font-size:.9rem;font-weight:300;
+  }
+  .index li:last-child{border-bottom:1px solid var(--hairline-dark)}
+  .index li .num{
+    font-size:11px;letter-spacing:.3em;color:var(--ink-mute);
+    font-variant-numeric:tabular-nums;
+  }
+  .index li a{display:block}
+  .index li a:hover{opacity:.55}
+  .index li .pg{
+    font-size:11px;letter-spacing:.3em;color:var(--ink-mute);
+    font-variant-numeric:tabular-nums;text-transform:uppercase;
+  }
+
+  /* numbered section */
+  .section{
+    padding-top:40px;
+    margin-top:32px;
+    border-top:1px solid var(--hairline-dark);
+    scroll-margin-top:100px;
+  }
+  .section:first-of-type{border-top:0;margin-top:0;padding-top:0}
+  .section-eyebrow{
+    font-size:10px;letter-spacing:.35em;text-transform:uppercase;
+    color:var(--ink-mute);
+    margin-bottom:14px;
+  }
+  .section-eyebrow .slash{opacity:.35;margin:0 8px}
+  .section-title{
+    font-family:var(--font-sans);font-weight:600;
+    font-size:1rem;line-height:1.3;letter-spacing:0;
+    margin-bottom:12px;
+    max-width:60ch;
+  }
+  .section p,
+  .section ul{
+    font-size:.95rem;line-height:1.65;font-weight:300;
+    color:var(--black);
+    margin-bottom:14px;
+    max-width:68ch;
+  }
+  .section p strong{font-weight:500}
+  .section ul{padding-left:0;list-style:none}
+  .section ul li{
+    position:relative;padding-left:24px;margin-bottom:6px;
+  }
+  .section ul li::before{
+    content:"";position:absolute;left:0;top:.85em;width:14px;height:1px;background:var(--black);opacity:.45;
+  }
+
+  /* placeholder copy mark */
+  .placeholder{
+    color:var(--ink-mute);font-style:italic;
+  }
+  .placeholder::before{content:"[ ";color:var(--ink-mute);font-style:normal;letter-spacing:.1em}
+  .placeholder::after{content:" ]";color:var(--ink-mute);font-style:normal;letter-spacing:.1em}
+
+  /* lede-style intro paragraphs (above the first section) */
+  .meta-line{
+    font-size:.85rem;line-height:1.5;font-weight:300;
+    color:var(--ink-dim);margin-bottom:32px;
+  }
+  .meta-line strong{font-weight:500;color:var(--black)}
+  .intro{
+    font-size:.95rem;line-height:1.65;font-weight:300;
+    color:var(--black);margin-bottom:16px;max-width:68ch;
+  }
+  .intro strong{font-weight:500}
+  .intro + .intro{margin-bottom:40px}
+
+  /* sub-headings inside a section */
+  .sub-title{
+    font-family:var(--font-sans);font-weight:600;
+    font-size:.85rem;letter-spacing:.05em;text-transform:uppercase;
+    margin-top:24px;margin-bottom:10px;color:var(--black);
+  }
+
+  /* contact card paragraph (final section) */
+  .contact-card{
+    font-size:.95rem;line-height:1.85;font-weight:300;
+    border-left:1px solid var(--hairline-dark-strong);
+    padding-left:20px;margin-top:8px;
+  }
+  .contact-card strong{font-weight:500}
+
+  /* contact callout */
+  .contact-block{
+    margin-top:72px;padding-top:32px;
+    border-top:1px solid var(--hairline-dark-strong);
+    display:grid;grid-template-columns:1fr 1fr;gap:40px;
+  }
+  .contact-block .label{
+    font-size:11px;letter-spacing:.35em;text-transform:uppercase;
+    color:var(--ink-mute);margin-bottom:14px;
+  }
+  .contact-block .val{font-size:.9rem;font-weight:300;line-height:1.55}
+  .contact-block .val a{border-bottom:1px solid var(--hairline-dark-strong);padding-bottom:1px}
+
+  /* back to top */
+  .to-top{
+    margin-top:56px;text-align:center;
+    font-size:10px;letter-spacing:.4em;text-transform:uppercase;
+    color:var(--ink-mute);
+  }
+  .to-top a{display:inline-block;padding:14px 28px;border:1px solid var(--hairline-dark-strong);color:var(--black)}
+  .to-top a:hover{background:var(--bone-deep);opacity:1}
+
+  /* ── FOOTER (homepage parity) ──────────────────────────────── */
+  footer{
+    background:var(--black);color:var(--white);
+    padding:120px 48px 48px;position:relative;overflow:hidden;
+  }
+  .footer-grid{
+    max-width:1200px;margin:0 auto;
+    display:grid;grid-template-columns:1.4fr .8fr .8fr .8fr;gap:80px;align-items:start;
+  }
+  .footer-col h4{
+    font-family:var(--font-sans);font-size:11px;font-weight:500;
+    letter-spacing:.3em;text-transform:uppercase;opacity:.55;margin-bottom:24px;
+  }
+  .footer-col a{display:block;margin-bottom:10px;font-size:.95rem;font-weight:300}
+  .footer-sub{display:flex;align-items:center;border-bottom:1px solid var(--hairline-light)}
+  .footer-sub input{
+    background:transparent;border:0;color:inherit;font:inherit;
+    padding:12px 0;flex:1;outline:none;font-size:.95rem;font-weight:300;
+  }
+  .footer-sub input::placeholder{color:rgba(255,255,255,.35);letter-spacing:.2em;text-transform:uppercase;font-size:11px}
+  .footer-sub button{
+    background:none;border:0;color:inherit;cursor:default;padding:12px 0 12px 16px;
+    font-size:11px;letter-spacing:.3em;text-transform:uppercase;
+  }
+  .footer-fine{
+    max-width:1200px;margin:96px auto 0;
+    display:flex;justify-content:space-between;align-items:flex-end;
+    font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.4);
+    padding-top:32px;border-top:1px solid var(--hairline-light);
+  }
+  .watermark{
+    font-family:var(--font-sans);font-weight:900;
+    font-size:18vw;line-height:.85;letter-spacing:-.05em;
+    color:rgba(255,255,255,.025);
+    text-align:center;margin-top:80px;pointer-events:none;user-select:none;
+  }
+
+  /* ── MOBILE ────────────────────────────────────────────────── */
+  @media (max-width:1024px){
+    nav#navbar{padding:20px 24px}
+    .nav-links{gap:20px}
+    .nav-cart{gap:20px}
+    header.policy-header{padding:112px 24px 40px}
+    .policy-header-inner{grid-template-columns:1fr;gap:24px;align-items:start}
+    .policy-meta{text-align:left;flex-direction:row;gap:16px;flex-wrap:wrap}
+    main.policy{padding:56px 24px 72px}
+    .lede{margin-bottom:64px}
+    .index{margin-bottom:96px}
+    .contact-block{grid-template-columns:1fr;gap:32px}
+    .footer-grid{grid-template-columns:1fr 1fr;gap:48px}
+    .footer-fine{flex-direction:column;align-items:flex-start;gap:16px}
+  }
+  @media (max-width:640px){
+    nav#navbar{grid-template-columns:auto 1fr auto;padding:18px 20px}
+    .nav-links{display:none}
+    .nav-cart{gap:16px}
+    .nav-brand{font-size:11px;letter-spacing:.3em}
+    header.policy-header{padding:96px 20px 32px}
+    .policy-title{font-size:11vw}
+    main.policy{padding:48px 20px 64px}
+    .index li{grid-template-columns:36px 1fr;column-gap:16px}
+    .index li .pg{display:none}
+    .footer-grid{grid-template-columns:1fr;gap:40px}
+    .watermark{font-size:32vw}
+  }
+</style>
+</head>
+<body data-screen-label="Privacy Policy">
+
+<nav id="navbar">
+  <div class="nav-links">
+    <button class="du-ham" data-menu-toggle aria-label="Open menu"><span class="du-ham-ico"><i></i><i></i></span>Menu</button>
+    <a href="Collection.html">The Series</a>
+    <a href="#">Art</a>
+  </div>
+  <a class="nav-brand" href="Home.html">THE DEANGELO SERIES</a>
+  <div class="nav-cart">
+    <a href="#">Search</a>
+    <a href="#" data-cart-toggle>Cart (0)</a>
+  </div>
+</nav>
+
+<header class="policy-header" data-screen-label="Privacy — Header">
+  <div class="policy-header-inner">
+    <h1 class="policy-title">Privacy Policy</h1>
+  </div>
+</header>
+
+<main class="policy" data-screen-label="Privacy — Body">
+  <div class="policy-inner">
+
+    <p class="meta-line"><strong>Last updated:</strong> <span class="placeholder">Month Day, Year</span></p>
+
+    <p class="intro">This Privacy Policy explains how <strong><span class="placeholder">Brand Name</span></strong>, operated by <strong><span class="placeholder">Legal Name DBA Brand Name</span></strong> (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;), collects, uses, shares, and protects information when you visit our website, place an order, contact us, or interact with our products and services.</p>
+
+    <p class="intro">By using our website, you agree to the practices described in this Privacy Policy.</p>
+
+    <section class="section">
+      <h2 class="section-title">1. Information We Collect</h2>
+      <p>We collect information needed to operate our website, process orders, fulfill purchases, provide customer support, and improve our services.</p>
+
+      <h3 class="sub-title">Information You Provide</h3>
+      <p>When you place an order, contact us, or interact with our website, we may collect:</p>
+      <ul>
+        <li>Your name</li>
+        <li>Email address</li>
+        <li>Phone number, if provided</li>
+        <li>Billing address</li>
+        <li>Shipping address</li>
+        <li>Order details, including product, size, color, quantity, and purchase history</li>
+        <li>Customer support messages or other communications you send to us</li>
+      </ul>
+
+      <h3 class="sub-title">Payment Information</h3>
+      <p>Payments are processed through third-party payment providers, including <strong>Stripe</strong>.</p>
+      <p>We do not store full credit card numbers on our own servers. Stripe may collect and process payment details, billing information, transaction information, device information, and fraud prevention data according to its own privacy and security practices.</p>
+      <p>We may receive limited payment-related information from Stripe, such as payment status, transaction ID, billing details, card brand, and the last four digits of a payment card.</p>
+
+      <h3 class="sub-title">Fulfillment and Shipping Information</h3>
+      <p>We use third-party fulfillment partners, including <strong>Printify</strong> and its print providers, to produce and ship made-to-order products.</p>
+      <p>To fulfill your order, we may share necessary order information with these partners, including your name, shipping address, product selection, size, color, quantity, and shipping details.</p>
+
+      <h3 class="sub-title">Customer Accounts and Order Records</h3>
+      <p>We do not currently offer customer accounts or maintain a separate customer account database on our own website.</p>
+      <p>However, personal information connected to orders, payments, fulfillment, shipping, customer support, and business records may be stored or processed through third-party services we use, including Stripe, Printify, website hosting providers, email providers, shipping carriers, and fulfillment partners.</p>
+
+      <h3 class="sub-title">Information Collected Automatically</h3>
+      <p>When you visit our website, certain information may be collected automatically by our website, hosting provider, analytics tools, or similar technologies. This may include:</p>
+      <ul>
+        <li>IP address</li>
+        <li>Browser type</li>
+        <li>Device type</li>
+        <li>Operating system</li>
+        <li>Pages viewed</li>
+        <li>Referring website or source</li>
+        <li>Date and time of visit</li>
+        <li>General website usage data</li>
+        <li>Server log information</li>
+      </ul>
+      <p>We use this information to help operate the website, monitor performance, prevent fraud or misuse, troubleshoot errors, and improve the customer experience.</p>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">2. How We Use Your Information</h2>
+      <p>We use the information we collect to:</p>
+      <ul>
+        <li>Process and complete orders</li>
+        <li>Accept and verify payments</li>
+        <li>Produce, fulfill, and ship products</li>
+        <li>Send order confirmations, shipping updates, and customer service messages</li>
+        <li>Respond to questions, requests, or support inquiries</li>
+        <li>Prevent fraud, unauthorized transactions, chargebacks, and misuse of our website</li>
+        <li>Improve our website, products, and customer experience</li>
+        <li>Maintain business, tax, accounting, and legal records</li>
+        <li>Comply with applicable laws and regulations</li>
+        <li>Send marketing emails or promotional messages only where permitted and, when required, with your consent</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">3. How We Share Information</h2>
+      <p>We do not sell your personal information for money.</p>
+      <p>We may share information with trusted third parties when necessary to operate our business, process orders, fulfill purchases, provide customer support, protect our website, or comply with legal obligations.</p>
+      <p>We may share information with:</p>
+      <ul>
+        <li>Payment processors, including Stripe</li>
+        <li>Fulfillment and print-on-demand partners, including Printify and its print providers</li>
+        <li>Shipping carriers</li>
+        <li>Website hosting providers</li>
+        <li>Email and customer support providers</li>
+        <li>Analytics providers, if used</li>
+        <li>Marketing tools, if used</li>
+        <li>Fraud prevention and security providers</li>
+        <li>Legal, tax, accounting, or business advisors</li>
+        <li>Government authorities or law enforcement when required by law</li>
+      </ul>
+      <p>We only share information as reasonably necessary for the purposes described in this Privacy Policy.</p>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">4. Cookies and Tracking Technologies</h2>
+      <p>Our website may use cookies, pixels, or similar technologies to help the site function, improve performance, understand visitor behavior, and enhance the shopping experience.</p>
+      <p>Cookies and similar technologies may be used to:</p>
+      <ul>
+        <li>Keep the website functioning properly</li>
+        <li>Remember preferences</li>
+        <li>Analyze traffic and website performance</li>
+        <li>Understand how customers interact with our site</li>
+        <li>Support marketing or advertising tools, if enabled</li>
+      </ul>
+      <p>You may be able to control or disable cookies through your browser settings. However, disabling cookies may affect how certain parts of the website function.</p>
+      <p>If we begin using specific analytics or advertising tools, such as Google Analytics, Meta Pixel, TikTok Pixel, or email marketing platforms, we may update this Privacy Policy to identify those providers and explain how they are used.</p>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">5. Third-Party Services</h2>
+      <p>Our website and business operations rely on third-party services. These third parties may collect, process, or store information according to their own privacy policies.</p>
+      <p>Examples include:</p>
+      <ul>
+        <li>Stripe for payment processing</li>
+        <li>Printify and print providers for product fulfillment</li>
+        <li>Shipping carriers for delivery</li>
+        <li>Website hosting providers</li>
+        <li>Email and customer support providers</li>
+        <li>Analytics or marketing platforms, if used</li>
+      </ul>
+      <p>We are not responsible for the privacy practices of third-party websites, platforms, or services that we do not own or control.</p>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">6. Data Retention</h2>
+      <p>We retain personal information for as long as reasonably necessary to:</p>
+      <ul>
+        <li>Process and fulfill orders</li>
+        <li>Provide customer support</li>
+        <li>Maintain business records</li>
+        <li>Prevent fraud and resolve disputes</li>
+        <li>Comply with legal, tax, accounting, and regulatory obligations</li>
+      </ul>
+      <p>Because we use third-party providers such as Stripe and Printify, some order, payment, and fulfillment information may also be retained by those providers according to their own policies.</p>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">7. Data Security</h2>
+      <p>We use reasonable administrative, technical, and organizational safeguards to help protect personal information.</p>
+      <p>Payment information is processed through third-party payment providers such as Stripe. We do not store full credit card numbers on our own servers.</p>
+      <p>However, no method of transmission over the internet or electronic storage is completely secure. We cannot guarantee absolute security of any information transmitted through or stored by our website or third-party providers.</p>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">8. Your Privacy Choices and Rights</h2>
+      <p>Depending on where you live, you may have certain rights regarding your personal information. These rights may include the ability to request:</p>
+      <ul>
+        <li>Access to personal information we have about you</li>
+        <li>Correction of inaccurate information</li>
+        <li>Deletion of certain personal information</li>
+        <li>Restriction or objection to certain processing</li>
+        <li>Information about how your data is used or shared</li>
+      </ul>
+      <p>To make a privacy request, contact us at <strong><span class="placeholder">support email</span></strong>.</p>
+      <p>We may need to verify your identity before completing certain requests. Some information may be retained where required or permitted by law, such as for tax, accounting, fraud prevention, dispute resolution, or legal compliance purposes.</p>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">9. California Privacy Notice</h2>
+      <p>If you are a California resident, you may have additional privacy rights under California law.</p>
+      <p>We may collect the following categories of personal information:</p>
+      <ul>
+        <li>Identifiers, such as name, email address, billing address, shipping address, and IP address</li>
+        <li>Commercial information, such as products purchased, order details, and purchase history</li>
+        <li>Internet or electronic activity information, such as website usage data and server logs</li>
+        <li>Payment-related information processed through third-party payment providers</li>
+        <li>Communications you send to us</li>
+      </ul>
+      <p>We use this information for the business purposes described in this Privacy Policy, including order processing, payment processing, fulfillment, shipping, customer support, fraud prevention, website operation, marketing if you opt in, and legal compliance.</p>
+      <p>We do not sell your personal information for money. We also do not currently share personal information for cross-context behavioral advertising unless specifically disclosed in this Privacy Policy.</p>
+      <p>California residents may contact us at <strong><span class="placeholder">support email</span></strong> to submit a privacy request.</p>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">10. Children&rsquo;s Privacy</h2>
+      <p>Our website is not intended for children under the age of 13. We do not knowingly collect personal information from children under 13.</p>
+      <p>If you believe a child has provided us with personal information, please contact us at <strong><span class="placeholder">support email</span></strong>, and we will take appropriate steps to delete the information where required.</p>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">11. Marketing Communications</h2>
+      <p>If you sign up for our email list or otherwise consent to receive marketing messages, we may use your email address to send updates, product announcements, promotions, or brand-related emails.</p>
+      <p>You can unsubscribe from marketing emails at any time by using the unsubscribe link in the email or by contacting us at <strong><span class="placeholder">support email</span></strong>.</p>
+      <p>Even if you unsubscribe from marketing messages, we may still send non-promotional messages related to orders, shipping, customer service, refunds, policy updates, or other business purposes.</p>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">12. Links to Other Websites</h2>
+      <p>Our website may contain links to third-party websites or services. We are not responsible for the privacy practices, content, or policies of third-party websites.</p>
+      <p>We encourage you to review the privacy policies of any third-party websites you visit.</p>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">13. Changes to This Privacy Policy</h2>
+      <p>We may update this Privacy Policy from time to time. When we make changes, we will update the &ldquo;Last updated&rdquo; date at the top of this page.</p>
+      <p>Your continued use of our website after changes are posted means you acknowledge the updated Privacy Policy.</p>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">14. Contact Us</h2>
+      <p>If you have questions about this Privacy Policy or want to make a privacy request, contact us at:</p>
+      <p class="contact-card">
+        <strong><span class="placeholder">Brand Name</span></strong><br>
+        Operated by <strong><span class="placeholder">Legal Name DBA Brand Name</span></strong><br>
+        Email: <strong><span class="placeholder">support email</span></strong><br>
+        Mailing Address: <strong><span class="placeholder">business mailing address, if applicable</span></strong>
+      </p>
+    </section>
+
+  </div>
+</main>
+
+<footer data-screen-label="Footer">
+  <div class="footer-grid">
+    <div class="footer-col">
+      <h4>Newsletter</h4>
+      <p style="font-weight:300;font-size:.95rem;color:rgba(255,255,255,.6);margin-bottom:24px;max-width:38ch">
+        First word on each new plate. No noise, no promotions — one note per drop.
+      </p>
+      <form class="footer-sub" onsubmit="event.preventDefault()">
+        <input type="email" placeholder="Email address" aria-label="Email address">
+        <button type="submit">Subscribe →</button>
+      </form>
+    </div>
+    <div class="footer-col">
+      <h4>The Series</h4>
+      <a href="Collection.html">Collection</a>
+      <a href="#">Archive</a>
+      <a href="#">Lookbook</a>
+      <a href="#">Statement</a>
+    </div>
+    <div class="footer-col">
+      <h4>Service</h4>
+      <a href="shipping-policy.html">Shipping</a>
+      <a href="refund-policy.html">Returns</a>
+      <a href="#">Size Guide</a>
+      <a href="#">Contact</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="privacy-policy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
+      <a href="shipping-policy.html">Shipping Policy</a>
+      <a href="refund-policy.html">Refund Policy</a>
+    </div>
+  </div>
+
+  <div class="footer-fine">
+    <span>© MMXXVI The Deangelo Series</span>
+    <span>Brooklyn · New York</span>
+  </div>
+  <div class="watermark">DEANGELO</div>
+</footer>
+
+<script>
+  // navbar scroll
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+  });
+  // smooth scroll for in-page TOC
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const id = a.getAttribute('href').slice(1);
+      if (!id) return;
+      const el = document.getElementById(id);
+      if (el) { e.preventDefault(); el.scrollIntoView({behavior:'smooth', block:'start'}); }
+    });
+  });
+</script>
+
+<script src="site-ui.js"></script>
+</body>
+</html>

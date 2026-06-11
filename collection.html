@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Collection — The Deangelo Series</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;0,600;1,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#0A0A0A;
+    --white:#FFFFFF;
+    --bone:#F5F5F1;
+    --bone-tint:#ECECE6;   /* one shade darker than bone for placeholder fields */
+    --bone-warm:#EFEDE5;
+    --hairline-light:rgba(255,255,255,.10);
+    --hairline-dark:rgba(0,0,0,.10);
+    --ink-dim:rgba(10,10,10,.55);
+    --paper-dim:rgba(255,255,255,.55);
+    --font-serif:'Cormorant Garamond',serif;
+    --font-sans:'Inter',sans-serif;
+    --max:1400px;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{background:var(--black);color:var(--white);font-family:var(--font-sans);-webkit-font-smoothing:antialiased;line-height:1.55}
+  body{overflow-x:hidden}
+
+  a{color:inherit;text-decoration:none;transition:opacity 220ms ease}
+  a:hover{opacity:.6}
+  img{max-width:100%;display:block}
+
+  /* ── NAV (carbon copy of homepage) ─────────────────────────── */
+  nav{
+    position:fixed;inset:0 0 auto 0;
+    display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+    padding:24px 48px;z-index:1000;
+    background:transparent;transition:background 400ms ease,border-color 400ms ease;
+    text-transform:uppercase;letter-spacing:.2em;font-size:11px;font-weight:500;
+    border-bottom:1px solid transparent;
+  }
+  nav.scrolled{background:rgba(10,10,10,.96);border-bottom-color:var(--hairline-light)}
+  .nav-brand{font-size:13px;letter-spacing:.4em;font-weight:400;text-align:center}
+  .nav-links,.nav-cart{display:flex;gap:32px}
+  .nav-cart{justify-content:flex-end}
+  .nav-current{opacity:1;position:relative}
+  .nav-current::after{
+    content:"";position:absolute;left:0;right:0;bottom:-6px;height:1px;background:currentColor;opacity:.7;
+  }
+
+  /* ── HEADER (black) ────────────────────────────────────────── */
+  header.collection-header{
+    background:var(--black);color:var(--white);
+    padding:200px 48px 56px;
+    border-bottom:1px solid var(--hairline-light);
+  }
+  .collection-header-inner{max-width:var(--max);margin:0 auto;display:grid;grid-template-columns:1fr auto;gap:64px;align-items:end}
+
+  .eyebrow{
+    font-family:var(--font-sans);font-size:11px;font-weight:400;
+    text-transform:uppercase;letter-spacing:.5em;opacity:.55;
+  }
+  .collection-title{
+    font-family:var(--font-serif);font-weight:500;
+    font-size:clamp(4rem,9vw,8.5rem);
+    line-height:.9;letter-spacing:-.02em;
+    margin:28px 0 0;
+  }
+  .collection-sub{
+    margin-top:32px;max-width:520px;
+    font-weight:300;font-size:1.05rem;color:var(--paper-dim);
+  }
+  .collection-meta{
+    font-family:var(--font-sans);font-size:11px;letter-spacing:.3em;text-transform:uppercase;
+    text-align:right;color:var(--paper-dim);
+    display:flex;flex-direction:column;gap:8px;line-height:1.4;
+  }
+  .collection-meta span:last-child{color:var(--white);opacity:.85}
+
+  /* filter row */
+  .filter-row{
+    max-width:var(--max);margin:48px auto 0;
+    display:flex;align-items:center;justify-content:space-between;gap:24px;
+    font-size:11px;letter-spacing:.3em;text-transform:uppercase;
+  }
+  .filters{display:flex;gap:28px;align-items:center;flex-wrap:wrap}
+  .filters button{
+    background:none;border:0;color:inherit;font:inherit;letter-spacing:inherit;
+    text-transform:inherit;cursor:default;padding:6px 0;
+    opacity:.55;transition:opacity 200ms ease;position:relative;
+  }
+  .filters button:hover{opacity:.85}
+  .filters button.is-active{opacity:1}
+  .filters button.is-active::after{
+    content:"";position:absolute;left:0;right:0;bottom:-2px;height:1px;background:currentColor;
+  }
+  .filters .filter-count{opacity:.4;margin-left:6px;font-size:9px;letter-spacing:.2em}
+  .sort{display:flex;gap:12px;align-items:center;opacity:.7}
+  .sort .caret{opacity:.5}
+
+  /* ── GRID (bone) ───────────────────────────────────────────── */
+  main.collection{
+    background:var(--bone);color:var(--black);
+    padding:120px 48px 160px;
+  }
+  .grid{
+    max-width:var(--max);margin:0 auto;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    column-gap:80px;
+    row-gap:128px;
+  }
+
+  /* ── PLATE / CARD ──────────────────────────────────────────── */
+  .plate{position:relative;display:flex;flex-direction:column;gap:24px}
+  .plate-link{display:block;color:inherit}
+  .plate-link:hover{opacity:1}
+
+  .plate-image-wrap{
+    position:relative;aspect-ratio:4/5;width:100%;
+    background:var(--bone-tint);
+    overflow:hidden;
+  }
+  .plate-image{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    transition:opacity 600ms ease;
+  }
+  .plate-image--model{
+    background:
+      repeating-linear-gradient(
+        135deg,
+        transparent 0 14px,
+        rgba(10,10,10,.035) 14px 15px
+      ),
+      var(--bone-tint);
+  }
+  /* Flat shirt / product shot — shown on hover only. NOT the artwork. */
+  .plate-image--flat{
+    background:
+      repeating-linear-gradient(
+        90deg,
+        transparent 0 28px,
+        rgba(10,10,10,.03) 28px 29px
+      ),
+      var(--bone-warm);
+    opacity:0;
+    transition:opacity 600ms ease,transform 700ms ease;
+  }
+  .ph-label{
+    font-family:'Courier New',ui-monospace,monospace;
+    font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;
+    color:rgba(10,10,10,.4);
+    padding:8px 14px;background:rgba(245,245,241,.8);
+  }
+
+  /* hover: cross-fade model → flat shirt. Text never changes. */
+  @media (hover:hover){
+    .plate:hover .plate-image--model{opacity:0}
+    .plate:hover .plate-image--flat{opacity:1}
+  }
+
+  .plate-caption{
+    display:flex;flex-direction:column;gap:4px;
+  }
+  .plate-line{
+    display:flex;align-items:baseline;gap:10px;
+    font-family:var(--font-sans);font-size:12px;font-weight:500;
+    letter-spacing:.28em;text-transform:uppercase;
+  }
+  .plate-num{font-variant-numeric:tabular-nums}
+  .plate-sep{opacity:.35;font-weight:300}
+  .plate-title{letter-spacing:.28em}
+
+  .plate-price{
+    font-family:var(--font-sans);font-weight:300;font-size:1.1rem;
+    margin-top:8px;
+  }
+
+  /* Description is part of the resting card. Never reveals, never moves. */
+  .plate-desc{
+    margin-top:14px;
+    font-weight:300;font-size:.95rem;line-height:1.5;color:var(--ink-dim);
+    max-width:38ch;
+  }
+
+  /* soldout state */
+  .plate.is-archived .plate-image-wrap::after{
+    content:"ARCHIVED";
+    position:absolute;top:16px;left:16px;
+    font-family:var(--font-sans);font-size:10px;font-weight:500;
+    letter-spacing:.3em;color:rgba(10,10,10,.5);
+    padding:6px 10px;background:rgba(245,245,241,.85);
+  }
+  .plate.is-archived .plate-price{text-decoration:line-through;opacity:.4}
+
+  /* ── FOOTER (homepage parity) ──────────────────────────────── */
+  footer{
+    background:var(--black);color:var(--white);
+    padding:120px 48px 48px;
+    position:relative;overflow:hidden;
+  }
+  .footer-grid{
+    max-width:1200px;margin:0 auto;
+    display:grid;grid-template-columns:1.4fr .8fr .8fr .8fr .8fr;
+    gap:64px;align-items:start;
+  }
+  .footer-col h4{
+    font-family:var(--font-sans);font-size:11px;font-weight:500;
+    letter-spacing:.3em;text-transform:uppercase;opacity:.55;margin-bottom:24px;
+  }
+  .footer-col a{display:block;margin-bottom:10px;font-size:.95rem;font-weight:300}
+  .footer-sub{display:flex;align-items:center;border-bottom:1px solid var(--hairline-light)}
+  .footer-sub input{
+    background:transparent;border:0;color:inherit;font:inherit;
+    padding:12px 0;flex:1;outline:none;
+    font-size:.95rem;font-weight:300;
+  }
+  .footer-sub input::placeholder{color:rgba(255,255,255,.35);letter-spacing:.2em;text-transform:uppercase;font-size:11px}
+  .footer-sub button{
+    background:none;border:0;color:inherit;cursor:default;padding:12px 0 12px 16px;
+    font-size:11px;letter-spacing:.3em;text-transform:uppercase;
+  }
+  .footer-fine{
+    max-width:1200px;margin:96px auto 0;
+    display:flex;justify-content:space-between;align-items:flex-end;
+    font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.4);
+    padding-top:32px;border-top:1px solid var(--hairline-light);
+  }
+  .watermark{
+    font-family:var(--font-sans);font-weight:900;
+    font-size:18vw;line-height:.85;letter-spacing:-.05em;
+    color:rgba(255,255,255,.025);
+    text-align:center;margin-top:80px;pointer-events:none;user-select:none;
+  }
+
+  /* ── MOBILE ────────────────────────────────────────────────── */
+  @media (max-width:1024px){
+    nav{padding:20px 24px}
+    .nav-links{gap:20px}
+    .nav-cart{gap:20px}
+    header.collection-header{padding:160px 24px 40px}
+    .collection-header-inner{grid-template-columns:1fr;gap:24px;align-items:start}
+    .collection-meta{text-align:left;flex-direction:row;gap:16px;flex-wrap:wrap}
+    .filter-row{flex-direction:column;align-items:flex-start;gap:20px;margin-top:32px}
+    main.collection{padding:72px 24px 96px}
+    .grid{grid-template-columns:repeat(2,1fr);column-gap:32px;row-gap:80px}
+    .footer-grid{grid-template-columns:1fr 1fr;gap:48px}
+    .footer-fine{flex-direction:column;align-items:flex-start;gap:16px}
+  }
+  @media (max-width:640px){
+    nav{grid-template-columns:auto 1fr auto;padding:18px 20px}
+    .nav-links{display:none}
+    .nav-cart{gap:16px}
+    .nav-brand{font-size:11px;letter-spacing:.3em}
+    header.collection-header{padding:120px 20px 32px}
+    .collection-title{font-size:18vw}
+    .filters{gap:18px;font-size:10px}
+    .sort{font-size:10px}
+    main.collection{padding:56px 20px 80px}
+    .grid{grid-template-columns:1fr;row-gap:64px}
+    /* Mobile: description size only — nothing was hidden in the first place */
+    .plate-desc{font-size:.9rem;max-width:none}
+    .footer-grid{grid-template-columns:1fr;gap:40px}
+    .watermark{font-size:32vw}
+  }
+
+  /* ── Tweak-driven variants ─────────────────────────────────── */
+  /* Hover image effect: crossfade (default), scale, none */
+  body[data-imgfx="none"] .plate-image--flat{display:none}
+  @media (hover:hover){
+    body[data-imgfx="none"] .plate:hover .plate-image--model{opacity:1}
+    body[data-imgfx="scale"] .plate:hover .plate-image--model{opacity:1;transform:scale(1.025)}
+    body[data-imgfx="scale"] .plate:hover .plate-image--flat{opacity:0}
+  }
+
+  body[data-imgbg="white"] .plate-image-wrap{background:#FBFBF8}
+  body[data-imgbg="white"] .plate-image--model{
+    background:
+      repeating-linear-gradient(135deg, transparent 0 14px, rgba(10,10,10,.025) 14px 15px),
+      #FBFBF8;
+  }
+  body[data-imgbg="white"] .plate-image--flat{
+    background:
+      repeating-linear-gradient(90deg, transparent 0 28px, rgba(10,10,10,.025) 28px 29px),
+      #FBFBF8;
+  }
+
+  body[data-cols="4"] .grid{grid-template-columns:repeat(4,1fr);column-gap:48px;row-gap:96px}
+  body[data-cols="4"] .plate-line{font-size:11px;letter-spacing:.24em}
+
+  body[data-density="airy"] main.collection{padding-top:200px;padding-bottom:240px}
+  body[data-density="airy"] .grid{row-gap:200px}
+  body[data-density="compact"] .grid{row-gap:80px}
+  body[data-density="compact"] main.collection{padding-top:72px}
+</style>
+</head>
+<body data-screen-label="Shop All — The Collection">
+
+<nav id="navbar">
+  <div class="nav-links">
+    <button class="du-ham" data-menu-toggle aria-label="Open menu"><span class="du-ham-ico"><i></i><i></i></span>Menu</button>
+    <a href="#" class="nav-current">The Series</a>
+    <a href="#">Art</a>
+  </div>
+  <a class="nav-brand" href="Home.html">THE DEANGELO SERIES</a>
+  <div class="nav-cart">
+    <a href="#">Search</a>
+    <a href="#" data-cart-toggle>Cart (0)</a>
+  </div>
+</nav>
+
+<header class="collection-header" data-screen-label="Collection — Header">
+  <div class="collection-header-inner">
+    <div>
+      <div class="eyebrow">The Series // MMXXVI</div>
+      <h1 class="collection-title">The Collection</h1>
+      <p class="collection-sub">
+        Six plates. Series 01. Each garment is a single titled work — printed in limited edition on heavyweight organic cotton, photographed once, then archived.
+      </p>
+    </div>
+    <div class="collection-meta">
+      <span>Series 01</span>
+      <span>06 Plates</span>
+      <span>Editions of 200</span>
+    </div>
+  </div>
+
+  <div class="filter-row">
+    <div class="filters">
+      <button class="is-active">All <span class="filter-count">06</span></button>
+      <button>Tees <span class="filter-count">04</span></button>
+      <button>Long Sleeve <span class="filter-count">01</span></button>
+      <button>Archive <span class="filter-count">01</span></button>
+    </div>
+    <div class="sort">
+      <span>Sort:</span><span>Plate</span><span class="caret">▾</span>
+    </div>
+  </div>
+</header>
+
+<main class="collection" data-screen-label="Collection — Grid">
+  <div class="grid" id="grid"></div>
+</main>
+
+<footer data-screen-label="Footer">
+  <div class="footer-grid">
+    <div class="footer-col">
+      <h4>Newsletter</h4>
+      <p style="font-weight:300;font-size:.95rem;color:rgba(255,255,255,.6);margin-bottom:24px;max-width:38ch">
+        First word on each new plate. No noise, no promotions — one note per drop.
+      </p>
+      <form class="footer-sub" onsubmit="event.preventDefault()">
+        <input type="email" placeholder="Email address" aria-label="Email address">
+        <button type="submit">Subscribe →</button>
+      </form>
+    </div>
+    <div class="footer-col">
+      <h4>The Series</h4>
+      <a href="Collection.html">Collection</a>
+      <a href="#">Archive</a>
+      <a href="#">Lookbook</a>
+      <a href="#">Statement</a>
+    </div>
+    <div class="footer-col">
+      <h4>Service</h4>
+      <a href="shipping-policy.html">Shipping</a>
+      <a href="refund-policy.html">Returns</a>
+      <a href="#">Size Guide</a>
+      <a href="#">Contact</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="privacy-policy.html">Privacy Policy</a>
+      <a href="terms.html">Terms</a>
+      <a href="shipping-policy.html">Shipping Policy</a>
+      <a href="refund-policy.html">Refund Policy</a>
+    </div>
+    <div class="footer-col">
+      <h4>Studio</h4>
+      <a href="#">Instagram</a>
+      <a href="#">Editorial</a>
+      <a href="#">Press</a>
+    </div>
+  </div>
+
+  <div class="footer-fine">
+    <span>© MMXXVI The Deangelo Series</span>
+    <span>Brooklyn · New York</span>
+  </div>
+  <div class="watermark">DEANGELO</div>
+</footer>
+
+<div id="tweaks-root"></div>
+
+<!-- ── Static product data + render ───────────────────────────── -->
+<script>
+  const PLATES = [
+    { n:"01", title:"Metamorphosis", price:"$68",
+      desc:"Heavyweight 10.5oz organic cotton. Oversized editorial fit. Butterfly skull motif, gallery-grade screen print." },
+    { n:"02", title:"Dualities", price:"$68",
+      desc:"A study on light and shadow. Featured on the signature box-cut silhouette. Hand-mixed pigment, single colourway." },
+    { n:"03", title:"Venezia", price:"$72",
+      desc:"Long sleeve, mid-weight. Sourced from a 2024 oil-on-linen study; printed on cotton-silk twill." },
+    { n:"04", title:"Stillness", price:"$68",
+      desc:"Minimal centred composition. Garment-dyed cotton. Quiet plate, intended for repeated wear." },
+    { n:"05", title:"The Garden", price:"$72",
+      desc:"Floral negative-space study, printed front and back. Boxy crew, dropped shoulder." },
+    { n:"06", title:"Aperture", price:"$68", archived:true,
+      desc:"Series 01 sold-out edition. Limited returns held in the archive — no further runs scheduled." },
+  ];
+
+  const grid = document.getElementById('grid');
+  grid.innerHTML = PLATES.map(p => `
+    <article class="plate ${p.archived ? 'is-archived' : ''}">
+      <a class="plate-link" href="Product.html" aria-label="View ${p.title}">
+        <div class="plate-image-wrap">
+          <div class="plate-image plate-image--model">
+            <span class="ph-label">MODEL // ${p.n}</span>
+          </div>
+          <div class="plate-image plate-image--flat">
+            <span class="ph-label">FLAT // ${p.n}</span>
+          </div>
+        </div>
+      </a>
+      <div class="plate-caption">
+        <div class="plate-line">
+          <span class="plate-num">${p.n}</span>
+          <span class="plate-sep">//</span>
+          <span class="plate-title">${p.title}</span>
+        </div>
+        <p class="plate-price">${p.price}</p>
+        <p class="plate-desc">${p.desc}</p>
+      </div>
+    </article>
+  `).join('');
+
+  // nav scroll state
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
+  });
+</script>
+
+<!-- ── React + Tweaks panel ───────────────────────────────────── -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel">
+  const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "imgfx": "crossfade",
+    "imgbg": "bone",
+    "cols": "3",
+    "density": "regular"
+  }/*EDITMODE-END*/;
+
+  function CollectionTweaks(){
+    const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+    React.useEffect(() => {
+      document.body.dataset.imgfx    = t.imgfx;
+      document.body.dataset.imgbg    = t.imgbg;
+      document.body.dataset.cols     = t.cols;
+      document.body.dataset.density  = t.density;
+    }, [t]);
+
+    return (
+      <TweaksPanel title="Tweaks">
+        <TweakSection label="Card hover" />
+        <TweakRadio label="Image effect" value={t.imgfx}
+          options={['crossfade','scale','none']}
+          onChange={v => setTweak('imgfx', v)} />
+        <TweakRadio label="Image bg" value={t.imgbg}
+          options={['bone','white']}
+          onChange={v => setTweak('imgbg', v)} />
+        <TweakSection label="Grid" />
+        <TweakRadio label="Columns" value={t.cols}
+          options={['3','4']}
+          onChange={v => setTweak('cols', v)} />
+        <TweakRadio label="Spacing" value={t.density}
+          options={['compact','regular','airy']}
+          onChange={v => setTweak('density', v)} />
+      </TweaksPanel>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('tweaks-root'))
+    .render(<CollectionTweaks />);
+</script>
+
+<script src="site-ui.js"></script>
+</body>
+</html>

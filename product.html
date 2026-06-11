@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plate 01 — The Metamorphosis · The Deangelo Series</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;0,600;1,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#0A0A0A;
+    --white:#FFFFFF;
+    --bone:#F5F5F1;
+    --bone-tint:#ECECE6;
+    --bone-warm:#EFEDE5;
+    --bone-deep:#E5E4DD;
+    --hairline-light:rgba(255,255,255,.10);
+    --hairline-dark:rgba(0,0,0,.12);
+    --hairline-soft:rgba(0,0,0,.06);
+    --ink:#0A0A0A;
+    --ink-dim:rgba(10,10,10,.6);
+    --ink-mute:rgba(10,10,10,.45);
+    --paper-dim:rgba(255,255,255,.55);
+    --font-serif:'Cormorant Garamond',serif;
+    --font-sans:'Inter',sans-serif;
+    --max:1400px;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{background:var(--bone);color:var(--ink);font-family:var(--font-sans);-webkit-font-smoothing:antialiased;line-height:1.55}
+  body{overflow-x:hidden}
+  a{color:inherit;text-decoration:none;transition:opacity 220ms ease}
+  a:hover{opacity:.6}
+  img{max-width:100%;display:block}
+  button{font:inherit;cursor:default}
+
+  /* ── NAV ───────────────────────────────────────────────────── */
+  nav{
+    position:fixed;inset:0 0 auto 0;
+    display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+    padding:24px 48px;z-index:1000;
+    background:rgba(245,245,241,.78);
+    backdrop-filter:blur(14px) saturate(140%);
+    -webkit-backdrop-filter:blur(14px) saturate(140%);
+    border-bottom:1px solid var(--hairline-soft);
+    text-transform:uppercase;letter-spacing:.2em;font-size:11px;font-weight:500;
+    transition:background 300ms ease,border-color 300ms ease;
+  }
+  nav.scrolled{background:rgba(245,245,241,.95);border-bottom-color:var(--hairline-dark)}
+  .nav-brand{font-size:13px;letter-spacing:.4em;font-weight:400;text-align:center}
+  .nav-links,.nav-cart{display:flex;gap:32px}
+  .nav-cart{justify-content:flex-end}
+  .nav-current{position:relative}
+  .nav-current::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:1px;background:currentColor;opacity:.7}
+
+  /* ── BREADCRUMB ───────────────────────────────────────────── */
+  .crumb{
+    max-width:var(--max);margin:0 auto;
+    padding:120px 48px 0;
+    font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-mute);
+    display:flex;gap:14px;align-items:center;
+  }
+  .crumb .sep{opacity:.5}
+
+  /* ── MAIN GALLERY + INFO ───────────────────────────────────── */
+  .product{
+    max-width:var(--max);margin:0 auto;
+    padding:40px 48px 120px;
+    display:grid;grid-template-columns:1.35fr 1fr;gap:96px;
+    align-items:start;
+  }
+
+  .gallery{display:flex;flex-direction:column;gap:24px;position:relative}
+  .gallery-stage{
+    position:relative;width:100%;aspect-ratio:4/5;
+    background:var(--bone-tint);
+    overflow:hidden;
+  }
+  .gallery-stage .frame{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    opacity:0;transition:opacity 600ms ease;
+  }
+  .gallery-stage .frame.is-active{opacity:1}
+  .ph-label{
+    font-family:'Courier New',ui-monospace,monospace;
+    font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:rgba(10,10,10,.4);
+    padding:8px 14px;background:rgba(245,245,241,.85);
+  }
+
+  .frame[data-kind="front"]   { background: repeating-linear-gradient(135deg,transparent 0 14px,rgba(10,10,10,.04) 14px 15px),var(--bone-tint) }
+  .frame[data-kind="back"]    { background: repeating-linear-gradient(45deg, transparent 0 14px,rgba(10,10,10,.04) 14px 15px),var(--bone-tint) }
+  .frame[data-kind="detail"]  { background: repeating-linear-gradient(90deg, transparent 0 22px,rgba(10,10,10,.05) 22px 23px),var(--bone-warm) }
+  .frame[data-kind="artwork"] { background: repeating-linear-gradient(45deg, transparent 0 26px,rgba(10,10,10,.07) 26px 27px),var(--bone-deep) }
+
+  .gallery-counter{
+    position:absolute;left:16px;bottom:16px;
+    font-family:'Courier New',ui-monospace,monospace;
+    font-size:10.5px;letter-spacing:.3em;color:rgba(10,10,10,.55);
+    background:rgba(245,245,241,.7);padding:6px 10px;
+  }
+
+  .thumbs{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:14px;
+  }
+  .thumb{
+    aspect-ratio:4/5;background:var(--bone-tint);border:1px solid transparent;
+    cursor:default;position:relative;overflow:hidden;
+    transition:border-color 200ms ease,opacity 200ms ease;
+  }
+  .thumb[data-kind="front"]   { background: repeating-linear-gradient(135deg,transparent 0 7px,rgba(10,10,10,.04) 7px 8px),var(--bone-tint) }
+  .thumb[data-kind="back"]    { background: repeating-linear-gradient(45deg, transparent 0 7px,rgba(10,10,10,.04) 7px 8px),var(--bone-tint) }
+  .thumb[data-kind="detail"]  { background: repeating-linear-gradient(90deg, transparent 0 11px,rgba(10,10,10,.05) 11px 12px),var(--bone-warm) }
+  .thumb[data-kind="artwork"] { background: repeating-linear-gradient(45deg, transparent 0 13px,rgba(10,10,10,.07) 13px 14px),var(--bone-deep) }
+  .thumb.is-active{border-color:var(--ink)}
+  .thumb:not(.is-active){opacity:.55}
+  .thumb:hover{opacity:.85}
+  .thumb-label{
+    position:absolute;left:8px;bottom:8px;
+    font-family:'Courier New',ui-monospace,monospace;
+    font-size:9px;letter-spacing:.25em;text-transform:uppercase;
+    color:rgba(10,10,10,.45);
+  }
+
+  /* ── INFO COLUMN ───────────────────────────────────────────── */
+  .info{
+    position:sticky;top:120px;
+    display:flex;flex-direction:column;gap:0;
+    padding-top:8px;
+  }
+
+  .eyebrow{
+    font-family:var(--font-sans);font-size:11px;font-weight:400;
+    text-transform:uppercase;letter-spacing:.5em;color:var(--ink-mute);
+  }
+  .info-eyebrow{display:flex;gap:18px;align-items:center}
+  .info-eyebrow .dot{width:3px;height:3px;background:currentColor;opacity:.4}
+
+  .product-title{
+    font-family:var(--font-serif);font-weight:500;
+    font-size:clamp(3rem,5.5vw,5rem);
+    line-height:.95;letter-spacing:-.015em;
+    margin:24px 0 28px;
+  }
+  .product-title em{font-style:italic;font-weight:300}
+
+  .product-price{
+    font-family:var(--font-sans);font-weight:300;font-size:1.4rem;
+    margin-bottom:48px;
+  }
+
+  .hairline{height:1px;background:var(--hairline-dark);width:100%}
+
+  .info-block{padding:32px 0}
+  .info-block + .info-block{border-top:1px solid var(--hairline-soft)}
+  .info-block-label{
+    font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-mute);
+    margin-bottom:18px;
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .info-block-label .aside{font-size:10px;letter-spacing:.25em;opacity:.65}
+
+  /* Size chips */
+  .sizes{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+  .size{
+    background:transparent;border:1px solid var(--hairline-dark);
+    padding:14px 0;text-align:center;
+    font-size:11px;letter-spacing:.25em;text-transform:uppercase;font-weight:500;
+    transition:border-color 180ms ease,background 180ms ease,color 180ms ease;
+  }
+  .size:hover{border-color:var(--ink)}
+  .size.is-active{background:var(--ink);color:var(--bone);border-color:var(--ink)}
+  .size.is-disabled{
+    opacity:.35;color:var(--ink-mute);text-decoration:line-through;cursor:not-allowed;
+  }
+  .size.is-disabled:hover{border-color:var(--hairline-dark)}
+
+  /* CTA */
+  .cta-row{display:flex;flex-direction:column;gap:14px;margin-top:24px}
+  .cta-primary{
+    background:var(--ink);color:var(--bone);
+    padding:22px 28px;
+    font-size:11px;letter-spacing:.35em;text-transform:uppercase;
+    border:1px solid var(--ink);
+    text-align:center;
+    transition:background 180ms ease,color 180ms ease;
+  }
+  .cta-primary:hover{background:transparent;color:var(--ink)}
+  .cta-secondary{
+    background:transparent;color:var(--ink);
+    padding:18px 28px;
+    font-size:11px;letter-spacing:.3em;text-transform:uppercase;
+    border:1px solid var(--hairline-dark);text-align:center;
+    transition:border-color 180ms ease;
+  }
+  .cta-secondary:hover{border-color:var(--ink)}
+
+  /* Meta pairs in info column */
+  .meta-pair{display:grid;grid-template-columns:1fr 1.6fr;gap:24px;align-items:start;padding:14px 0}
+  .meta-pair + .meta-pair{border-top:1px dashed var(--hairline-soft)}
+  .meta-pair dt{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-mute)}
+  .meta-pair dd{font-weight:300;font-size:.95rem;color:var(--ink)}
+
+  /* ── THE SOURCE ────────────────────────────────────────────── */
+  .source-section{
+    background:var(--bone);padding:160px 48px 160px;
+    border-top:1px solid var(--hairline-soft);
+  }
+  .source-inner{
+    max-width:var(--max);margin:0 auto;
+    display:grid;grid-template-columns:1.2fr 1fr;gap:120px;align-items:start;
+  }
+  .source-art{
+    position:relative;aspect-ratio:3/4;
+    background:
+      repeating-linear-gradient(45deg,transparent 0 32px,rgba(10,10,10,.06) 32px 33px),
+      var(--bone-deep);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 30px 60px rgba(0,0,0,.08);
+  }
+  .source-art .ph-label{font-size:12px}
+  .source-art-caption{
+    margin-top:18px;
+    font-family:'Courier New',ui-monospace,monospace;
+    font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-mute);
+    display:flex;justify-content:space-between;
+  }
+
+  .source-copy{padding-top:32px}
+  .source-copy .eyebrow{margin-bottom:32px;display:block}
+  .source-title{
+    font-family:var(--font-serif);font-weight:500;
+    font-size:clamp(2.5rem,4.5vw,4rem);
+    line-height:1;letter-spacing:-.01em;
+    margin-bottom:18px;
+  }
+  .source-title em{font-style:italic;font-weight:300}
+  .source-medium{
+    font-family:var(--font-serif);font-style:italic;font-weight:300;
+    font-size:1.3rem;color:var(--ink-dim);margin-bottom:48px;
+  }
+  .source-pull{
+    font-family:var(--font-serif);font-style:italic;font-weight:300;
+    font-size:1.7rem;line-height:1.35;letter-spacing:-.005em;
+    color:var(--ink);margin-bottom:40px;max-width:34ch;
+  }
+  .source-body{
+    font-weight:300;font-size:1.02rem;line-height:1.65;color:var(--ink-dim);
+    max-width:48ch;
+  }
+  .source-body p + p{margin-top:18px}
+  .source-sign{
+    margin-top:48px;display:flex;align-items:baseline;gap:14px;
+    font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-mute);
+  }
+  .source-sign .name{color:var(--ink);letter-spacing:.25em}
+
+  /* ── PROVENANCE STRIP (black) ──────────────────────────────── */
+  .provenance{
+    background:var(--black);color:var(--white);
+    padding:96px 48px;
+  }
+  .provenance-inner{
+    max-width:var(--max);margin:0 auto;
+    display:grid;grid-template-columns:repeat(4,1fr);gap:48px;align-items:start;
+  }
+  .prov-item .prov-label{
+    font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--paper-dim);
+    margin-bottom:24px;
+  }
+  .prov-item .prov-value{
+    font-family:var(--font-serif);font-weight:500;font-size:2.2rem;line-height:1;letter-spacing:-.01em;
+  }
+  .prov-item .prov-value em{font-style:italic;font-weight:300}
+  .prov-item .prov-aside{
+    margin-top:14px;font-size:.9rem;font-weight:300;color:var(--paper-dim);
+  }
+
+  /* ── ALSO IN SERIES ────────────────────────────────────────── */
+  .also{
+    background:var(--bone);padding:140px 48px 160px;
+  }
+  .also-inner{max-width:var(--max);margin:0 auto}
+  .also-head{
+    display:flex;justify-content:space-between;align-items:baseline;
+    margin-bottom:64px;padding-bottom:24px;border-bottom:1px solid var(--hairline-soft);
+  }
+  .also-head .eyebrow{flex:1}
+  .also-head h3{
+    flex:2;font-family:var(--font-serif);font-weight:500;
+    font-size:clamp(2.5rem,4vw,3.6rem);line-height:1;letter-spacing:-.015em;
+  }
+  .also-head .all{font-size:11px;letter-spacing:.3em;text-transform:uppercase}
+
+  .also-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:80px}
+
+  /* reuse plate component (same as Collection) */
+  .plate{display:flex;flex-direction:column;gap:22px}
+  .plate-link{display:block;color:inherit}
+  .plate-link:hover{opacity:1}
+  .plate-image-wrap{position:relative;aspect-ratio:4/5;width:100%;background:var(--bone-tint);overflow:hidden}
+  .plate-image{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;transition:opacity 600ms ease}
+  .plate-image--model{background:repeating-linear-gradient(135deg,transparent 0 14px,rgba(10,10,10,.035) 14px 15px),var(--bone-tint)}
+  .plate-image--artwork{background:repeating-linear-gradient(45deg, transparent 0 22px,rgba(10,10,10,.05) 22px 23px),var(--bone-warm);opacity:0}
+  @media(hover:hover){
+    .plate:hover .plate-image--model{opacity:.05}
+    .plate:hover .plate-image--artwork{opacity:1}
+  }
+  .plate-line{display:flex;align-items:baseline;gap:10px;font-size:12px;font-weight:500;letter-spacing:.28em;text-transform:uppercase}
+  .plate-sep{opacity:.35;font-weight:300}
+  .plate-price{font-weight:300;font-size:1.05rem;margin-top:6px}
+
+  /* ── FOOTER ────────────────────────────────────────────────── */
+  footer{
+    background:var(--black);color:var(--white);
+    padding:120px 48px 48px;
+    position:relative;overflow:hidden;
+  }
+  .footer-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1.4fr .8fr .8fr .8fr .8fr;gap:64px;align-items:start}
+  .footer-col h4{font-size:11px;font-weight:500;letter-spacing:.3em;text-transform:uppercase;opacity:.55;margin-bottom:24px}
+  .footer-col a{display:block;margin-bottom:10px;font-size:.95rem;font-weight:300}
+  .footer-sub{display:flex;align-items:center;border-bottom:1px solid var(--hairline-light)}
+  .footer-sub input{background:transparent;border:0;color:inherit;font:inherit;padding:12px 0;flex:1;outline:none;font-size:.95rem;font-weight:300}
+  .footer-sub input::placeholder{color:rgba(255,255,255,.35);letter-spacing:.2em;text-transform:uppercase;font-size:11px}
+  .footer-sub button{background:none;border:0;color:inherit;padding:12px 0 12px 16px;font-size:11px;letter-spacing:.3em;text-transform:uppercase}
+  .footer-fine{max-width:1200px;margin:96px auto 0;display:flex;justify-content:space-between;align-items:flex-end;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.4);padding-top:32px;border-top:1px solid var(--hairline-light)}
+  .watermark{font-weight:900;font-size:18vw;line-height:.85;letter-spacing:-.05em;color:rgba(255,255,255,.025);text-align:center;margin-top:80px;pointer-events:none;user-select:none}
+
+  /* ── MOBILE ────────────────────────────────────────────────── */
+  @media (max-width:1024px){
+    nav{padding:20px 24px}
+    .nav-links{gap:20px}
+    .nav-cart{gap:20px}
+    .crumb{padding:100px 24px 0;font-size:10px;gap:10px}
+    .product{grid-template-columns:1fr;gap:48px;padding:32px 24px 80px}
+    .info{position:static;top:auto}
+    .source-section{padding:96px 24px}
+    .source-inner{grid-template-columns:1fr;gap:48px}
+    .source-copy{padding-top:0}
+    .provenance{padding:64px 24px}
+    .provenance-inner{grid-template-columns:repeat(2,1fr);gap:40px}
+    .also{padding:96px 24px}
+    .also-head{flex-wrap:wrap;gap:24px}
+    .also-grid{grid-template-columns:1fr;gap:64px}
+    .footer-grid{grid-template-columns:1fr 1fr;gap:48px}
+  }
+  @media (max-width:640px){
+    nav{grid-template-columns:auto 1fr auto;padding:18px 20px}
+    .nav-links{display:none}
+    .nav-brand{font-size:11px;letter-spacing:.3em}
+    .crumb{padding:90px 20px 0;flex-wrap:wrap}
+    .product{padding:24px 20px 64px;gap:32px}
+    .thumbs{grid-template-columns:repeat(4,1fr);gap:8px}
+    .sizes{grid-template-columns:repeat(3,1fr)}
+    .product-price{margin-bottom:32px}
+    .source-section{padding:72px 20px}
+    .provenance-inner{grid-template-columns:1fr;gap:32px}
+    .prov-item .prov-value{font-size:1.7rem}
+    .also{padding:72px 20px}
+    .footer-grid{grid-template-columns:1fr;gap:40px}
+    .watermark{font-size:30vw}
+  }
+
+  /* ── Tweak-driven variants ─────────────────────────────────── */
+  body[data-sticky="off"] .info{position:static}
+  body[data-cta="outline"] .cta-primary{background:transparent;color:var(--ink)}
+  body[data-cta="outline"] .cta-primary:hover{background:var(--ink);color:var(--bone)}
+  body[data-source-align="reverse"] .source-inner{grid-template-columns:1fr 1.2fr}
+  body[data-source-align="reverse"] .source-art{order:2}
+  body[data-source-align="reverse"] .source-copy{order:1}
+  body[data-meta-style="serif"] .prov-item .prov-value{font-family:var(--font-serif)}
+  body[data-meta-style="sans"]  .prov-item .prov-value{font-family:var(--font-sans);font-weight:500;font-size:1.6rem;letter-spacing:-.005em}
+</style>
+</head>
+<body data-screen-label="Plate 01 — The Metamorphosis">
+
+<nav id="navbar">
+  <div class="nav-links">
+    <button class="du-ham" data-menu-toggle aria-label="Open menu"><span class="du-ham-ico"><i></i><i></i></span>Menu</button>
+    <a href="Collection.html" class="nav-current">The Series</a>
+    <a href="#">Art</a>
+  </div>
+  <a class="nav-brand" href="Home.html">THE DEANGELO SERIES</a>
+  <div class="nav-cart">
+    <a href="#">Search</a>
+    <a href="#" data-cart-toggle>Cart (0)</a>
+  </div>
+</nav>
+
+<!-- Breadcrumb -->
+<div class="crumb">
+  <a href="Collection.html">The Collection</a>
+  <span class="sep">/</span>
+  <span>Series 01</span>
+  <span class="sep">/</span>
+  <span>Plate 01</span>
+</div>
+
+<!-- Main product: gallery + info -->
+<section class="product" data-screen-label="Plate 01 — Gallery + Info">
+  <div class="gallery">
+    <div class="gallery-stage" id="stage">
+      <div class="frame is-active" data-kind="front"><span class="ph-label">GARMENT FRONT // 01</span></div>
+      <div class="frame" data-kind="back"><span class="ph-label">GARMENT BACK // 01</span></div>
+      <div class="frame" data-kind="detail"><span class="ph-label">PRINT DETAIL // 01</span></div>
+      <div class="frame" data-kind="artwork"><span class="ph-label">ARTWORK // 01</span></div>
+      <div class="gallery-counter" id="counter">01 / 04</div>
+    </div>
+    <div class="thumbs" id="thumbs">
+      <button class="thumb is-active" data-target="front" data-i="1"><span class="thumb-label">Front</span></button>
+      <button class="thumb" data-target="back" data-i="2"><span class="thumb-label">Back</span></button>
+      <button class="thumb" data-target="detail" data-i="3"><span class="thumb-label">Detail</span></button>
+      <button class="thumb" data-target="artwork" data-i="4"><span class="thumb-label">Artwork</span></button>
+    </div>
+  </div>
+
+  <aside class="info">
+    <div class="info-eyebrow eyebrow">
+      <span>Series 01 // MMXXVI</span>
+      <span class="dot"></span>
+      <span>Plate 01</span>
+    </div>
+
+    <h1 class="product-title">The<br>Metamorphosis</h1>
+    <p class="product-price">$68 USD</p>
+
+    <div class="hairline"></div>
+
+    <div class="info-block">
+      <div class="info-block-label">
+        <span>Size</span>
+        <a href="#" class="aside" data-size-guide>Size guide →</a>
+      </div>
+      <div class="sizes" id="sizes">
+        <button class="size">XS</button>
+        <button class="size">S</button>
+        <button class="size is-active">M</button>
+        <button class="size">L</button>
+        <button class="size">XL</button>
+        <button class="size is-disabled" disabled>XXL</button>
+      </div>
+    </div>
+
+    <div class="cta-row">
+      <button class="cta-primary" data-add-to-cart data-kind="model">Add to Collection — $68</button>
+      <button class="cta-secondary">Save to Archive</button>
+    </div>
+
+    <div class="du-acc" style="margin-top:40px">
+      <div class="du-acc-item is-open">
+        <button class="du-acc-trigger"><span class="du-acc-label">Details</span><span class="du-acc-sign"></span></button>
+        <div class="du-acc-panel"><div class="du-acc-inner">
+          <dl>
+            <div class="meta-pair">
+              <dt>Material</dt>
+              <dd>10.5oz organic heavyweight cotton. Soft-hand, garment-dyed in small lots.</dd>
+            </div>
+            <div class="meta-pair">
+              <dt>Fit</dt>
+              <dd>Oversized editorial. Boxy crew, dropped shoulder, slightly cropped hem.</dd>
+            </div>
+            <div class="meta-pair">
+              <dt>Print</dt>
+              <dd>Six-colour water-based screen print, hand-pulled. Front placement.</dd>
+            </div>
+          </dl>
+        </div></div>
+      </div>
+
+      <div class="du-acc-item">
+        <button class="du-acc-trigger"><span class="du-acc-label">Delivery &amp; Returns</span><span class="du-acc-sign"></span></button>
+        <div class="du-acc-panel"><div class="du-acc-inner">
+          <dl>
+            <div class="meta-pair">
+              <dt>Dispatch</dt>
+              <dd>Made to order, printed and shipped from the Brooklyn studio within 5&ndash;7 business days.</dd>
+            </div>
+            <div class="meta-pair">
+              <dt>Shipping</dt>
+              <dd>Tracked worldwide. Duties calculated at checkout. <a href="shipping-policy.html" style="border-bottom:1px solid var(--hairline-dark);padding-bottom:1px">Shipping policy &rarr;</a></dd>
+            </div>
+            <div class="meta-pair">
+              <dt>Returns</dt>
+              <dd>14 days on unworn plates in original condition with the plate card. <a href="refund-policy.html" style="border-bottom:1px solid var(--hairline-dark);padding-bottom:1px">Refund policy &rarr;</a></dd>
+            </div>
+          </dl>
+        </div></div>
+      </div>
+
+      <div class="du-acc-item">
+        <button class="du-acc-trigger"><span class="du-acc-label">The Plate</span><span class="du-acc-sign"></span></button>
+        <div class="du-acc-panel"><div class="du-acc-inner">
+          <dl>
+            <div class="meta-pair">
+              <dt>Edition</dt>
+              <dd>Limited to 200 numbered plates &mdash; No. 01 of 200. Series 01 closes when sold out.</dd>
+            </div>
+            <div class="meta-pair">
+              <dt>Authenticity</dt>
+              <dd>Ships with a signed, hand-numbered plate card matching your edition number.</dd>
+            </div>
+          </dl>
+        </div></div>
+      </div>
+    </div>
+  </aside>
+</section>
+
+<!-- The Source -->
+<section class="source-section" data-screen-label="The Source">
+  <div class="source-inner">
+    <div>
+      <div class="source-art"><span class="ph-label">ORIGINAL ARTWORK // 01</span></div>
+      <div class="source-art-caption">
+        <span>The Metamorphosis · Oil on linen</span>
+        <span>900 × 1200 mm</span>
+      </div>
+    </div>
+
+    <div class="source-copy">
+      <span class="eyebrow">The Source</span>
+      <h2 class="source-title">The <em>Metamorphosis</em></h2>
+      <p class="source-medium">Oil on linen — MMXXIV</p>
+      <p class="source-pull">"A butterfly built from what it used to be — half-skull, half-wing, suspended at the moment of changing its mind."</p>
+      <div class="source-body">
+        <p>The Metamorphosis began as a small graphite study, sketched in the studio over the winter of 2023. The final canvas was completed nine months later, oil on Belgian linen, after the motif had moved through three earlier drafts on paper.</p>
+        <p>The piece was reproduced for Series 01 as a six-colour water-based print, hand-pulled in Brooklyn on heavyweight cotton. The print is the painting's only authorised wearable edition.</p>
+      </div>
+      <div class="source-sign">
+        <span>By</span>
+        <span class="name">Marco Deangelo</span>
+        <span>· Brooklyn studio · MMXXIV</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Provenance -->
+<section class="provenance" data-screen-label="Provenance">
+  <div class="provenance-inner">
+    <div class="prov-item">
+      <div class="prov-label">Edition</div>
+      <div class="prov-value">No. <em>001</em> / 200</div>
+      <div class="prov-aside">Hand-numbered, sequence in order of purchase.</div>
+    </div>
+    <div class="prov-item">
+      <div class="prov-label">Printed</div>
+      <div class="prov-value">Brooklyn, NY</div>
+      <div class="prov-aside">Small-batch screen print. Water-based inks.</div>
+    </div>
+    <div class="prov-item">
+      <div class="prov-label">Series</div>
+      <div class="prov-value">01 <em>/</em> MMXXVI</div>
+      <div class="prov-aside">Six plates. Released February 2026.</div>
+    </div>
+    <div class="prov-item">
+      <div class="prov-label">Authenticity</div>
+      <div class="prov-value">Plate card</div>
+      <div class="prov-aside">Each garment ships with a signed plate card and edition number.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Also in Series -->
+<section class="also" data-screen-label="Also in Series 01">
+  <div class="also-inner">
+    <header class="also-head">
+      <span class="eyebrow">Series 01 // Continued</span>
+      <h3>Also on the wall</h3>
+      <a href="Collection.html" class="all">View all plates →</a>
+    </header>
+    <div class="also-grid">
+      <article class="plate">
+        <a class="plate-link" href="Product.html">
+          <div class="plate-image-wrap">
+            <div class="plate-image plate-image--model"><span class="ph-label">MODEL // 02</span></div>
+            <div class="plate-image plate-image--artwork"><span class="ph-label">ARTWORK // 02</span></div>
+          </div>
+        </a>
+        <div>
+          <div class="plate-line"><span>02</span><span class="plate-sep">//</span><span>Dualities</span></div>
+          <p class="plate-price">$68</p>
+        </div>
+      </article>
+      <article class="plate">
+        <a class="plate-link" href="Product.html">
+          <div class="plate-image-wrap">
+            <div class="plate-image plate-image--model"><span class="ph-label">MODEL // 03</span></div>
+            <div class="plate-image plate-image--artwork"><span class="ph-label">ARTWORK // 03</span></div>
+          </div>
+        </a>
+        <div>
+          <div class="plate-line"><span>03</span><span class="plate-sep">//</span><span>Venezia</span></div>
+          <p class="plate-price">$72</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer data-screen-label="Footer">
+  <div class="footer-grid">
+    <div class="footer-col">
+      <h4>Newsletter</h4>
+      <p style="font-weight:300;font-size:.95rem;color:rgba(255,255,255,.6);margin-bottom:24px;max-width:38ch">
+        First word on each new plate. No noise, no promotions — one note per drop.
+      </p>
+      <form class="footer-sub" onsubmit="event.preventDefault()">
+        <input type="email" placeholder="Email address" aria-label="Email address">
+        <button type="submit">Subscribe →</button>
+      </form>
+    </div>
+    <div class="footer-col">
+      <h4>The Series</h4>
+      <a href="Collection.html">Collection</a>
+      <a href="#">Archive</a>
+      <a href="#">Lookbook</a>
+      <a href="#">Statement</a>
+    </div>
+    <div class="footer-col">
+      <h4>Service</h4>
+      <a href="shipping-policy.html">Shipping</a>
+      <a href="refund-policy.html">Returns</a>
+      <a href="#">Size Guide</a>
+      <a href="#">Contact</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="privacy-policy.html">Privacy Policy</a>
+      <a href="terms.html">Terms</a>
+      <a href="shipping-policy.html">Shipping Policy</a>
+      <a href="refund-policy.html">Refund Policy</a>
+    </div>
+    <div class="footer-col">
+      <h4>Studio</h4>
+      <a href="#">Instagram</a>
+      <a href="#">Editorial</a>
+      <a href="#">Press</a>
+    </div>
+  </div>
+  <div class="footer-fine">
+    <span>© MMXXVI The Deangelo Series</span>
+    <span>Brooklyn · New York</span>
+  </div>
+  <div class="watermark">DEANGELO</div>
+</footer>
+
+<div id="tweaks-root"></div>
+
+<script>
+  // Gallery thumbnail switching
+  const stage = document.getElementById('stage');
+  const thumbs = document.getElementById('thumbs');
+  const counter = document.getElementById('counter');
+  thumbs.addEventListener('click', e => {
+    const btn = e.target.closest('.thumb');
+    if (!btn) return;
+    const target = btn.dataset.target;
+    [...stage.querySelectorAll('.frame')].forEach(f => {
+      f.classList.toggle('is-active', f.dataset.kind === target);
+    });
+    [...thumbs.querySelectorAll('.thumb')].forEach(t => t.classList.toggle('is-active', t === btn));
+    counter.textContent = `0${btn.dataset.i} / 04`;
+  });
+
+  // Size selection
+  document.getElementById('sizes').addEventListener('click', e => {
+    const btn = e.target.closest('.size');
+    if (!btn || btn.classList.contains('is-disabled')) return;
+    [...e.currentTarget.querySelectorAll('.size')].forEach(s => s.classList.remove('is-active'));
+    btn.classList.add('is-active');
+  });
+
+  // nav scroll
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
+  });
+</script>
+
+<!-- React + Tweaks panel -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel">
+  const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "sticky": "on",
+    "cta": "solid",
+    "sourceAlign": "reverse",
+    "metaStyle": "serif"
+  }/*EDITMODE-END*/;
+
+  function ProductTweaks(){
+    const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+    React.useEffect(() => {
+      document.body.dataset.sticky      = t.sticky;
+      document.body.dataset.cta         = t.cta;
+      document.body.dataset.sourceAlign = t.sourceAlign;
+      document.body.dataset.metaStyle   = t.metaStyle;
+    }, [t]);
+
+    return (
+      <TweaksPanel title="Tweaks">
+        <TweakSection label="Product info" />
+        <TweakRadio label="Sticky rail" value={t.sticky}
+          options={['on','off']} onChange={v => setTweak('sticky', v)} />
+        <TweakRadio label="Primary CTA" value={t.cta}
+          options={['solid','outline']} onChange={v => setTweak('cta', v)} />
+        <TweakSection label="The Source" />
+        <TweakRadio label="Layout" value={t.sourceAlign}
+          options={['default','reverse']} onChange={v => setTweak('sourceAlign', v)} />
+        <TweakSection label="Provenance" />
+        <TweakRadio label="Meta type" value={t.metaStyle}
+          options={['serif','sans']} onChange={v => setTweak('metaStyle', v)} />
+      </TweaksPanel>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('tweaks-root'))
+    .render(<ProductTweaks />);
+</script>
+
+<script src="site-ui.js"></script>
+
+</body>
+</html>
