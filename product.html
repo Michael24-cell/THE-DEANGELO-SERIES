@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Plate 01 — The Metamorphosis · The Deangelo Series</title>
+<title>Venezia Tee — The Deangelo Series</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;0,600;1,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
@@ -101,7 +101,7 @@
   }
 
   .thumbs{
-    display:grid;grid-template-columns:repeat(4,1fr);gap:14px;
+    display:grid;grid-template-columns:repeat(2,1fr);gap:14px;
   }
   .thumb{
     aspect-ratio:4/5;background:var(--bone-tint);border:1px solid transparent;
@@ -292,19 +292,19 @@
   }
   .also-head .all{font-size:11px;letter-spacing:.3em;text-transform:uppercase}
 
-  .also-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:80px}
+  .also-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:56px}
 
-  /* reuse plate component (same as Collection) */
+  /* plate component */
   .plate{display:flex;flex-direction:column;gap:22px}
   .plate-link{display:block;color:inherit}
   .plate-link:hover{opacity:1}
   .plate-image-wrap{position:relative;aspect-ratio:4/5;width:100%;background:var(--bone-tint);overflow:hidden}
   .plate-image{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;transition:opacity 600ms ease}
   .plate-image--model{background:repeating-linear-gradient(135deg,transparent 0 14px,rgba(10,10,10,.035) 14px 15px),var(--bone-tint)}
-  .plate-image--artwork{background:repeating-linear-gradient(45deg, transparent 0 22px,rgba(10,10,10,.05) 22px 23px),var(--bone-warm);opacity:0}
+  .plate-image--flat{background:var(--bone-tint);opacity:0}
   @media(hover:hover){
     .plate:hover .plate-image--model{opacity:.05}
-    .plate:hover .plate-image--artwork{opacity:1}
+    .plate:hover .plate-image--flat{opacity:1}
   }
   .plate-line{display:flex;align-items:baseline;gap:10px;font-size:12px;font-weight:500;letter-spacing:.28em;text-transform:uppercase}
   .plate-sep{opacity:.35;font-weight:300}
@@ -370,6 +370,38 @@
   body[data-source-align="reverse"] .source-copy{order:1}
   body[data-meta-style="serif"] .prov-item .prov-value{font-family:var(--font-serif)}
   body[data-meta-style="sans"]  .prov-item .prov-value{font-family:var(--font-sans);font-weight:500;font-size:1.6rem;letter-spacing:-.005em}
+
+  /* ── VOTE SECTION ─────────────────────────────────────────── */
+  .vote-section{background:var(--black);color:var(--white);padding:80px 48px 100px;border-top:1px solid rgba(255,255,255,.06)}
+  .vote-eyebrow{font-size:11px;letter-spacing:.4em;text-transform:uppercase;opacity:.35;margin-bottom:48px;max-width:1400px;margin-left:auto;margin-right:auto}
+  .vote-grid{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+  .vote-card{display:flex;flex-direction:column;transition:opacity 500ms ease}
+  .vote-card.is-dim{opacity:.18}
+  .vote-img{position:relative;aspect-ratio:3/4;overflow:hidden;background:#111}
+  .vote-img img{width:100%;height:100%;object-fit:cover;transition:transform 500ms ease}
+  .vote-card:hover .vote-img img{transform:scale(1.02)}
+  .vote-bar-wrap{position:absolute;bottom:0;left:0;right:0;height:2px;background:rgba(255,255,255,.15);opacity:0;transition:opacity 400ms ease}
+  .vote-bar-fill{height:100%;background:var(--white);width:0%;transition:width 900ms cubic-bezier(.16,1,.3,1)}
+  .vote-section.has-voted .vote-bar-wrap{opacity:1}
+  .vote-meta{display:flex;justify-content:space-between;align-items:baseline;padding:20px 0 0;font-size:11px;letter-spacing:.2em;text-transform:uppercase}
+  .vote-name{font-weight:500}
+  .vote-pct{font-weight:300;opacity:0;transition:opacity 400ms ease 300ms}
+  .vote-section.has-voted .vote-pct{opacity:.55}
+  .vote-btn{margin-top:16px;background:transparent;border:1px solid rgba(255,255,255,.2);color:var(--white);padding:18px 24px;font-family:var(--font-sans);font-size:11px;letter-spacing:.3em;text-transform:uppercase;cursor:default;transition:border-color 200ms ease,background 200ms ease;width:100%}
+  .vote-btn:hover{border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.04)}
+  .vote-section.has-voted .vote-btn{display:none}
+  .vote-footer{max-width:1400px;margin:48px auto 0;display:flex;justify-content:space-between;align-items:baseline}
+  .vote-note{font-size:11px;letter-spacing:.15em;text-transform:uppercase;opacity:.25;font-weight:300}
+  .vote-section.has-voted .vote-note{opacity:0;transition:opacity 300ms ease}
+  .vote-back{background:none;border:0;font:inherit;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--white);opacity:0;pointer-events:none;transition:opacity 400ms ease 600ms;cursor:default}
+  .vote-back:hover{opacity:.8!important}
+  .vote-section.has-voted .vote-back{opacity:.45;pointer-events:auto}
+
+@media(max-width:768px){.vote-grid{grid-template-columns:1fr;gap:48px}.vote-section{padding:64px 24px 80px}}
+
+  .gallery-stage .frame img,
+  .plate-image img,
+  .summ-stage .frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 </style>
 </head>
 <body data-screen-label="Plate 01 — The Metamorphosis">
@@ -380,7 +412,7 @@
     <a href="Collection.html" class="nav-current">The Series</a>
     <a href="#">Art</a>
   </div>
-  <a class="nav-brand" href="Home.html">THE DEANGELO SERIES</a>
+  <a class="nav-brand" href="index.html">THE DEANGELO SERIES</a>
   <div class="nav-cart">
     <a href="#">Search</a>
     <a href="#" data-cart-toggle>Cart (0)</a>
@@ -393,24 +425,24 @@
   <span class="sep">/</span>
   <span>Series 01</span>
   <span class="sep">/</span>
-  <span>Plate 01</span>
+  <span id="crumbPlate">Piece 01</span>
 </div>
 
 <!-- Main product: gallery + info -->
 <section class="product" data-screen-label="Plate 01 — Gallery + Info">
   <div class="gallery">
     <div class="gallery-stage" id="stage">
-      <div class="frame is-active" data-kind="front"><span class="ph-label">GARMENT FRONT // 01</span></div>
-      <div class="frame" data-kind="back"><span class="ph-label">GARMENT BACK // 01</span></div>
-      <div class="frame" data-kind="detail"><span class="ph-label">PRINT DETAIL // 01</span></div>
-      <div class="frame" data-kind="artwork"><span class="ph-label">ARTWORK // 01</span></div>
-      <div class="gallery-counter" id="counter">01 / 04</div>
+      <div class="frame is-active" data-kind="front">
+        <img id="frameModel" src="Venezia-tee-m.png" alt="Venezia Tee — Model">
+      </div>
+      <div class="frame" data-kind="back">
+        <img id="frameFlat" src="Venezia-tee.png" alt="Venezia Tee — Flat">
+      </div>
+      <div class="gallery-counter" id="counter">01 / 02</div>
     </div>
     <div class="thumbs" id="thumbs">
-      <button class="thumb is-active" data-target="front" data-i="1"><span class="thumb-label">Front</span></button>
-      <button class="thumb" data-target="back" data-i="2"><span class="thumb-label">Back</span></button>
-      <button class="thumb" data-target="detail" data-i="3"><span class="thumb-label">Detail</span></button>
-      <button class="thumb" data-target="artwork" data-i="4"><span class="thumb-label">Artwork</span></button>
+      <button class="thumb is-active" data-target="front" data-i="1" id="thumbModel" style="background-image:url('Venezia-tee-m.png');background-size:cover;background-position:center;"><span class="thumb-label">Model</span></button>
+      <button class="thumb" data-target="back" data-i="2" id="thumbFlat" style="background-image:url('Venezia-tee.png');background-size:cover;background-position:center;"><span class="thumb-label">Flat</span></button>
     </div>
   </div>
 
@@ -418,11 +450,11 @@
     <div class="info-eyebrow eyebrow">
       <span>Series 01 // MMXXVI</span>
       <span class="dot"></span>
-      <span>Plate 01</span>
+      <span id="eyebrowPlate">Artwork 01 · Piece 01</span>
     </div>
 
-    <h1 class="product-title">The<br>Metamorphosis</h1>
-    <p class="product-price">$68 USD</p>
+    <h1 class="product-title" id="productTitle">Venezia<br><em>Tee</em></h1>
+    <p class="product-price" id="productPrice">$72 USD</p>
 
     <div class="hairline"></div>
 
@@ -442,7 +474,7 @@
     </div>
 
     <div class="cta-row">
-      <button class="cta-primary" data-add-to-cart data-kind="model">Add to Collection — $68</button>
+      <button class="cta-primary" id="ctaBtn" data-add-to-cart data-kind="model" data-price="72" data-name="Venezia Tee">Add to Collection — $72</button>
       <button class="cta-secondary">Save to Archive</button>
     </div>
 
@@ -481,23 +513,23 @@
             </div>
             <div class="meta-pair">
               <dt>Returns</dt>
-              <dd>14 days on unworn plates in original condition with the plate card. <a href="refund-policy.html" style="border-bottom:1px solid var(--hairline-dark);padding-bottom:1px">Refund policy &rarr;</a></dd>
+              <dd>14 days on unworn pieces in original condition with the edition card. <a href="refund-policy.html" style="border-bottom:1px solid var(--hairline-dark);padding-bottom:1px">Refund policy &rarr;</a></dd>
             </div>
           </dl>
         </div></div>
       </div>
 
       <div class="du-acc-item">
-        <button class="du-acc-trigger"><span class="du-acc-label">The Plate</span><span class="du-acc-sign"></span></button>
+        <button class="du-acc-trigger"><span class="du-acc-label">The Edition</span><span class="du-acc-sign"></span></button>
         <div class="du-acc-panel"><div class="du-acc-inner">
           <dl>
             <div class="meta-pair">
               <dt>Edition</dt>
-              <dd>Limited to 200 numbered plates &mdash; No. 01 of 200. Series 01 closes when sold out.</dd>
+              <dd>Edition of 200 numbered pieces &mdash; No. 01 of 200. Series 01 closes when sold out.</dd>
             </div>
             <div class="meta-pair">
               <dt>Authenticity</dt>
-              <dd>Ships with a signed, hand-numbered plate card matching your edition number.</dd>
+              <dd>Ships with a signed, hand-numbered edition card matching your edition number.</dd>
             </div>
           </dl>
         </div></div>
@@ -551,12 +583,12 @@
     <div class="prov-item">
       <div class="prov-label">Series</div>
       <div class="prov-value">01 <em>/</em> MMXXVI</div>
-      <div class="prov-aside">Six plates. Released February 2026.</div>
+      <div class="prov-aside">Six pieces. Released February 2026.</div>
     </div>
     <div class="prov-item">
       <div class="prov-label">Authenticity</div>
-      <div class="prov-value">Plate card</div>
-      <div class="prov-aside">Each garment ships with a signed plate card and edition number.</div>
+      <div class="prov-value">Edition Card</div>
+      <div class="prov-aside">Each piece ships with a signed edition card and edition number.</div>
     </div>
   </div>
 </section>
@@ -567,34 +599,57 @@
     <header class="also-head">
       <span class="eyebrow">Series 01 // Continued</span>
       <h3>Also on the wall</h3>
-      <a href="Collection.html" class="all">View all plates →</a>
+      <a href="Collection.html" class="all">View all pieces →</a>
     </header>
-    <div class="also-grid">
-      <article class="plate">
-        <a class="plate-link" href="Product.html">
-          <div class="plate-image-wrap">
-            <div class="plate-image plate-image--model"><span class="ph-label">MODEL // 02</span></div>
-            <div class="plate-image plate-image--artwork"><span class="ph-label">ARTWORK // 02</span></div>
-          </div>
-        </a>
-        <div>
-          <div class="plate-line"><span>02</span><span class="plate-sep">//</span><span>Dualities</span></div>
-          <p class="plate-price">$68</p>
-        </div>
-      </article>
-      <article class="plate">
-        <a class="plate-link" href="Product.html">
-          <div class="plate-image-wrap">
-            <div class="plate-image plate-image--model"><span class="ph-label">MODEL // 03</span></div>
-            <div class="plate-image plate-image--artwork"><span class="ph-label">ARTWORK // 03</span></div>
-          </div>
-        </a>
-        <div>
-          <div class="plate-line"><span>03</span><span class="plate-sep">//</span><span>Venezia</span></div>
-          <p class="plate-price">$72</p>
-        </div>
-      </article>
-    </div>
+    <div class="also-grid" id="alsoGrid"></div>
+  </div>
+</section>
+
+<!-- Vote on next drop -->
+<section class="vote-section" id="vote">
+  <p class="vote-eyebrow">Series 02 // Cast Your Vote</p>
+  <div class="vote-grid">
+
+    <article class="vote-card" data-candidate="japan">
+      <div class="vote-img">
+        <img src="bella-hoodie.png" alt="Japan">
+        <div class="vote-bar-wrap"><div class="vote-bar-fill"></div></div>
+      </div>
+      <div class="vote-meta">
+        <span class="vote-name">Japan</span>
+        <span class="vote-pct"></span>
+      </div>
+      <button class="vote-btn">Cast vote</button>
+    </article>
+
+    <article class="vote-card" data-candidate="arthus">
+      <div class="vote-img">
+        <img src="Arhus, The Old Town.png" alt="Arthus, The Old Town">
+        <div class="vote-bar-wrap"><div class="vote-bar-fill"></div></div>
+      </div>
+      <div class="vote-meta">
+        <span class="vote-name">Arthus, The Old Town</span>
+        <span class="vote-pct"></span>
+      </div>
+      <button class="vote-btn">Cast vote</button>
+    </article>
+
+    <article class="vote-card" data-candidate="newyork">
+      <div class="vote-img">
+        <img src="New york chystler hoodie.png" alt="New York Chrysler">
+        <div class="vote-bar-wrap"><div class="vote-bar-fill"></div></div>
+      </div>
+      <div class="vote-meta">
+        <span class="vote-name">New York Chrysler</span>
+        <span class="vote-pct"></span>
+      </div>
+      <button class="vote-btn">Cast vote</button>
+    </article>
+
+  </div>
+  <div class="vote-footer">
+    <p class="vote-note">One vote. Series 02 drops when the studio is ready.</p>
+    <button class="vote-back" id="voteBack">↑ Back to product</button>
   </div>
 </section>
 
@@ -604,7 +659,7 @@
     <div class="footer-col">
       <h4>Newsletter</h4>
       <p style="font-weight:300;font-size:.95rem;color:rgba(255,255,255,.6);margin-bottom:24px;max-width:38ch">
-        First word on each new plate. No noise, no promotions — one note per drop.
+        First word on each new piece. No noise, no promotions — one note per drop.
       </p>
       <form class="footer-sub" onsubmit="event.preventDefault()">
         <input type="email" placeholder="Email address" aria-label="Email address">
@@ -641,12 +696,89 @@
   </div>
   <div class="footer-fine">
     <span>© MMXXVI The Deangelo Series</span>
+    <div style="display:flex;gap:24px">
+      <a href="privacy-policy.html" style="color:inherit;opacity:.7;transition:opacity .2s ease" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.7">Privacy Policy</a>
+      <a href="terms.html" style="color:inherit;opacity:.7;transition:opacity .2s ease" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.7">Terms &amp; Conditions</a>
+    </div>
     <span>Brooklyn · New York</span>
   </div>
   <div class="watermark">DEANGELO</div>
 </footer>
 
 <div id="tweaks-root"></div>
+
+<script>
+  // Product switching via ?p= query param
+  (function() {
+    var PRODS = {
+      tee:    { plate:'01', garment:'Tee',      price:'$72', priceNum:72, model:'Venezia-tee-m.png',    flat:'Venezia-tee.png' },
+      hoodie: { plate:'02', garment:'Hoodie',   price:'$88', priceNum:88, model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png' },
+      crew:   { plate:'03', garment:'Crewneck', price:'$82', priceNum:82, model:'Venezia-crew-m.png',   flat:'Venezia-crew.png' }
+    };
+    var key = new URLSearchParams(location.search).get('p') || 'tee';
+    var p = PRODS[key] || PRODS.tee;
+
+    document.title = 'Venezia ' + p.garment + ' — The Deangelo Series';
+    document.getElementById('productTitle').innerHTML = 'Venezia<br><em>' + p.garment + '</em>';
+    document.getElementById('productPrice').textContent = p.price + ' USD';
+    document.getElementById('crumbPlate').textContent = 'Piece ' + p.plate;
+    document.getElementById('eyebrowPlate').textContent = 'Artwork 01 · Piece ' + p.plate;
+
+    var cta = document.getElementById('ctaBtn');
+    cta.textContent = 'Add to Collection — ' + p.price;
+    cta.setAttribute('data-price', p.priceNum);
+    cta.setAttribute('data-name', 'Venezia ' + p.garment);
+    cta.setAttribute('data-img', p.model);
+    cta.setAttribute('data-plate', 'Piece ' + p.plate);
+
+    var mImg = document.getElementById('frameModel');
+    mImg.src = p.model;
+    mImg.alt = 'Venezia ' + p.garment + ' — Model';
+
+    var fImg = document.getElementById('frameFlat');
+    fImg.src = p.flat;
+    fImg.alt = 'Venezia ' + p.garment + ' — Flat';
+
+    var tModel = document.getElementById('thumbModel');
+    tModel.style.backgroundImage = "url('" + p.model + "')";
+
+    var tFlat = document.getElementById('thumbFlat');
+    tFlat.style.backgroundImage = "url('" + p.flat + "')";
+
+    // Also on the wall — other Venezia garments
+    var ALSO = {
+      tee:    [
+        { plate:'02', garment:'Hoodie',   price:'$88', slug:'hoodie', model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png' },
+        { plate:'03', garment:'Crewneck', price:'$82', slug:'crew',   model:'Venezia-crew-m.png',   flat:'Venezia-crew.png' }
+      ],
+      hoodie: [
+        { plate:'01', garment:'Tee',      price:'$72', slug:'tee',    model:'Venezia-tee-m.png',    flat:'Venezia-tee.png' },
+        { plate:'03', garment:'Crewneck', price:'$82', slug:'crew',   model:'Venezia-crew-m.png',   flat:'Venezia-crew.png' }
+      ],
+      crew:   [
+        { plate:'01', garment:'Tee',      price:'$72', slug:'tee',    model:'Venezia-tee-m.png',    flat:'Venezia-tee.png' },
+        { plate:'02', garment:'Hoodie',   price:'$88', slug:'hoodie', model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png' }
+      ]
+    };
+    var alsoGrid = document.getElementById('alsoGrid');
+    if (alsoGrid) {
+      alsoGrid.innerHTML = (ALSO[key] || []).map(function(a) {
+        return '<article class="plate">' +
+          '<a class="plate-link" href="product.html?p=' + a.slug + '">' +
+            '<div class="plate-image-wrap">' +
+              '<div class="plate-image plate-image--model"><img src="' + a.model + '" alt="Venezia ' + a.garment + '"></div>' +
+              '<div class="plate-image plate-image--flat"><img src="' + a.flat + '" alt="Venezia ' + a.garment + ' — flat"></div>' +
+            '</div>' +
+          '</a>' +
+          '<div>' +
+            '<div class="plate-line"><span>' + a.plate + '</span><span class="plate-sep">//</span><span>Venezia — ' + a.garment + '</span></div>' +
+            '<p class="plate-price">' + a.price + '</p>' +
+          '</div>' +
+        '</article>';
+      }).join('');
+    }
+  })();
+</script>
 
 <script>
   // Gallery thumbnail switching
@@ -661,7 +793,7 @@
       f.classList.toggle('is-active', f.dataset.kind === target);
     });
     [...thumbs.querySelectorAll('.thumb')].forEach(t => t.classList.toggle('is-active', t === btn));
-    counter.textContent = `0${btn.dataset.i} / 04`;
+    counter.textContent = `0${btn.dataset.i} / 02`;
   });
 
   // Size selection
@@ -722,6 +854,47 @@
 </script>
 
 <script src="site-ui.js"></script>
+
+<script>
+  // Vote section
+  (function() {
+    var SEEDS = { japan: 312, arthus: 198, newyork: 247 };
+
+    document.querySelectorAll('.vote-section').forEach(function(section) {
+      var voted = false;
+
+      section.querySelectorAll('.vote-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          if (voted) return;
+          voted = true;
+
+          var card = btn.closest('.vote-card');
+          var candidate = card.dataset.candidate;
+          SEEDS[candidate]++;
+
+          var total = Object.values(SEEDS).reduce(function(a, b) { return a + b; }, 0);
+          section.classList.add('has-voted');
+
+          section.querySelectorAll('.vote-card').forEach(function(c) {
+            var cand = c.dataset.candidate;
+            var pct = Math.round(SEEDS[cand] / total * 100);
+            c.querySelector('.vote-bar-fill').style.width = pct + '%';
+            c.querySelector('.vote-pct').textContent = pct + '%';
+            if (cand !== candidate) c.classList.add('is-dim');
+          });
+
+        });
+      });
+    });
+
+    var backBtn = document.getElementById('voteBack');
+    if (backBtn) {
+      backBtn.addEventListener('click', function() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+  })();
+</script>
 
 </body>
 </html>

@@ -34,7 +34,7 @@
   var MENU_GROUPS = [
     { label: "Shop", items: [
       { label: "Series 01", href: "Collection.html" },
-      { label: "All Plates", href: "Collection.html" },
+      { label: "Collection", href: "Collection.html" },
       { label: "The Archive", href: "#" },
       { label: "New Release", href: "#" }
     ]},
@@ -289,7 +289,7 @@
     if (hit) hit.qty += item.qty || 1;
     else cart.push({
       plate: item.plate, name: item.name, size: item.size,
-      price: item.price, kind: item.kind || "model", qty: item.qty || 1
+      price: item.price, kind: item.kind || "model", img: item.img || "", qty: item.qty || 1
     });
     saveCart(cart);
     renderCart();
@@ -401,7 +401,7 @@
           "<h2>Size Guide</h2></div>" +
           '<button class="du-x" data-modal-close><span class="gl">\u2715</span>Close</button>' +
         "</div>" +
-        '<p class="du-modal-intro">Plates are cut oversized and boxy. Measurements are garment-flat in inches \u2014 lay a tee you own flat and compare. Between sizes, size down for a cleaner crew, up for fuller drape.</p>' +
+        '<p class="du-modal-intro">Pieces are cut oversized and boxy. Measurements are garment-flat in inches \u2014 lay a tee you own flat and compare. Between sizes, size down for a cleaner crew, up for fuller drape.</p>' +
         '<table class="du-table"><thead>' + head + "</thead><tbody>" + body + "</tbody></table>" +
         '<div class="du-measure">How to measure</div>' +
         '<ul class="du-measure-list">' +
@@ -426,7 +426,7 @@
     var head = els.cart.querySelector("[data-cart-headcount]");
     var count = cartCount();
 
-    head.textContent = count === 0 ? "" : count + (count === 1 ? " plate" : " plates");
+    head.textContent = count === 0 ? "" : count + (count === 1 ? " piece" : " pieces");
 
     if (cart.length === 0) {
       body.className = "du-cart-empty";
@@ -440,7 +440,9 @@
     body.className = "du-cart-body";
     body.innerHTML = cart.map(function (it, i) {
       return '<div class="du-citem">' +
-        '<div class="du-citem-img" style="background:' + swatchBg(it.kind) + '"></div>' +
+        '<div class="du-citem-img" style="' + (it.img ? 'overflow:hidden' : 'background:' + swatchBg(it.kind)) + '">' +
+          (it.img ? '<img src="' + it.img + '" style="width:100%;height:100%;object-fit:cover;display:block">' : '') +
+        '</div>' +
         '<div class="du-citem-main">' +
           '<div class="du-citem-line"><span>' + it.plate + '</span><span class="sep">//</span><span>' + it.name + "</span></div>" +
           '<div class="du-citem-name">' + it.name + "</div>" +
@@ -461,7 +463,7 @@
     foot.style.display = "";
     foot.innerHTML =
       '<div class="du-cart-sub"><span class="lbl">Subtotal</span><span class="val">' + money(cartSubtotal()) + "</span></div>" +
-      '<p class="du-cart-note">Shipping &amp; duties calculated at checkout. Each plate ships with a signed, numbered plate card.</p>' +
+      '<p class="du-cart-note">Shipping &amp; duties calculated at checkout. Each piece ships with a signed, numbered edition card.</p>' +
       '<a class="du-cart-checkout" href="Checkout.html">Proceed to Checkout</a>' +
       '<button class="du-cart-cont" data-cart-close>Continue browsing</button>';
   }
@@ -575,19 +577,24 @@
 
     if (!name) {
       var t = document.querySelector(".product-title");
-      name = t ? t.textContent.replace(/\s+/g, " ").trim() : "Plate";
+      name = t ? t.textContent.replace(/\s+/g, " ").trim() : "Piece";
     }
     if (!plate) {
       var eb = document.querySelector(".info-eyebrow");
-      plate = eb ? (eb.textContent.match(/Plate\s*\d+/i) || ["Plate 01"])[0] : "Plate 01";
+      plate = eb ? (eb.textContent.match(/Piece\s*\d+/i) || ["Piece 01"])[0] : "Piece 01";
     }
     if (price == null) {
       var p = document.querySelector(".product-price");
       price = p ? p.textContent.replace(/[^0-9.]/g, "") : "0";
     }
+    var img = trigger.getAttribute("data-img");
+    if (!img) {
+      var activeFrame = document.querySelector(".gallery-stage .frame.is-active img");
+      if (activeFrame) img = activeFrame.getAttribute("src");
+    }
     return {
       name: name, plate: plate, size: size,
-      price: Math.round(parseFloat(price) || 0), kind: kind, qty: 1
+      price: Math.round(parseFloat(price) || 0), kind: kind, img: img || "", qty: 1
     };
   }
 

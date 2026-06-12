@@ -293,6 +293,48 @@
   body[data-density="airy"] .grid{row-gap:200px}
   body[data-density="compact"] .grid{row-gap:80px}
   body[data-density="compact"] main.collection{padding-top:72px}
+
+  .plate-image img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+  .plate.is-soon .plate-image-wrap{opacity:.6;cursor:default}
+  .plate.is-soon .plate-image-wrap:hover{opacity:.85}
+  .plate-soon{font-size:10px;letter-spacing:.35em;text-transform:uppercase;opacity:.4;margin-top:6px}
+
+  /* nav search button */
+  .nav-search-btn{background:none;border:0;color:inherit;font:inherit;font-size:11px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;padding:0;transition:opacity 220ms ease}
+  .nav-search-btn:hover{opacity:.6}
+
+  /* search dropdown */
+  .search-drop{position:fixed;top:73px;left:0;right:0;z-index:1400;background:var(--bone);border-bottom:1px solid var(--hairline-dark);box-shadow:0 20px 60px rgba(10,10,10,.1);opacity:0;visibility:hidden;transform:translateY(-8px);transition:opacity .25s ease,visibility .25s ease,transform .25s ease}
+  .search-drop.is-open{opacity:1;visibility:visible;transform:none}
+  .search-drop-inner{max-width:var(--max);margin:0 auto;padding:30px 48px 32px}
+  .search-input-row{display:flex;align-items:center;gap:24px;border-bottom:1px solid rgba(10,10,10,.15);padding-bottom:20px;margin-bottom:18px}
+  .search-input-row input{flex:1;background:none;border:0;outline:none;font-family:var(--font-serif);font-size:clamp(1.5rem,2.8vw,2.2rem);font-weight:500;letter-spacing:-.01em;color:var(--black);caret-color:var(--black)}
+  .search-input-row input::placeholder{color:rgba(10,10,10,.22);font-weight:300;font-style:italic}
+  .search-x-btn{background:none;border:0;font-family:var(--font-sans);font-size:10px;letter-spacing:.35em;text-transform:uppercase;color:var(--ink-mute);cursor:pointer;padding:0;white-space:nowrap;transition:color .2s ease;flex:none}
+  .search-x-btn:hover{color:var(--black)}
+  .search-sugg{display:flex;flex-direction:column;max-height:300px;overflow-y:auto}
+  .search-sugg-item{display:flex;align-items:center;gap:20px;padding:13px 0;border-bottom:1px solid var(--hairline-soft);text-decoration:none;color:inherit;transition:opacity .18s ease}
+  .search-sugg-item:last-child{border-bottom:0}
+  .search-sugg-item:not(.is-soon):hover{opacity:.55}
+  .search-sugg-item.is-soon{opacity:.4;cursor:default}
+  .search-sugg-thumb{width:36px;height:46px;overflow:hidden;flex:none;background:var(--bone-tint)}
+  .search-sugg-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .search-sugg-body{flex:1;min-width:0}
+  .search-sugg-name{font-family:var(--font-serif);font-size:1.1rem;font-weight:500;letter-spacing:-.005em;line-height:1.1}
+  .search-sugg-meta{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-mute);margin-top:3px}
+  .search-sugg-price{font-size:.9rem;font-weight:300;color:var(--ink-mute);white-space:nowrap}
+  .search-cat-hint{padding:10px 0 4px;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:var(--ink-mute)}
+  .search-no-results{padding:16px 0 4px;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:var(--ink-mute)}
+  @media(max-width:640px){.search-drop-inner{padding:22px 20px 24px}.search-input-row input{font-size:1.4rem}}
+
+  /* empty state */
+  .grid-empty{display:none;grid-column:1/-1;padding:80px 0;text-align:center;color:rgba(10,10,10,.4)}
+  .grid-empty p{font-family:var(--font-serif);font-style:italic;font-size:1.4rem;font-weight:300}
+
+  /* footer fine links */
+  .footer-fine a{color:inherit;opacity:.7;transition:opacity .2s ease}
+  .footer-fine a:hover{opacity:1}
+  .footer-fine-links{display:flex;gap:24px}
 </style>
 </head>
 <body data-screen-label="Shop All — The Collection">
@@ -303,9 +345,9 @@
     <a href="#" class="nav-current">The Series</a>
     <a href="#">Art</a>
   </div>
-  <a class="nav-brand" href="Home.html">THE DEANGELO SERIES</a>
+  <a class="nav-brand" href="index.html">THE DEANGELO SERIES</a>
   <div class="nav-cart">
-    <a href="#">Search</a>
+    <button class="nav-search-btn" data-search-toggle>Search</button>
     <a href="#" data-cart-toggle>Cart (0)</a>
   </div>
 </nav>
@@ -316,31 +358,43 @@
       <div class="eyebrow">The Series // MMXXVI</div>
       <h1 class="collection-title">The Collection</h1>
       <p class="collection-sub">
-        Six plates. Series 01. Each garment is a single titled work — printed in limited edition on heavyweight organic cotton, photographed once, then archived.
+        Six pieces. Series 01. Each garment is a single titled work — printed in limited edition on heavyweight organic cotton, photographed once, then archived.
       </p>
     </div>
     <div class="collection-meta">
       <span>Series 01</span>
-      <span>06 Plates</span>
+      <span>06 Pieces</span>
       <span>Editions of 200</span>
     </div>
   </div>
 
   <div class="filter-row">
     <div class="filters">
-      <button class="is-active">All <span class="filter-count">06</span></button>
-      <button>Tees <span class="filter-count">04</span></button>
-      <button>Long Sleeve <span class="filter-count">01</span></button>
-      <button>Archive <span class="filter-count">01</span></button>
+      <button class="is-active" data-filter="all">All <span class="filter-count">06</span></button>
+      <button data-filter="tee">Tees <span class="filter-count">02</span></button>
+      <button data-filter="sweatshirt">Sweatshirts <span class="filter-count">04</span></button>
+      <button data-filter="archive">Archive <span class="filter-count">00</span></button>
     </div>
     <div class="sort">
-      <span>Sort:</span><span>Plate</span><span class="caret">▾</span>
+      <span>Sort:</span><span>Piece</span><span class="caret">▾</span>
     </div>
   </div>
 </header>
 
+<!-- Search dropdown -->
+<div class="search-drop" id="searchDrop">
+  <div class="search-drop-inner">
+    <div class="search-input-row">
+      <input type="text" id="searchInput" placeholder="Search the collection…" autocomplete="off" spellcheck="false">
+      <button class="search-x-btn" id="searchClose">✕ Close</button>
+    </div>
+    <div class="search-sugg" id="searchSugg"></div>
+  </div>
+</div>
+
 <main class="collection" data-screen-label="Collection — Grid">
   <div class="grid" id="grid"></div>
+  <div class="grid-empty" id="gridEmpty"><p>No pieces match.</p></div>
 </main>
 
 <footer data-screen-label="Footer">
@@ -348,7 +402,7 @@
     <div class="footer-col">
       <h4>Newsletter</h4>
       <p style="font-weight:300;font-size:.95rem;color:rgba(255,255,255,.6);margin-bottom:24px;max-width:38ch">
-        First word on each new plate. No noise, no promotions — one note per drop.
+        First word on each new piece. No noise, no promotions — one note per drop.
       </p>
       <form class="footer-sub" onsubmit="event.preventDefault()">
         <input type="email" placeholder="Email address" aria-label="Email address">
@@ -386,6 +440,10 @@
 
   <div class="footer-fine">
     <span>© MMXXVI The Deangelo Series</span>
+    <div class="footer-fine-links">
+      <a href="privacy-policy.html">Privacy Policy</a>
+      <a href="terms.html">Terms &amp; Conditions</a>
+    </div>
     <span>Brooklyn · New York</span>
   </div>
   <div class="watermark">DEANGELO</div>
@@ -396,44 +454,164 @@
 <!-- ── Static product data + render ───────────────────────────── -->
 <script>
   const PLATES = [
-    { n:"01", title:"Metamorphosis", price:"$68",
-      desc:"Heavyweight 10.5oz organic cotton. Oversized editorial fit. Butterfly skull motif, gallery-grade screen print." },
-    { n:"02", title:"Dualities", price:"$68",
-      desc:"A study on light and shadow. Featured on the signature box-cut silhouette. Hand-mixed pigment, single colourway." },
-    { n:"03", title:"Venezia", price:"$72",
-      desc:"Long sleeve, mid-weight. Sourced from a 2024 oil-on-linen study; printed on cotton-silk twill." },
-    { n:"04", title:"Stillness", price:"$68",
-      desc:"Minimal centred composition. Garment-dyed cotton. Quiet plate, intended for repeated wear." },
-    { n:"05", title:"The Garden", price:"$72",
-      desc:"Floral negative-space study, printed front and back. Boxy crew, dropped shoulder." },
-    { n:"06", title:"Aperture", price:"$68", archived:true,
-      desc:"Series 01 sold-out edition. Limited returns held in the archive — no further runs scheduled." },
+    { n:"01", title:"Venezia", garment:"Tee", price:"$72", slug:"tee", type:"tee",
+      model:"Venezia-tee-m.png", flat:"Venezia-tee.png",
+      desc:"Oversized cotton tee. Sourced from a 2024 oil-on-linen study of the Venetian campanile. Gallery-grade screen print." },
+    { n:"02", title:"Venezia", garment:"Hoodie", price:"$88", slug:"hoodie", type:"sweatshirt",
+      model:"Venezia-Hoodie-m.png", flat:"Venezia-hoodie.png",
+      desc:"Heavyweight fleece, relaxed oversized silhouette. Same source artwork across a different canvas." },
+    { n:"03", title:"Venezia", garment:"Crewneck", price:"$82", slug:"crew", type:"sweatshirt",
+      model:"Venezia-crew-m.png", flat:"Venezia-crew.png",
+      desc:"Mid-weight cotton-poly crewneck. Clean back placement, dropped shoulder, boxy crew neck." },
+    { n:"S2", title:"Japan", price:"—", soon:true, type:"sweatshirt",
+      model:"bella-hoodie.png", flat:"Japan flat.png",
+      desc:"Series 02 candidate. Cast your vote on the homepage to shape the next drop." },
+    { n:"S2", title:"Arthus, The Old Town", price:"—", soon:true, type:"tee",
+      model:"Arhus, The Old Town.png", flat:"The Old Town flat.png",
+      desc:"Series 02 candidate. Cast your vote on the homepage to shape the next drop." },
+    { n:"S2", title:"New York Chrysler", price:"—", soon:true, type:"sweatshirt",
+      model:"New york chystler hoodie.png", flat:"New York Chrystler flat.png",
+      desc:"Series 02 candidate. Cast your vote on the homepage to shape the next drop." },
   ];
 
   const grid = document.getElementById('grid');
-  grid.innerHTML = PLATES.map(p => `
-    <article class="plate ${p.archived ? 'is-archived' : ''}">
-      <a class="plate-link" href="Product.html" aria-label="View ${p.title}">
-        <div class="plate-image-wrap">
-          <div class="plate-image plate-image--model">
-            <span class="ph-label">MODEL // ${p.n}</span>
-          </div>
-          <div class="plate-image plate-image--flat">
-            <span class="ph-label">FLAT // ${p.n}</span>
-          </div>
-        </div>
-      </a>
+  grid.innerHTML = PLATES.map(p => {
+    const title = p.title + (p.garment ? ' — ' + p.garment : '');
+    const imgModel = p.model ? `<img src="${p.model}" alt="${title}">` : `<span class="ph-label">MODEL // ${p.n}</span>`;
+    const imgFlat  = p.flat  ? `<img src="${p.flat}"  alt="${title} flat">` : `<span class="ph-label">FLAT // ${p.n}</span>`;
+    const imageWrap = `<div class="plate-image-wrap">
+        <div class="plate-image plate-image--model">${imgModel}</div>
+        <div class="plate-image plate-image--flat">${imgFlat}</div>
+      </div>`;
+    return `<article class="plate${p.soon ? ' is-soon' : ''}" data-type="${p.type || ''}" data-searchable="${(p.title + ' ' + (p.garment || '')).toLowerCase()}">
+      ${p.soon
+        ? imageWrap
+        : `<a class="plate-link" href="product.html?p=${p.slug}" aria-label="View ${title}">${imageWrap}</a>`}
       <div class="plate-caption">
         <div class="plate-line">
           <span class="plate-num">${p.n}</span>
           <span class="plate-sep">//</span>
-          <span class="plate-title">${p.title}</span>
+          <span class="plate-title">${title}</span>
         </div>
         <p class="plate-price">${p.price}</p>
+        ${p.soon ? '<p class="plate-soon">Soon</p>' : ''}
         <p class="plate-desc">${p.desc}</p>
       </div>
-    </article>
-  `).join('');
+    </article>`;
+  }).join('');
+
+  // Filter buttons
+  document.querySelector('.filters').addEventListener('click', e => {
+    const btn = e.target.closest('button[data-filter]');
+    if (!btn) return;
+    const filter = btn.dataset.filter;
+    document.querySelectorAll('.filters button').forEach(b => b.classList.remove('is-active'));
+    btn.classList.add('is-active');
+    applyFilters(filter, document.getElementById('searchInput').value.trim().toLowerCase());
+  });
+
+  function applyFilters(filter, query) {
+    const plates = document.querySelectorAll('#grid .plate');
+    let visible = 0;
+    plates.forEach(plate => {
+      const typeMatch = filter === 'all' || plate.dataset.type === filter;
+      const searchMatch = !query || plate.dataset.searchable.includes(query);
+      const show = typeMatch && searchMatch;
+      plate.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    const empty = document.getElementById('gridEmpty');
+    empty.style.display = visible === 0 ? '' : 'none';
+  }
+
+  // Search dropdown
+  const searchDrop  = document.getElementById('searchDrop');
+  const searchInput = document.getElementById('searchInput');
+  const searchSugg  = document.getElementById('searchSugg');
+
+  function renderSuggs(q) {
+    const matches = PLATES.filter(p =>
+      !q || p.title.toLowerCase().includes(q) || (p.garment || '').toLowerCase().includes(q)
+    );
+    if (!matches.length) {
+      searchSugg.innerHTML = '<p class="search-no-results">No results</p>';
+      return;
+    }
+    searchSugg.innerHTML = matches.map(p => {
+      const label = p.title + (p.garment ? ' — ' + p.garment : '');
+      const href  = p.slug ? `product.html?p=${p.slug}` : null;
+      const tag   = href ? 'a' : 'div';
+      const attr  = href ? ` href="${href}"` : '';
+      return `<${tag} class="search-sugg-item${p.soon ? ' is-soon' : ''}"${attr}>
+        <div class="search-sugg-thumb"><img src="${p.model}" alt="${label}" loading="lazy"></div>
+        <div class="search-sugg-body">
+          <div class="search-sugg-name">${label}</div>
+          <div class="search-sugg-meta">${p.soon ? 'Soon · Series 02' : 'Series 01'}</div>
+        </div>
+        <span class="search-sugg-price">${p.price}</span>
+      </${tag}>`;
+    }).join('');
+  }
+
+  function openSearch() {
+    searchDrop.classList.add('is-open');
+    searchInput.focus();
+    renderSuggs('');
+  }
+  function closeSearch() {
+    searchDrop.classList.remove('is-open');
+    searchInput.value = '';
+    searchSugg.innerHTML = '';
+    applyFilters(document.querySelector('.filters .is-active').dataset.filter, '');
+  }
+
+  document.querySelectorAll('[data-search-toggle]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+      searchDrop.classList.contains('is-open') ? closeSearch() : openSearch();
+    });
+  });
+
+  document.getElementById('searchClose').addEventListener('click', closeSearch);
+
+  const CATEGORY_KEYS = [
+    { words: ['tee','tees'], filter: 'tee' },
+    { words: ['sweatshirt','sweatshirts','hoodie','hoodies','crewneck','crewnecks','crew','fleece'], filter: 'sweatshirt' }
+  ];
+
+  function detectCategory(q) {
+    for (const cat of CATEGORY_KEYS) {
+      if (cat.words.some(w => w.startsWith(q) || q.startsWith(w))) return cat.filter;
+    }
+    return null;
+  }
+
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.trim().toLowerCase();
+    const cat = q.length >= 2 ? detectCategory(q) : null;
+    if (cat) {
+      const filterBtn = document.querySelector(`.filters button[data-filter="${cat}"]`);
+      if (filterBtn) {
+        document.querySelectorAll('.filters button').forEach(b => b.classList.remove('is-active'));
+        filterBtn.classList.add('is-active');
+        applyFilters(cat, '');
+      }
+      searchSugg.innerHTML = `<p class="search-cat-hint">Showing ${cat === 'tee' ? 'Tees' : 'Sweatshirts'} ↓</p>`;
+    } else {
+      renderSuggs(q);
+      applyFilters(document.querySelector('.filters .is-active').dataset.filter, q);
+    }
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && searchDrop.classList.contains('is-open')) closeSearch();
+  });
+
+  document.addEventListener('click', e => {
+    if (!searchDrop.contains(e.target) && !e.target.closest('[data-search-toggle]')) {
+      if (searchDrop.classList.contains('is-open')) closeSearch();
+    }
+  });
 
   // nav scroll state
   window.addEventListener('scroll', () => {
