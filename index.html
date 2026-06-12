@@ -14,16 +14,11 @@
             --bone: #F5F5F1;
             --font-serif: 'Cormorant Garamond', serif;
             --font-sans: 'Inter', sans-serif;
-            /* From research: 96px generous desktop padding */
             --section-padding: 96px;
             --max-width: 1200px;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             background-color: var(--black);
@@ -34,7 +29,7 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* --- MARION PARKE STYLE NAVBAR --- */
+        /* ── NAV ───────────────────────────────────────────────── */
         nav {
             position: fixed;
             top: 0;
@@ -57,28 +52,14 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .nav-brand {
-            font-size: 16px;
-            letter-spacing: 0.4em;
-            font-weight: 400;
-        }
-
-        .nav-links, .nav-cart {
-            display: flex;
-            gap: 32px;
-        }
-
+        .nav-brand { font-size: 13px; letter-spacing: 0.4em; font-weight: 400; text-align: center; }
+        .nav-links, .nav-cart { display: flex; gap: 32px; }
         .nav-cart { justify-content: flex-end; }
 
-        a {
-            color: inherit;
-            text-decoration: none;
-            transition: opacity 0.3s ease;
-        }
-
+        a { color: inherit; text-decoration: none; transition: opacity 0.3s ease; }
         a:hover { opacity: 0.5; }
 
-        /* --- HERO: 55/45 SPLIT --- */
+        /* ── HERO ──────────────────────────────────────────────── */
         .hero {
             height: 100vh;
             display: flex;
@@ -87,7 +68,7 @@
         }
 
         .hero-text {
-            flex: 1.1; /* Approx 55% */
+            flex: 1.1;
             background: var(--black);
             display: flex;
             flex-direction: column;
@@ -115,102 +96,564 @@
             transition: background 150ms ease;
         }
 
-        .btn:hover {
-            background: rgba(255,255,255,0.08); /* 8% darker/lighter rule */
+        .btn:hover { background: rgba(255,255,255,0.08); }
+
+        .hero-visual { flex: 0.9; position: relative; }
+        .hero-visual img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* ── CURRENT RELEASE ───────────────────────────────────── */
+        .release-section {
+            background: var(--bone);
+            color: var(--black);
+            display: grid;
+            grid-template-columns: 44fr 56fr;
+            min-height: 92vh;
+            overflow: hidden;
         }
 
-        .hero-visual {
-            flex: 0.9; /* Approx 45% */
+        .release-copy {
+            display: flex;
+            flex-direction: column;
+            padding: 96px 48px 80px 80px;
+        }
+
+        .release-meta-top {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: auto;
+        }
+
+        .release-eyebrow {
+            font-size: 10px;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            opacity: 0.38;
+        }
+
+        .release-sub {
+            font-size: 10px;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            opacity: 0.35;
+        }
+
+        .release-body {
+            font-size: 13px;
+            font-weight: 300;
+            line-height: 1.7;
+            opacity: 0.55;
+            max-width: 260px;
+        }
+
+        .release-cta {
+            display: inline-block;
+            width: fit-content;
+            padding: 14px 40px;
+            background: var(--black);
+            color: var(--white);
+            font-size: 10px;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: opacity 200ms ease;
+            margin-top: 4px;
+        }
+
+        .release-cta:hover { opacity: 0.6; }
+
+        .release-title {
+            font-family: var(--font-serif);
+            font-weight: 300;
+            font-style: italic;
+            font-size: clamp(5.5rem, 10.5vw, 12rem);
+            line-height: 0.82;
+            letter-spacing: -0.03em;
+            margin-top: 56px;
+        }
+
+        .release-image {
             position: relative;
+            overflow: hidden;
         }
 
-        .hero-visual img {
+        .release-image img {
+            position: absolute;
+            inset: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
+            object-position: center 8%;
         }
 
-        /* --- LIFESTYLE (NATURE) --- */
-        .lifestyle {
-            background-color: var(--bone);
-            color: var(--black);
-            padding: var(--section-padding) 48px;
+        /* ── AVAILABLE PIECES ───────────────────────────────────── */
+        .pieces-section {
+            background: var(--black);
+            color: var(--white);
+            display: grid;
+            grid-template-columns: 2fr 3fr;
+            min-height: 60vh;
         }
 
-        .lifestyle-container {
-            max-width: var(--max-width);
-            margin: 0 auto;
+        .pieces-preview {
+            position: relative;
+            overflow: hidden;
+            background: #0d0d0d;
+            border-right: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .pieces-preview-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 10%;
+            transition: opacity 300ms ease;
+        }
+
+        .pieces-right {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pieces-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 48px 64px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .pieces-label {
+            font-size: 10px;
+            letter-spacing: 0.45em;
+            text-transform: uppercase;
+            opacity: 0.3;
+        }
+
+        .pieces-edition {
+            font-size: 10px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            opacity: 0.16;
+        }
+
+        .pieces-list { list-style: none; flex: 1; }
+
+        .piece-row {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            padding: 36px 64px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            text-decoration: none;
+            color: var(--white);
+            opacity: 1;
+            background: transparent;
+            transition: background 250ms ease;
             position: relative;
         }
 
-        .lifestyle img {
-            width: 100%;
-            height: 85vh;
-            object-fit: cover;
-        }
-
-        .lifestyle-statement {
+        .piece-row::before {
+            content: '';
             position: absolute;
-            bottom: -64px;
-            left: 64px;
-            background: var(--bone);
-            padding: 80px;
-            max-width: 640px;
-            font-family: var(--font-sans);
-            font-size: 2rem;
-            line-height: 1.3;
+            left: 0; top: 0; bottom: 0;
+            width: 2px;
+            background: var(--white);
+            transform: scaleY(0);
+            transform-origin: bottom;
+            transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .piece-row:hover { opacity: 1; background: rgba(255,255,255,0.025); }
+        .piece-row:hover::before { transform: scaleY(1); }
+
+        .piece-row-num {
+            font-family: var(--font-serif);
             font-weight: 300;
-            /* Scroll animation hook */
+            font-style: italic;
+            font-size: clamp(2.8rem, 4vw, 4.5rem);
+            line-height: 1;
+            opacity: 0.1;
+            min-width: 72px;
+            transition: opacity 300ms ease;
+        }
+
+        .piece-row:hover .piece-row-num { opacity: 0.2; }
+
+        .piece-row-info { flex: 1; }
+
+        .piece-row-name {
+            font-family: var(--font-serif);
+            font-weight: 300;
+            font-style: italic;
+            font-size: clamp(1.6rem, 2.2vw, 2.4rem);
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .piece-row-type {
+            font-size: 10px;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            opacity: 0.25;
+        }
+
+        .piece-row-right {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .piece-row-price {
+            font-size: 13px;
+            font-weight: 300;
+            letter-spacing: 0.08em;
+            opacity: 0.5;
+        }
+
+        .piece-row-cta {
+            font-size: 10px;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
             opacity: 0;
-            transform: translateY(16px);
-            transition: all 400ms ease;
+            transition: opacity 250ms ease;
+            white-space: nowrap;
         }
 
-        .lifestyle-statement.reveal {
-            opacity: 1;
-            transform: translateY(0);
+        .piece-row:hover .piece-row-cta { opacity: 0.4; }
+
+        .pieces-view-all {
+            padding: 24px 64px;
+            text-align: right;
+            border-top: 1px solid rgba(255,255,255,0.05);
         }
 
-        /* --- EXHIBITION SECTIONS --- */
-        .exhibition {
-            padding: 160px 48px;
+        .pieces-view-all a {
+            font-size: 10px;
+            letter-spacing: 0.38em;
+            text-transform: uppercase;
+            color: var(--white);
+            text-decoration: none;
+            opacity: 0.2;
+            transition: opacity 200ms ease;
+        }
+
+        .pieces-view-all a:hover { opacity: 0.6; }
+
+        /* ── THE SOURCE ─────────────────────────────────────────── */
+        .source-section {
+            background: var(--bone);
+            color: var(--black);
+            padding: 104px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .source-watermark {
+            position: absolute;
+            top: -0.12em;
+            left: -0.04em;
+            font-family: var(--font-serif);
+            font-weight: 600;
+            font-size: 30vw;
+            line-height: 1;
+            color: rgba(0,0,0,0.04);
+            pointer-events: none;
+            letter-spacing: -0.04em;
+            user-select: none;
+        }
+
+        .source-inner {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 1.2fr;
+            gap: 72px;
+            align-items: start;
+        }
+
+        .source-id-label {
+            font-size: 10px;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            opacity: 0.32;
+            margin-bottom: 28px;
+        }
+
+        .source-id-number {
+            font-family: var(--font-serif);
+            font-weight: 300;
+            font-style: italic;
+            font-size: clamp(3rem, 5vw, 6rem);
+            line-height: 1;
+            letter-spacing: -0.02em;
+            opacity: 0.65;
+        }
+
+        .source-meta-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            row-gap: 14px;
+            column-gap: 28px;
+            align-items: baseline;
+        }
+
+        .source-meta-label {
+            font-size: 9px;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            opacity: 0.3;
+            white-space: nowrap;
+        }
+
+        .source-meta-value {
+            font-size: 13px;
+            font-weight: 300;
+            opacity: 0.72;
+            letter-spacing: 0.02em;
+        }
+
+        .source-prose-text {
+            font-family: var(--font-serif);
+            font-size: clamp(1.5rem, 2.2vw, 2.2rem);
+            font-weight: 300;
+            font-style: italic;
+            line-height: 1.35;
+            letter-spacing: -0.01em;
+            opacity: 0.6;
+            margin-bottom: 28px;
+        }
+
+        .source-prose-note {
+            font-size: 12px;
+            font-weight: 300;
+            line-height: 1.85;
+            opacity: 0.38;
+            max-width: 300px;
+        }
+
+        /* ── THE SYSTEM ─────────────────────────────────────────── */
+        .system-strip {
+            background: var(--black);
+            color: var(--white);
+            padding: 96px 80px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .system-eyebrow {
+            font-size: 10px;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            opacity: 0.22;
+            margin-bottom: 64px;
+        }
+
+        .system-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .system-col {
+            padding-right: 56px;
+            border-right: 1px solid rgba(255,255,255,0.07);
+            margin-right: 56px;
+        }
+
+        .system-col:last-child {
+            border-right: none;
+            margin-right: 0;
+            padding-right: 0;
+        }
+
+        .system-col-title {
+            font-family: var(--font-serif);
+            font-weight: 300;
+            font-style: italic;
+            font-size: 2.4rem;
+            line-height: 1;
+            margin-bottom: 20px;
+            color: var(--white);
+        }
+
+        .system-col-body {
+            font-size: 12px;
+            font-weight: 300;
+            line-height: 1.9;
+            opacity: 0.38;
+            color: var(--white);
+        }
+
+        .system-rule {
+            border: none;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            margin: 64px 0 0;
+        }
+
+        .system-artist {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-top: 36px;
+        }
+
+        .system-artist-name {
+            font-family: var(--font-serif);
+            font-size: 1.4rem;
+            font-style: italic;
+            opacity: 0.3;
+            color: var(--white);
+        }
+
+        .system-artist-meta {
+            font-size: 10px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            opacity: 0.18;
+            color: var(--white);
+        }
+
+        /* ── VOTE SECTION ──────────────────────────────────────── */
+        .vote-section {
+            background: var(--black);
+            color: var(--white);
+            padding: 80px 48px 100px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .vote-head {
+            max-width: 1400px;
+            margin: 0 auto 56px;
+        }
+
+        .vote-eyebrow {
+            font-size: 11px;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            opacity: 0.35;
+            margin-bottom: 20px;
+        }
+
+        .vote-heading {
+            font-family: var(--font-serif);
+            font-weight: 600;
+            font-size: clamp(4rem, 8vw, 7rem);
+            line-height: 0.85;
+            letter-spacing: -0.02em;
+        }
+
+        .vote-grid {
             max-width: 1400px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
-            gap: 100px;
-            align-items: center;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
         }
 
-        .exhibition.reverse { grid-template-columns: 0.8fr 1.2fr; }
+        .vote-card { display: flex; flex-direction: column; transition: opacity 500ms ease; cursor: pointer; }
+        .vote-card.is-dim { opacity: 0.18; }
+        .vote-section.has-voted .vote-card { cursor: default; }
 
-        .ex-image img {
+        .vote-img { position: relative; aspect-ratio: 3/4; overflow: hidden; background: #111; }
+        .vote-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 500ms ease; }
+        .vote-card:hover .vote-img img { transform: scale(1.02); }
+
+        .vote-bar-wrap {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 2px;
+            background: rgba(255,255,255,0.15);
+            opacity: 0;
+            transition: opacity 400ms ease;
+        }
+
+        .vote-bar-fill {
+            height: 100%;
+            background: var(--white);
+            width: 0%;
+            transition: width 900ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .vote-section.has-voted .vote-bar-wrap { opacity: 1; }
+
+        .vote-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 20px 0 0;
+            font-size: 11px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        .vote-name { font-weight: 500; }
+
+        .vote-pct {
+            font-weight: 300;
+            opacity: 0;
+            transition: opacity 400ms ease 300ms;
+        }
+
+        .vote-section.has-voted .vote-pct { opacity: 0.55; }
+
+        .vote-btn {
+            margin-top: 16px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--white);
+            padding: 18px 24px;
+            font-family: var(--font-sans);
+            font-size: 11px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            cursor: default;
+            transition: border-color 200ms ease, background 200ms ease;
             width: 100%;
-            transition: transform 200ms ease;
         }
 
-        .ex-image img:hover {
-            transform: scale(1.015); /* Lift rule */
+        .vote-btn:hover { border-color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.04); }
+        .vote-section.has-voted .vote-btn { display: none; }
+
+        .vote-footer {
+            max-width: 1400px;
+            margin: 48px auto 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
         }
 
-        .ex-content h2 {
-            font-family: var(--font-serif);
-            font-size: 4.5rem;
-            line-height: 1;
-            margin-bottom: 24px;
-        }
-
-        .ex-price {
-            font-size: 1.5rem;
-            margin-bottom: 40px;
+        .vote-note {
+            font-size: 11px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            opacity: 0.25;
             font-weight: 300;
         }
 
-        /* --- FOOTER --- */
-        footer {
-            padding: 120px 48px 64px;
-            background: var(--black);
+        .vote-section.has-voted .vote-note { opacity: 0; transition: opacity 300ms ease; }
+
+        .vote-back {
+            background: none;
+            border: 0;
+            font: inherit;
+            font-size: 11px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--white);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 400ms ease 600ms;
+            cursor: default;
         }
+
+        .vote-back:hover { opacity: 0.8 !important; }
+        .vote-section.has-voted .vote-back { opacity: 0.45; pointer-events: auto; }
+
+        /* ── FOOTER ────────────────────────────────────────────── */
+        footer { padding: 120px 48px 64px; background: var(--black); }
 
         .watermark {
             font-size: 15vw;
@@ -222,13 +665,37 @@
             margin-top: 80px;
         }
 
+        /* ── MOBILE ────────────────────────────────────────────── */
         @media (max-width: 1024px) {
             .hero { flex-direction: column; }
             .hero-text { padding: 120px 48px; order: 2; }
             .hero-visual { order: 1; height: 60vh; }
-            .exhibition { grid-template-columns: 1fr; gap: 60px; padding: 80px 24px; }
-            .exhibition.reverse { grid-template-columns: 1fr; }
-            .lifestyle-statement { position: relative; left: 0; bottom: 0; padding: 40px 0; font-size: 1.5rem; }
+            .release-section { grid-template-columns: 1fr; }
+            .release-image { min-height: 70vw; position: relative; order: -1; }
+            .release-copy { padding: 72px 48px 80px; }
+            .pieces-section { grid-template-columns: 1fr; }
+            .pieces-preview { min-height: 56vw; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.04); }
+            .source-inner { grid-template-columns: 1fr 1fr; gap: 48px; }
+        }
+
+        @media (max-width: 768px) {
+            nav { padding: 20px 24px; }
+            .release-copy { padding: 56px 24px 64px; }
+            .release-title { font-size: clamp(4.5rem, 16vw, 7rem); }
+            .pieces-header { padding: 40px 24px 18px; }
+            .piece-row { padding: 28px 24px; gap: 16px; }
+            .piece-row-num { font-size: 2.6rem; min-width: 52px; }
+            .pieces-view-all { padding: 20px 24px; }
+            .source-section { padding: 72px 24px; }
+            .source-inner { grid-template-columns: 1fr; gap: 40px; }
+            .source-watermark { font-size: 50vw; }
+            .system-strip { padding: 72px 24px; }
+            .system-grid { grid-template-columns: 1fr; }
+            .system-col { border-right: none; margin-right: 0; padding-right: 0; border-bottom: 1px solid rgba(255,255,255,0.07); padding-bottom: 40px; margin-bottom: 40px; }
+            .system-col:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+            .system-artist { flex-direction: column; gap: 8px; }
+            .vote-grid { grid-template-columns: 1fr; gap: 48px; }
+            .vote-section { padding: 64px 24px 80px; }
         }
     </style>
 </head>
@@ -236,208 +703,201 @@
 
     <nav id="navbar">
         <div class="nav-links">
-            <a href="#">The Series</a>
+            <button class="du-ham" data-menu-toggle aria-label="Open menu"><span class="du-ham-ico"><i></i><i></i></span>Menu</button>
+            <a href="collection.html">The Series</a>
             <a href="#">Art</a>
         </div>
         <div class="nav-brand">THE DEANGELO SERIES</div>
         <div class="nav-cart">
             <a href="#">Search</a>
-            <a href="#">Cart (0)</a>
+            <a href="#" data-cart-toggle>Cart (0)</a>
         </div>
     </nav>
 
     <section class="hero">
         <div class="hero-text">
             <h1>WEAR<br>THE<br>CANVAS</h1>
-            <a href="#" class="btn">View Drop 01</a>
+            <a href="collection.html" class="btn">View Drop 01</a>
         </div>
         <div class="hero-visual">
-            <img src="7d3d613e8e139249db062b05ef70764a.jpg" alt="The Rose Detail">
+            <img src="Hero-desert-model.png" alt="Venezia — Series 01 Campaign">
         </div>
     </section>
 
-<style>
-    :root {
-        --bone: #F5F5F1;
-        --black: #0A0A0A;
-        --inter: 'Inter', sans-serif;
-    }
-
-    /* --- THE VENEZIA STOP --- */
-    .featured-art {
-        background-color: var(--bone);
-        color: var(--black);
-        padding: 100px 0 40px 0; /* Tightened top and bottom */
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        width: 100%;
-        overflow: hidden;
-    }
-
-    .label-mini {
-        font-family: var(--inter);
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.6em;
-        margin-bottom: 32px;
-        opacity: 0.4;
-    }
-
-    .venezia-title {
-        font-family: var(--inter);
-        font-weight: 900;
-        font-size: 24vw; /* Even more aggressive scale */
-        line-height: 0.75;
-        letter-spacing: -0.07em;
-        margin: 0 0 20px 0;
-        text-transform: uppercase;
-    }
-
-    .featured-shirt-wrapper {
-        width: 90vw; /* Maximum shirt impact */
-        max-width: 1200px;
-        margin-bottom: 20px; /* Minimal gap between shirt and series title */
-    }
-
-    .featured-shirt-wrapper img {
-        width: 100%;
-        height: auto;
-        filter: drop-shadow(0 40px 80px rgba(0,0,0,0.15));
-    }
-
-    /* --- THE DEANGELO SERIES (TIGHT FOOTER) --- */
-    .series-footer-anchor {
-        width: 100%;
-        padding: 0 0 20px 0; /* Minimal padding */
-    }
-
-    .series-title-static {
-        font-family: var(--inter);
-        font-weight: 900;
-        font-size: 8.5vw;
-        color: var(--black);
-        text-transform: uppercase;
-        letter-spacing: -0.04em;
-        line-height: 1;
-        margin: 0;
-    }
-</style>
-
-<style>
-    :root {
-        --bone: #F5F5F1;
-        --black: #0A0A0A;
-        --inter: 'Inter', sans-serif;
-    }
-
-    /* --- THE VENEZIA STOP --- */
-    .featured-art {
-        background-color: var(--bone);
-        color: var(--black);
-        padding: 160px 48px 240px; /* Massive bottom padding for the 'Series' gap */
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-
-    .label-mini {
-        font-family: var(--inter);
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.5em;
-        margin-bottom: 64px;
-        opacity: 0.5;
-    }
-
-    .venezia-title {
-        font-family: var(--inter);
-        font-weight: 900;
-        font-size: 18vw;
-        line-height: 0.9;
-        letter-spacing: -0.05em;
-        margin: 0 0 80px 0; /* Creates space for image below */
-        text-transform: uppercase;
-    }
-
-    .featured-shirt-wrapper {
-        width: 100%;
-        max-width: 700px;
-        margin-bottom: 80px; /* gap before the Series title */
-    }
-
-    .featured-shirt-wrapper img {
-        width: 100%;
-        height: auto;
-        /* Subtle lift to make the shirt feel physical */
-        filter: drop-shadow(0 30px 60px rgba(0,0,0,0.12));
-    }
-
-    /* --- THE DEANGELO SERIES (STATIC BAR) --- */
-    .series-footer-bar {
-        width: 100%;
-        padding: 100px 0;
-        background-color: var(--bone);
-        border-top: 1px solid rgba(0,0,0,0.05); /* Ultra-faint divider */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .series-title-static {
-        font-family: var(--inter);
-        font-weight: 900;
-        font-size: 7vw;
-        color: var(--black);
-        text-transform: uppercase;
-        letter-spacing: -0.02em;
-    }
-
-    /* Transition to Black Gallery */
-    .gallery-start {
-        background-color: var(--black);
-        height: 100vh;
-        width: 100%;
-    }
-</style>
-
-<section class="featured-art">
-    <div class="label-mini">Featured Art // 01</div>
-    
-    <h2 class="venezia-title">VENEZIA</h2>
-    
-    <div class="featured-shirt-wrapper">
-        <img src="42277c6ee51bb0a9ae700aade699a05b.jpg" alt="Venezia Series 01">
-    </div>
-</section>
-
-    <section class="exhibition">
-        <div class="ex-image">
-            <img src="2026830932ad0170797003b83ba8d884.jpg" alt="The Metamorphosis">
+    <!-- CURRENT RELEASE -->
+    <section class="release-section">
+        <div class="release-copy">
+            <div class="release-meta-top">
+                <p class="release-eyebrow">Current Release &nbsp;/&nbsp; Series 01</p>
+                <p class="release-sub">Artwork 01 &nbsp;&mdash;&nbsp; Edition of 200</p>
+                <p class="release-body">Three limited wearable pieces.<br>Tee, hoodie, and crewneck.</p>
+                <a href="collection.html" class="release-cta">Shop the Release</a>
+            </div>
+            <h2 class="release-title">Venezia</h2>
         </div>
-        <div class="ex-content">
-            <h2>The Metamorphosis</h2>
-            <p class="ex-price">$68</p>
-            <p style="font-size: 1.2rem; font-weight: 300; margin-bottom: 40px; opacity: 0.8;">
-                Heavyweight 10.5oz organic cotton. Oversized editorial fit. Features the signature butterfly skull motif in gallery-grade screen print.
-            </p>
-            <a href="#" class="btn">Add to Collection</a>
+        <div class="release-image">
+            <img src="hanging-venezia.png" alt="Venezia — Series 01">
         </div>
     </section>
 
-    <section class="exhibition reverse">
-        <div class="ex-content">
-            <h2>Dualities</h2>
-            <p class="ex-price">$68</p>
-            <p style="font-size: 1.2rem; font-weight: 300; margin-bottom: 40px; opacity: 0.8;">
-                A study on light and shadow. Featured on our signature box-cut silhouette. 
-            </p>
-            <a href="#" class="btn">Add to Collection</a>
+    <!-- AVAILABLE PIECES -->
+    <section class="pieces-section">
+        <div class="pieces-preview" aria-hidden="true">
+            <img id="piecesPreviewImg" class="pieces-preview-img" src="Venezia-tee-m.png" alt="">
         </div>
-        <div class="ex-image">
-            <img src="d0c5614f258287b16168f9399b4c1f25.jpg" alt="Dualities Detail">
+        <div class="pieces-right">
+            <div class="pieces-header">
+                <span class="pieces-label">Series 01 &nbsp;/&nbsp; Available Pieces</span>
+                <span class="pieces-edition">Edition of 200</span>
+            </div>
+            <ul class="pieces-list">
+                <li>
+                    <a href="product.html?p=tee" class="piece-row" data-img="Venezia-tee-m.png">
+                        <span class="piece-row-num">01</span>
+                        <div class="piece-row-info">
+                            <div class="piece-row-name">Venezia &mdash; Tee</div>
+                            <div class="piece-row-type">Heavyweight Cotton &nbsp;&middot;&nbsp; Artwork 01</div>
+                        </div>
+                        <div class="piece-row-right">
+                            <span class="piece-row-price">$72</span>
+                            <span class="piece-row-cta">View Piece &rarr;</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="product.html?p=hoodie" class="piece-row" data-img="Venezia-Hoodie-m.png">
+                        <span class="piece-row-num">02</span>
+                        <div class="piece-row-info">
+                            <div class="piece-row-name">Venezia &mdash; Hoodie</div>
+                            <div class="piece-row-type">Heavyweight Fleece &nbsp;&middot;&nbsp; Artwork 01</div>
+                        </div>
+                        <div class="piece-row-right">
+                            <span class="piece-row-price">$88</span>
+                            <span class="piece-row-cta">View Piece &rarr;</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="product.html?p=crew" class="piece-row" data-img="Venezia-crew-m.png">
+                        <span class="piece-row-num">03</span>
+                        <div class="piece-row-info">
+                            <div class="piece-row-name">Venezia &mdash; Crewneck</div>
+                            <div class="piece-row-type">Heavyweight Fleece &nbsp;&middot;&nbsp; Artwork 01</div>
+                        </div>
+                        <div class="piece-row-right">
+                            <span class="piece-row-price">$82</span>
+                            <span class="piece-row-cta">View Piece &rarr;</span>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+            <div class="pieces-view-all">
+                <a href="collection.html">View full collection &rarr;</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- THE SOURCE -->
+    <section class="source-section">
+        <div class="source-watermark" aria-hidden="true">V</div>
+        <div class="source-inner">
+            <div>
+                <p class="source-id-label">The Source</p>
+                <p class="source-id-number">AW&ndash;01</p>
+            </div>
+            <div class="source-meta-grid">
+                <span class="source-meta-label">Artist</span>
+                <span class="source-meta-value">Tony DeAngelo</span>
+                <span class="source-meta-label">Medium</span>
+                <span class="source-meta-value">Oil on canvas</span>
+                <span class="source-meta-label">Year</span>
+                <span class="source-meta-value">1967</span>
+                <span class="source-meta-label">Artwork</span>
+                <span class="source-meta-value">No. 01 &nbsp;/&nbsp; Venezia</span>
+                <span class="source-meta-label">Edition</span>
+                <span class="source-meta-value">200 pieces</span>
+                <span class="source-meta-label">Released</span>
+                <span class="source-meta-value">February 2026</span>
+            </div>
+            <div>
+                <p class="source-prose-text">&ldquo;The original study becomes the garment.&rdquo;</p>
+                <p class="source-prose-note">Artwork 01 is translated onto heavyweight cotton, released once, documented, and archived. The series does not reprint.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- THE SYSTEM -->
+    <section class="system-strip">
+        <p class="system-eyebrow">The Deangelo Series</p>
+        <div class="system-grid">
+            <div class="system-col">
+                <h3 class="system-col-title">Artwork</h3>
+                <p class="system-col-body">Each series begins with an original work — oil paintings, architecture drawings, and slides from decades of European travel.</p>
+            </div>
+            <div class="system-col">
+                <h3 class="system-col-title">Piece</h3>
+                <p class="system-col-body">The artwork becomes a limited wearable edition. Each piece is numbered and ships with a signed edition card.</p>
+            </div>
+            <div class="system-col">
+                <h3 class="system-col-title">Archive</h3>
+                <p class="system-col-body">Once the edition closes, the work is documented and archived. The series does not reprint.</p>
+            </div>
+        </div>
+        <hr class="system-rule">
+        <div class="system-artist">
+            <span class="system-artist-name">Tony DeAngelo</span>
+            <span class="system-artist-meta">Original Works &nbsp;&middot;&nbsp; Est. MCMLXVII</span>
+        </div>
+    </section>
+
+    <!-- VOTE ON NEXT DROP -->
+    <section class="vote-section" id="vote">
+        <div class="vote-head">
+            <p class="vote-eyebrow">Series 02</p>
+            <h2 class="vote-heading">Cast your vote.</h2>
+        </div>
+        <div class="vote-grid">
+
+            <article class="vote-card" data-candidate="japan">
+                <div class="vote-img">
+                    <img src="bella-hoodie.png" alt="Japan">
+                    <div class="vote-bar-wrap"><div class="vote-bar-fill"></div></div>
+                </div>
+                <div class="vote-meta">
+                    <span class="vote-name">Japan</span>
+                    <span class="vote-pct"></span>
+                </div>
+                <button class="vote-btn">Cast vote</button>
+            </article>
+
+            <article class="vote-card" data-candidate="arthus">
+                <div class="vote-img">
+                    <img src="Arhus, The Old Town.png" alt="Arthus, The Old Town">
+                    <div class="vote-bar-wrap"><div class="vote-bar-fill"></div></div>
+                </div>
+                <div class="vote-meta">
+                    <span class="vote-name">Arthus, The Old Town</span>
+                    <span class="vote-pct"></span>
+                </div>
+                <button class="vote-btn">Cast vote</button>
+            </article>
+
+            <article class="vote-card" data-candidate="newyork">
+                <div class="vote-img">
+                    <img src="New york chystler hoodie.png" alt="New York Chrysler">
+                    <div class="vote-bar-wrap"><div class="vote-bar-fill"></div></div>
+                </div>
+                <div class="vote-meta">
+                    <span class="vote-name">New York Chrysler</span>
+                    <span class="vote-pct"></span>
+                </div>
+                <button class="vote-btn">Cast vote</button>
+            </article>
+
+        </div>
+        <div class="vote-footer">
+            <p class="vote-note">One vote. Series 02 drops when the studio is ready.</p>
+            <button class="vote-back" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Back to collection</button>
         </div>
     </section>
 
@@ -449,31 +909,79 @@
             </div>
             <div>
                 <p style="text-transform: uppercase; letter-spacing: 0.2em; font-size: 11px; margin-bottom: 24px;">Collection</p>
-                <a href="#" style="display: block; margin-bottom: 8px;">Series 01</a>
+                <a href="collection.html" style="display: block; margin-bottom: 8px;">Series 01</a>
                 <a href="#" style="display: block; margin-bottom: 8px;">The Archive</a>
             </div>
             <div>
                 <p style="text-transform: uppercase; letter-spacing: 0.2em; font-size: 11px; margin-bottom: 24px;">Legal</p>
-                <a href="#" style="display: block; margin-bottom: 8px;">Shipping</a>
-                <a href="#" style="display: block; margin-bottom: 8px;">Returns</a>
+                <a href="shipping-policy.html" style="display: block; margin-bottom: 8px;">Shipping</a>
+                <a href="refund-policy.html" style="display: block; margin-bottom: 8px;">Returns</a>
+                <a href="privacy-policy.html" style="display: block; margin-bottom: 8px;">Privacy Policy</a>
+                <a href="terms.html" style="display: block; margin-bottom: 8px;">Terms &amp; Conditions</a>
             </div>
+        </div>
+        <div style="max-width:var(--max-width);margin:64px auto 0;padding-top:24px;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.35)">
+            <span>© MMXXVI The Deangelo Series</span>
+            <div style="display:flex;gap:24px">
+                <a href="privacy-policy.html" style="color:inherit;text-decoration:none;transition:opacity .2s ease" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=''">Privacy Policy</a>
+                <a href="terms.html" style="color:inherit;text-decoration:none;transition:opacity .2s ease" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=''">Terms &amp; Conditions</a>
+            </div>
+            <span>Brooklyn · New York</span>
         </div>
         <div class="watermark">DEANGELO</div>
     </footer>
 
     <script>
-        // Navbar scroll effect
-        window.addEventListener('scroll', () => {
-            const nav = document.getElementById('navbar');
-            nav.classList.toggle('scrolled', window.scrollY > 50);
-
-            // Simple intersection reveal for the statement text
-            const revealText = document.getElementById('reveal-text');
-            const pos = revealText.getBoundingClientRect().top;
-            if (pos < window.innerHeight - 100) {
-                revealText.classList.add('reveal');
-            }
+        window.addEventListener('scroll', function() {
+            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
         });
+
+        // Pieces preview image swap on hover
+        (function() {
+            var img = document.getElementById('piecesPreviewImg');
+            if (!img) return;
+            document.querySelectorAll('.piece-row').forEach(function(row) {
+                row.addEventListener('mouseenter', function() {
+                    var src = row.getAttribute('data-img');
+                    if (src && img.src.indexOf(src) === -1) {
+                        img.style.opacity = '0';
+                        setTimeout(function() { img.src = src; img.style.opacity = '1'; }, 180);
+                    }
+                });
+            });
+        })();
+
+        // Vote section
+        (function() {
+            var SEEDS = { japan: 312, arthus: 198, newyork: 247 };
+
+            document.querySelectorAll('.vote-section').forEach(function(section) {
+                var voted = false;
+
+                section.querySelectorAll('.vote-card').forEach(function(card) {
+                    card.addEventListener('click', function() {
+                        if (voted) return;
+                        voted = true;
+
+                        var candidate = card.dataset.candidate;
+                        SEEDS[candidate]++;
+
+                        var total = Object.values(SEEDS).reduce(function(a, b) { return a + b; }, 0);
+
+                        section.classList.add('has-voted');
+
+                        section.querySelectorAll('.vote-card').forEach(function(c) {
+                            var cand = c.dataset.candidate;
+                            var pct = Math.round(SEEDS[cand] / total * 100);
+                            c.querySelector('.vote-bar-fill').style.width = pct + '%';
+                            c.querySelector('.vote-pct').textContent = pct + '%';
+                            if (cand !== candidate) c.classList.add('is-dim');
+                        });
+                    });
+                });
+            });
+        })();
     </script>
+    <script src="site-ui.js"></script>
 </body>
 </html>
