@@ -33,8 +33,8 @@
   /* ---- menu information architecture (expandable dropdown groups) ------- */
   var MENU_GROUPS = [
     { label: "Shop", items: [
-      { label: "Series 01", href: "Collection.html" },
-      { label: "Collection", href: "Collection.html" },
+      { label: "Series 01", href: "collection.html" },
+      { label: "Collection", href: "collection.html" },
       { label: "The Archive", href: "#" },
       { label: "New Release", href: "#" }
     ]},
@@ -432,7 +432,7 @@
       body.className = "du-cart-empty";
       body.innerHTML =
         "<p>Your collection is empty.</p>" +
-        '<a href="Collection.html">Browse the series \u2192</a>';
+        '<a href="collection.html">Browse the series \u2192</a>';
       foot.style.display = "none";
       return;
     }
