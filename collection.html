@@ -96,8 +96,9 @@
     content:"";position:absolute;left:0;right:0;bottom:-2px;height:1px;background:currentColor;
   }
   .filters .filter-count{opacity:.4;margin-left:6px;font-size:9px;letter-spacing:.2em}
-  .sort{display:flex;gap:12px;align-items:center;opacity:.7}
+  .sort{display:flex;gap:10px;align-items:center;opacity:.7}
   .sort .caret{opacity:.5}
+  .sort select{background:none;border:0;color:inherit;font:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer;opacity:1;padding:0;outline:none;-webkit-appearance:none;-moz-appearance:none;appearance:none}
 
   /* ── GRID (bone) ───────────────────────────────────────────── */
   main.collection{
@@ -343,7 +344,7 @@
   <div class="nav-links">
     <button class="du-ham" data-menu-toggle aria-label="Open menu"><span class="du-ham-ico"><i></i><i></i></span>Menu</button>
     <a href="#" class="nav-current">The Series</a>
-    <a href="#">Art</a>
+    <a href="art.html">Art</a>
   </div>
   <a class="nav-brand" href="index.html">THE DEANGELO SERIES</a>
   <div class="nav-cart">
@@ -376,7 +377,12 @@
       <button data-filter="archive">Archive <span class="filter-count">00</span></button>
     </div>
     <div class="sort">
-      <span>Sort:</span><span>Piece</span><span class="caret">▾</span>
+      <span>Series</span>
+      <select id="seriesFilter" aria-label="Filter by series">
+        <option value="all">All</option>
+        <option value="01">Series 01</option>
+      </select>
+      <span class="caret">▾</span>
     </div>
   </div>
 </header>
@@ -483,7 +489,7 @@
         <div class="plate-image plate-image--model">${imgModel}</div>
         <div class="plate-image plate-image--flat">${imgFlat}</div>
       </div>`;
-    return `<article class="plate${p.soon ? ' is-soon' : ''}" data-type="${p.type || ''}" data-searchable="${(p.title + ' ' + (p.garment || '')).toLowerCase()}">
+    return `<article class="plate${p.soon ? ' is-soon' : ''}" data-type="${p.type || ''}" data-series="${p.soon ? '02' : '01'}" data-searchable="${(p.title + ' ' + (p.garment || '')).toLowerCase()}">
       ${p.soon
         ? imageWrap
         : `<a class="plate-link" href="product.html?p=${p.slug}" aria-label="View ${title}">${imageWrap}</a>`}
@@ -500,6 +506,12 @@
     </article>`;
   }).join('');
 
+  // Series dropdown
+  document.getElementById('seriesFilter').addEventListener('change', () => {
+    const activeFilter = document.querySelector('.filters .is-active').dataset.filter;
+    applyFilters(activeFilter, document.getElementById('searchInput').value.trim().toLowerCase());
+  });
+
   // Filter buttons
   document.querySelector('.filters').addEventListener('click', e => {
     const btn = e.target.closest('button[data-filter]');
@@ -511,12 +523,14 @@
   });
 
   function applyFilters(filter, query) {
+    const series = document.getElementById('seriesFilter').value;
     const plates = document.querySelectorAll('#grid .plate');
     let visible = 0;
     plates.forEach(plate => {
       const typeMatch = filter === 'all' || plate.dataset.type === filter;
+      const seriesMatch = series === 'all' || plate.dataset.series === series;
       const searchMatch = !query || plate.dataset.searchable.includes(query);
-      const show = typeMatch && searchMatch;
+      const show = typeMatch && seriesMatch && searchMatch;
       plate.style.display = show ? '' : 'none';
       if (show) visible++;
     });

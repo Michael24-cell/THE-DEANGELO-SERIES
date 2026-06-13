@@ -220,6 +220,7 @@
   }
   .submit:hover{background:transparent;color:var(--ink)}
   .submit .total{font-weight:300;font-variant-numeric:tabular-nums;letter-spacing:.25em}
+  .submit-policy{font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--ink-mute);text-align:center;line-height:1.7;padding-bottom:16px;border-bottom:1px solid var(--ink-hair-soft)}
   .submit-fine{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-mute);text-align:center;line-height:1.7}
   .submit-fine a{text-decoration:underline;text-underline-offset:3px}
 
@@ -435,7 +436,7 @@
 
       <div class="form-head">
         <div class="eyebrow">Checkout // Series 01</div>
-        <h1>Complete your <em>plate</em></h1>
+        <h1>Complete your <em>piece</em></h1>
         <p class="sub">Three short steps. Edition number is assigned and recorded against your name on dispatch.</p>
       </div>
 
@@ -453,7 +454,7 @@
           </div>
           <label class="check">
             <input type="checkbox" checked>
-            <span>Note me when new plates are released. One email per series, never anything else.</span>
+            <span>Note me when new pieces are released. One email per series, never anything else.</span>
           </label>
         </div>
       </div>
@@ -551,13 +552,14 @@
 
       <!-- Submit -->
       <div class="submit-row">
+        <p class="submit-policy">All sales are final. Pieces are non-refundable once the order is placed.</p>
         <button class="submit" type="button">
           <span>Complete order</span>
-          <span class="total">$76.00 USD</span>
+          <span class="total">$80.00 USD</span>
         </button>
         <p class="submit-fine">
           By completing this order you accept the <a href="terms.html">Terms</a> &amp; <a href="privacy-policy.html">Privacy</a>. <br>
-          Free returns within 14 days · Edition number assigned on dispatch.
+          Edition number assigned on dispatch.
         </p>
       </div>
 
@@ -569,7 +571,7 @@
     <div class="summary">
 
       <div class="summary-eyebrow">
-        <span>Your plate</span>
+        <span>Your Piece</span>
         <span class="right">01 item</span>
       </div>
 
@@ -581,10 +583,10 @@
           <img src="Venezia-tee.png" alt="Venezia Tee — Flat">
         </div>
         <div class="frame" data-kind="detail">
-          <img src="Venezia-Hoodie-m.png" alt="Venezia Hoodie">
+          <img src="Venezia-Hoodie-m.png" alt="Venezia — Hoodie">
         </div>
         <div class="frame" data-kind="artwork">
-          <img src="Venezia-crew-m.png" alt="Venezia Crewneck">
+          <img src="Venezia-Original.png" alt="Venezia — Original Artwork, Tony DeAngelo, 1979" style="object-fit:contain;background:#F5F5F1;">
         </div>
 
         <button class="summ-arrow prev" id="summPrev" aria-label="Previous image">
@@ -598,41 +600,43 @@
 
       <div class="summ-caption">
         <div class="left">
-          <div class="plate-line"><span>01</span><span class="sep">//</span><span>Metamorphosis</span></div>
+          <div class="plate-line"><span>01</span><span class="sep">//</span><span>Venezia — Tee</span></div>
           <div class="plate-meta">Size M · Qty 01 · Edition of 200</div>
         </div>
-        <div class="price">$68.00</div>
+        <div class="price">$72.00</div>
       </div>
 
       <div class="placard">
-        <div class="eyebrow-mini">The Plate</div>
-        <p class="pull">A butterfly built from what it used to be.</p>
-        <p>Heavyweight 10.5oz organic cotton, oversized boxy crew. Six-colour water-based screen print, hand-pulled in Brooklyn. Printed once. Numbered. Archived when sold out.</p>
+        <div class="eyebrow-mini">The Piece</div>
+        <p class="pull">The painting, translated to cotton.</p>
+        <p>Heavyweight 10.5oz organic cotton, oversized boxy tee. Gallery-grade water-based screen print. Printed once, numbered, and archived when sold out.</p>
       </div>
 
       <div class="source-mini">
-        <div class="source-mini-art" aria-hidden="true"></div>
+        <div class="source-mini-art">
+          <img src="Venezia-Original.png" alt="Venezia — Original Artwork" style="width:100%;height:100%;object-fit:contain;padding:6px;">
+        </div>
         <div class="source-mini-text">
           <div class="eyebrow-mini">The Source</div>
-          <div class="title">The Metamorphosis</div>
-          <div class="meta">Oil on linen · MMXXIV · Marco Deangelo</div>
+          <div class="title">Venezia</div>
+          <div class="meta">Oil on canvas · 1979 · Tony DeAngelo</div>
         </div>
       </div>
 
       <div class="totals">
-        <div class="totals-row"><span class="label">Subtotal</span><span>$68.00</span></div>
+        <div class="totals-row"><span class="label">Subtotal</span><span>$72.00</span></div>
         <div class="totals-row"><span class="label">Shipping <span class="est">Standard</span></span><span>Free</span></div>
         <div class="totals-row"><span class="label">Tax <span class="est">Est.</span></span><span>$8.00</span></div>
         <div class="totals-total">
           <span class="label">Total <em style="font-style:normal;font-size:9px;letter-spacing:.3em;opacity:.6;">USD</em></span>
-          <span class="amount">$76.<em>00</em></span>
+          <span class="amount">$80.<em>00</em></span>
         </div>
       </div>
 
       <div class="reassure">
         <span>Free returns within 14 days</span>
         <span>Hand-numbered on dispatch</span>
-        <span>Signed plate card included</span>
+        <span>Signed edition card included</span>
       </div>
     </div>
   </aside>
@@ -729,12 +733,11 @@
     document.querySelectorAll('.vote-section').forEach(function(section) {
       var voted = false;
 
-      section.querySelectorAll('.vote-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
+      section.querySelectorAll('.vote-card').forEach(function(card) {
+        card.addEventListener('click', function() {
           if (voted) return;
           voted = true;
 
-          var card = btn.closest('.vote-card');
           var candidate = card.dataset.candidate;
           SEEDS[candidate]++;
 
