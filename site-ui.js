@@ -464,7 +464,7 @@
     foot.innerHTML =
       '<div class="du-cart-sub"><span class="lbl">Subtotal</span><span class="val">' + money(cartSubtotal()) + "</span></div>" +
       '<p class="du-cart-note">Shipping &amp; duties calculated at checkout. Each piece ships with a signed, numbered edition card.</p>' +
-      '<a class="du-cart-checkout" href="Checkout.html">Proceed to Checkout</a>' +
+      '<a class="du-cart-checkout" href="checkout.html">Proceed to Checkout</a>' +
       '<button class="du-cart-cont" data-cart-close>Continue browsing</button>';
   }
 
