@@ -3,6 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Limited edition artwear from The DeAngelo Series. Series 01 — Venezia. Edition of 200 numbered pieces.">
+<meta name="theme-color" content="#0A0A0A">
+<link rel="apple-touch-icon" href="deangeloseries-favicon.png">
+<link rel="canonical" href="https://www.thedeangeloseries.com/product.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The DeAngelo Series">
+<meta property="og:title" content="Venezia — The DeAngelo Series">
+<meta property="og:description" content="Limited edition artwear from The DeAngelo Series. Series 01 — Venezia. Edition of 200 numbered pieces.">
+<meta property="og:image" content="https://www.thedeangeloseries.com/Venezia-Original.png">
+<meta property="og:url" content="https://www.thedeangeloseries.com/product.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Venezia — The DeAngelo Series">
+<meta name="twitter:description" content="Limited edition artwear from The DeAngelo Series. Series 01 — Venezia. Edition of 200 numbered pieces.">
+<meta name="twitter:image" content="https://www.thedeangeloseries.com/Venezia-Original.png">
 <title>Venezia Tee — The Deangelo Series</title>
 <link rel="icon" href="deangeloseries-favicon.png" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -430,7 +444,7 @@
   .search-no-results{padding:16px 0 4px;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:rgba(10,10,10,.45)}
 </style>
 </head>
-<body data-screen-label="Plate 01 — The Metamorphosis">
+<body data-screen-label="Piece 01 — Venezia">
 
 <nav id="navbar">
   <div class="nav-links">
@@ -466,7 +480,7 @@
 </div>
 
 <!-- Main product: gallery + info -->
-<section class="product" data-screen-label="Plate 01 — Gallery + Info">
+<section class="product" data-screen-label="Piece 01 — Gallery + Info">
   <div class="gallery">
     <div class="gallery-stage" id="stage">
       <div class="frame is-active" data-kind="front">
@@ -522,15 +536,15 @@
           <dl>
             <div class="meta-pair">
               <dt>Material</dt>
-              <dd>10.5oz organic heavyweight cotton. Soft-hand, garment-dyed in small lots.</dd>
+              <dd id="detailMaterial">10.5oz organic heavyweight cotton. Soft-hand, garment-dyed in small lots.</dd>
             </div>
             <div class="meta-pair">
               <dt>Fit</dt>
-              <dd>Oversized editorial. Boxy crew, dropped shoulder, slightly cropped hem.</dd>
+              <dd id="detailFit">Oversized editorial. Boxy crew, dropped shoulder, slightly cropped hem.</dd>
             </div>
             <div class="meta-pair">
               <dt>Print</dt>
-              <dd>Six-colour water-based screen print, hand-pulled. Front placement.</dd>
+              <dd id="detailPrint">Six-colour water-based screen print, hand-pulled. Front placement.</dd>
             </div>
           </dl>
         </div></div>
@@ -780,6 +794,17 @@
 
     var tFlat = document.getElementById('thumbFlat');
     tFlat.style.backgroundImage = "url('" + p.flat + "')";
+
+    // Per-product details
+    var DETAILS = {
+      tee:    { material:'10.5oz organic heavyweight cotton. Soft-hand, garment-dyed in small lots.', fit:'Oversized editorial. Boxy crew, dropped shoulder, slightly cropped hem.', print:'Six-colour water-based screen print, hand-pulled. Front placement.' },
+      hoodie: { material:'18oz heavyweight fleece. Brushed cotton interior, structured hood, kangaroo pocket.', fit:'Relaxed pullover silhouette. Extended body, ribbed cuffs and hem, dropped shoulder.', print:'Six-colour water-based screen print, hand-pulled. Chest placement.' },
+      crew:   { material:'18oz heavyweight fleece. Brushed cotton interior, reinforced ribbed collar.', fit:'Boxy crew silhouette. Dropped shoulder, ribbed cuffs and waistband, slightly cropped.', print:'Six-colour water-based screen print, hand-pulled. Chest placement.' }
+    };
+    var d = DETAILS[key] || DETAILS.tee;
+    document.getElementById('detailMaterial').textContent = d.material;
+    document.getElementById('detailFit').textContent = d.fit;
+    document.getElementById('detailPrint').textContent = d.print;
 
     // Also on the wall — other Venezia garments
     var ALSO = {
