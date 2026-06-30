@@ -11,7 +11,7 @@
 ## Domain & DNS
 - [ ] **Purchase domain** — thedeangeloseries.com (or preferred)
 - [ ] **Connect domain to Vercel** — Add custom domain in Vercel project settings
-- [ ] **Update canonical URLs** — Replace `https://www.thedeangeloseries.com` placeholder in all HTML meta tags and sitemap.xml with final domain
+- [ ] **Update canonical URLs** — Replace `https://thedeangeloseries.com` placeholder in all HTML meta tags and sitemap.xml with final domain
 - [ ] **SSL certificate** — Auto-provisioned by Vercel on domain connect
 
 ## Business Email
@@ -60,5 +60,5 @@
 
 ## Known Dev Notes
 - `tweaks-panel.jsx` is referenced in product.html but the file does not exist — causes a silent console 404. Remove the React/tweaks script block before launch if the panel is not needed.
-- Canonical URLs and OG image URLs use `https://www.thedeangeloseries.com` as placeholder — update to final domain.
+- Canonical URLs and OG image URLs use `https://thedeangeloseries.com` as placeholder — update to final domain.
 - Checkout is currently scaffolded (no real payment processing). Do not promote checkout until Stripe is live.

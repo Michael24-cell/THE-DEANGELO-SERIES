@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /checkout.html
 
-Sitemap: https://www.thedeangeloseries.com/sitemap.xml
+Sitemap: https://thedeangeloseries.com/sitemap.xml
