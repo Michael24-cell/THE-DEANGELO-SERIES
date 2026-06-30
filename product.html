@@ -444,7 +444,7 @@
   .search-no-results{padding:16px 0 4px;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:rgba(10,10,10,.45)}
 </style>
 </head>
-<body data-screen-label="Piece 01 — Venezia">
+<body data-screen-label="Piece 01 — Venezia" data-source-align="reverse" data-meta-style="serif">
 
 <nav id="navbar">
   <div class="nav-links">
@@ -755,8 +755,6 @@
   <div class="watermark">DEANGELO</div>
 </footer>
 
-<div id="tweaks-root"></div>
-
 <script>
   // Product switching via ?p= query param
   (function() {
@@ -869,49 +867,6 @@
   window.addEventListener('scroll', () => {
     document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
   });
-</script>
-
-<!-- React + Tweaks panel -->
-<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
-<script type="text/babel" src="tweaks-panel.jsx"></script>
-<script type="text/babel">
-  const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-    "sticky": "on",
-    "cta": "solid",
-    "sourceAlign": "reverse",
-    "metaStyle": "serif"
-  }/*EDITMODE-END*/;
-
-  function ProductTweaks(){
-    const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
-    React.useEffect(() => {
-      document.body.dataset.sticky      = t.sticky;
-      document.body.dataset.cta         = t.cta;
-      document.body.dataset.sourceAlign = t.sourceAlign;
-      document.body.dataset.metaStyle   = t.metaStyle;
-    }, [t]);
-
-    return (
-      <TweaksPanel title="Tweaks">
-        <TweakSection label="Product info" />
-        <TweakRadio label="Sticky rail" value={t.sticky}
-          options={['on','off']} onChange={v => setTweak('sticky', v)} />
-        <TweakRadio label="Primary CTA" value={t.cta}
-          options={['solid','outline']} onChange={v => setTweak('cta', v)} />
-        <TweakSection label="The Source" />
-        <TweakRadio label="Layout" value={t.sourceAlign}
-          options={['default','reverse']} onChange={v => setTweak('sourceAlign', v)} />
-        <TweakSection label="Provenance" />
-        <TweakRadio label="Meta type" value={t.metaStyle}
-          options={['serif','sans']} onChange={v => setTweak('metaStyle', v)} />
-      </TweaksPanel>
-    );
-  }
-
-  ReactDOM.createRoot(document.getElementById('tweaks-root'))
-    .render(<ProductTweaks />);
 </script>
 
 <script src="site-ui.js"></script>
