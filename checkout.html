@@ -562,13 +562,13 @@
 
         <div class="pay-note">
           <span class="lock"></span>
-          <span>Encrypted payment · Processed by Stripe</span>
+          <span>Stripe payment integration — coming at launch</span>
         </div>
       </div>
 
       <!-- Submit -->
       <div class="submit-row">
-        <p class="submit-policy">All sales are final. Pieces are non-refundable once the order is placed.</p>
+        <p class="submit-policy">All sales are final. Checkout payment processing is not yet live — no order will be placed.</p>
         <button class="submit" type="button">
           <span>Complete order</span>
           <span class="total">$80.00 USD</span>
@@ -642,7 +642,7 @@
       <div class="totals">
         <div class="totals-row"><span class="label">Subtotal</span><span>$72.00</span></div>
         <div class="totals-row"><span class="label">Shipping <span class="est">Standard</span></span><span>Free</span></div>
-        <div class="totals-row"><span class="label">Tax <span class="est">Est.</span></span><span>$8.00</span></div>
+        <div class="totals-row"><span class="label">Tax <span class="est">Est.</span></span><span>Calculated at checkout</span></div>
         <div class="totals-total">
           <span class="label">Total <em style="font-style:normal;font-size:9px;letter-spacing:.3em;opacity:.6;">USD</em></span>
           <span class="amount">$80.<em>00</em></span>
@@ -650,7 +650,7 @@
       </div>
 
       <div class="reassure">
-        <span>Free returns within 14 days</span>
+        <span>Damage &amp; defect claims within 14 days</span>
         <span>Hand-numbered on dispatch</span>
         <span>Signed edition card included</span>
       </div>
@@ -729,17 +729,15 @@
     });
   });
 
-  // Complete order → confirm + scroll to vote
+  // Pre-launch: payment is not live — do not imply an order was placed
   document.querySelector('.submit').addEventListener('click', function() {
-    if (this.dataset.confirmed) return;
-    this.dataset.confirmed = '1';
-    this.innerHTML = '<span>Order confirmed</span><span class="total">Check your email</span>';
-    this.style.background = 'rgba(255,255,255,0.06)';
+    if (this.dataset.shown) return;
+    this.dataset.shown = '1';
+    this.innerHTML = '<span>Checkout coming soon</span><span class="total">Not yet live</span>';
+    this.style.background = 'transparent';
     this.style.color = 'var(--ink)';
     this.style.cursor = 'default';
-    setTimeout(function() {
-      document.getElementById('vote').scrollIntoView({ behavior: 'smooth' });
-    }, 900);
+    this.style.pointerEvents = 'none';
   });
 
   // Vote section

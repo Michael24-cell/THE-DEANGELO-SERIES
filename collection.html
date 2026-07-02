@@ -470,20 +470,19 @@
   <div class="watermark">DEANGELO</div>
 </footer>
 
-<div id="tweaks-root"></div>
 
 <!-- ── Static product data + render ───────────────────────────── -->
 <script>
   const PLATES = [
     { n:"01", title:"Venezia", garment:"Tee", price:"$72", slug:"tee", type:"tee",
       model:"Venezia-tee-m.png", flat:"Venezia-tee.png",
-      desc:"Oversized cotton tee. Sourced from a 2024 oil-on-linen study of the Venetian campanile. Gallery-grade screen print." },
+      desc:"Oversized cotton tee. Sourced from Venezia — oil on canvas, 1979. Gallery-grade water-based screen print." },
     { n:"02", title:"Venezia", garment:"Hoodie", price:"$88", slug:"hoodie", type:"sweatshirt",
       model:"Venezia-Hoodie-m.png", flat:"Venezia-hoodie.png",
       desc:"Heavyweight fleece, relaxed oversized silhouette. Same source artwork across a different canvas." },
     { n:"03", title:"Venezia", garment:"Crewneck", price:"$82", slug:"crew", type:"sweatshirt",
       model:"Venezia-crew-m.png", flat:"Venezia-crew.png",
-      desc:"Mid-weight cotton-poly crewneck. Clean back placement, dropped shoulder, boxy crew neck." },
+      desc:"Heavyweight fleece crewneck. Dropped shoulder, ribbed cuffs and waistband, boxy crew neck." },
     { n:"S2", title:"Japan", price:"—", soon:true, type:"sweatshirt",
       model:"bella-hoodie.png", flat:"Japan flat.png",
       desc:"Series 02 candidate. Cast your vote on the homepage to shape the next drop." },
@@ -648,52 +647,6 @@
   });
 </script>
 
-<!-- ── React + Tweaks panel ───────────────────────────────────── -->
-<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
-<script type="text/babel" src="tweaks-panel.jsx"></script>
-<script type="text/babel">
-  const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
-    "imgfx": "crossfade",
-    "imgbg": "bone",
-    "cols": "3",
-    "density": "regular"
-  }/*EDITMODE-END*/;
-
-  function CollectionTweaks(){
-    const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
-
-    React.useEffect(() => {
-      document.body.dataset.imgfx    = t.imgfx;
-      document.body.dataset.imgbg    = t.imgbg;
-      document.body.dataset.cols     = t.cols;
-      document.body.dataset.density  = t.density;
-    }, [t]);
-
-    return (
-      <TweaksPanel title="Tweaks">
-        <TweakSection label="Card hover" />
-        <TweakRadio label="Image effect" value={t.imgfx}
-          options={['crossfade','scale','none']}
-          onChange={v => setTweak('imgfx', v)} />
-        <TweakRadio label="Image bg" value={t.imgbg}
-          options={['bone','white']}
-          onChange={v => setTweak('imgbg', v)} />
-        <TweakSection label="Grid" />
-        <TweakRadio label="Columns" value={t.cols}
-          options={['3','4']}
-          onChange={v => setTweak('cols', v)} />
-        <TweakRadio label="Spacing" value={t.density}
-          options={['compact','regular','airy']}
-          onChange={v => setTweak('density', v)} />
-      </TweaksPanel>
-    );
-  }
-
-  ReactDOM.createRoot(document.getElementById('tweaks-root'))
-    .render(<CollectionTweaks />);
-</script>
 
 <script src="site-ui.js"></script>
 </body>

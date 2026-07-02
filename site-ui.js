@@ -346,7 +346,7 @@
       "<div class=\"du-mnav\">" + groups + '<div class="du-mdirect-wrap">' + direct + "</div></div>" +
       '<div class="du-foot">' +
         '<a href="#">Search</a><a href="#">Sign in</a>' +
-        '<span class="loc">Brooklyn \u00B7 NY</span>' +
+        '<span class="loc">California</span>' +
       "</div>";
     return menu;
   }
