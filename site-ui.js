@@ -35,7 +35,7 @@
     { label: "Shop", items: [
       { label: "Series 01", href: "collection.html" },
       { label: "Collection", href: "collection.html" },
-      { label: "The Archive", href: "#" },
+      { label: "The Archive", href: "archive.html" },
       { label: "New Release", href: "#" }
     ]},
     { label: "The Source", items: [
@@ -47,7 +47,7 @@
       { label: "Shipping", href: "shipping-policy.html" },
       { label: "Returns", href: "refund-policy.html" },
       { label: "Size Guide", href: "#", sizeGuide: true },
-      { label: "Contact", href: "#" }
+      { label: "Contact", href: "contact.html" }
     ]}
   ];
   var MENU_DIRECT = [

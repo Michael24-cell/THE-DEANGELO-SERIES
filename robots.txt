@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /checkout.html
+Disallow: /checkout-success.html
+Disallow: /checkout-cancel.html
 
 Sitemap: https://thedeangeloseries.com/sitemap.xml

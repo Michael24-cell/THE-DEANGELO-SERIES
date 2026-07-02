@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<!-- Stripe Checkout success redirect destination. Stripe redirects here after a completed payment session. -->
+<!-- Do NOT link to this page from anywhere on the site — it is only reachable via Stripe redirect. -->
+<!-- Configure in Stripe Dashboard: Checkout > Settings > Success URL = https://thedeangeloseries.com/checkout-success.html -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Confirmed — The DeAngelo Series</title>
+<meta name="description" content="Your order has been placed with The DeAngelo Series.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0A0A0A">
+<link rel="icon" href="deangeloseries-favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="deangeloseries-favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;0,600;1,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#0A0A0A;
+    --white:#FFFFFF;
+    --bone:#F5F5F1;
+    --hairline-light:rgba(255,255,255,.10);
+    --hairline-dark:rgba(10,10,10,.10);
+    --ink-dim:rgba(10,10,10,.55);
+    --font-serif:'Cormorant Garamond',serif;
+    --font-sans:'Inter',sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{
+    background:var(--bone);color:var(--black);
+    font-family:var(--font-sans);-webkit-font-smoothing:antialiased;
+    line-height:1.55;min-height:100vh;
+  }
+  body{overflow-x:hidden;display:flex;flex-direction:column}
+  a{color:inherit;text-decoration:none;transition:opacity 220ms ease}
+  a:hover{opacity:.6}
+
+  /* Minimal nav — order is done, no cart needed */
+  .top-bar{
+    padding:28px 48px;
+    display:flex;justify-content:center;align-items:center;
+    border-bottom:1px solid var(--hairline-dark);
+  }
+  .top-brand{
+    font-size:13px;letter-spacing:.4em;text-transform:uppercase;font-weight:400;
+  }
+
+  .confirm-wrap{
+    flex:1;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:80px 48px 100px;
+    text-align:center;
+  }
+  .confirm-icon{
+    width:48px;height:48px;
+    border:1px solid rgba(10,10,10,.18);
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    margin:0 auto 40px;
+    font-size:20px;
+  }
+  .confirm-eyebrow{
+    font-size:10px;letter-spacing:.5em;text-transform:uppercase;
+    opacity:.45;margin-bottom:16px;
+  }
+  .confirm-heading{
+    font-family:var(--font-serif);font-weight:500;
+    font-size:clamp(2rem,5vw,3.6rem);
+    line-height:1;letter-spacing:-.01em;
+    margin-bottom:28px;
+  }
+  .confirm-body{
+    font-size:.95rem;line-height:1.65;font-weight:300;
+    color:var(--ink-dim);max-width:44ch;margin:0 auto 48px;
+  }
+  .confirm-body strong{font-weight:500;color:var(--black)}
+  .confirm-actions{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+  .btn-primary{
+    background:var(--black);color:var(--white);
+    padding:18px 40px;
+    font-size:10px;letter-spacing:.4em;text-transform:uppercase;font-weight:500;
+    border:1px solid var(--black);
+    transition:background 180ms ease,color 180ms ease;
+    display:inline-block;
+  }
+  .btn-primary:hover{background:transparent;color:var(--black);opacity:1}
+  .btn-secondary{
+    padding:18px 32px;
+    font-size:10px;letter-spacing:.4em;text-transform:uppercase;font-weight:500;
+    color:var(--ink-dim);
+    border:1px solid rgba(10,10,10,.18);
+    display:inline-block;
+    transition:border-color 180ms ease,color 180ms ease;
+  }
+  .btn-secondary:hover{border-color:var(--black);color:var(--black);opacity:1}
+
+  .confirm-note{
+    margin-top:56px;padding-top:40px;
+    border-top:1px solid var(--hairline-dark);
+    max-width:44ch;
+    font-size:.8rem;line-height:1.6;font-weight:300;
+    color:var(--ink-dim);
+  }
+
+  @media (max-width:640px){
+    .top-bar{padding:24px 20px}
+    .confirm-wrap{padding:60px 20px 80px}
+    .confirm-actions{flex-direction:column;align-items:stretch}
+    .btn-primary,.btn-secondary{text-align:center}
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a class="top-brand" href="index.html">THE DEANGELO SERIES</a>
+</div>
+
+<div class="confirm-wrap">
+  <div class="confirm-icon" aria-hidden="true">✓</div>
+  <p class="confirm-eyebrow">Order confirmed</p>
+  <h1 class="confirm-heading">Thank you.</h1>
+  <p class="confirm-body">
+    Your order has been placed. A confirmation email is on its way to the address you provided at checkout.
+    <br><br>
+    <strong>Processing takes 5–7 business days</strong> before dispatch. You'll receive a tracking number once your piece ships.
+  </p>
+  <div class="confirm-actions">
+    <a href="collection.html" class="btn-primary">Continue shopping</a>
+    <a href="art.html" class="btn-secondary">Explore the art</a>
+  </div>
+  <p class="confirm-note">
+    Questions? Damage or defect claims must be reported within 14 days of delivery.
+    Email <a href="mailto:support@thedeangeloseries.com"><strong>support@thedeangeloseries.com</strong></a> with your order number.
+  </p>
+</div>
+
+</body>
+</html>

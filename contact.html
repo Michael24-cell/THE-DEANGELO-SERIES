@@ -3,21 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Refund Policy — The DeAngelo Series</title>
-<meta name="description" content="Refund and return policy for The DeAngelo Series — made-to-order pieces, damage claims, and eligible returns.">
+<title>Contact — The DeAngelo Series</title>
+<meta name="description" content="Contact The DeAngelo Series — order questions, damage claims, or anything else. Email support@thedeangeloseries.com.">
 <meta name="theme-color" content="#0A0A0A">
 <link rel="icon" href="deangeloseries-favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="deangeloseries-favicon.png">
-<link rel="canonical" href="https://thedeangeloseries.com/refund-policy.html">
+<link rel="canonical" href="https://thedeangeloseries.com/contact.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="The DeAngelo Series">
-<meta property="og:title" content="Refund Policy — The DeAngelo Series">
-<meta property="og:description" content="Refund and return policy for The DeAngelo Series.">
+<meta property="og:title" content="Contact — The DeAngelo Series">
+<meta property="og:description" content="Order questions, damage claims, or anything else — reach us at support@thedeangeloseries.com.">
 <meta property="og:image" content="https://thedeangeloseries.com/Hero-desert-model.png">
-<meta property="og:url" content="https://thedeangeloseries.com/refund-policy.html">
+<meta property="og:url" content="https://thedeangeloseries.com/contact.html">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Refund Policy — The DeAngelo Series">
-<meta name="twitter:description" content="Refund and return policy for The DeAngelo Series.">
+<meta name="twitter:title" content="Contact — The DeAngelo Series">
+<meta name="twitter:description" content="Order questions, damage claims, or anything else — reach us at support@thedeangeloseries.com.">
 <meta name="twitter:image" content="https://thedeangeloseries.com/Hero-desert-model.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -66,31 +66,89 @@
     padding:140px 48px 48px;
     border-bottom:1px solid var(--hairline-light);
   }
-  .policy-header-inner{max-width:var(--max);margin:0 auto;display:grid;grid-template-columns:1fr auto;gap:64px;align-items:end;}
-  .eyebrow{font-family:var(--font-sans);font-size:11px;font-weight:400;text-transform:uppercase;letter-spacing:.5em;opacity:.55;}
-  .policy-title{font-family:var(--font-serif);font-weight:500;font-size:clamp(2.4rem,4.6vw,4rem);line-height:1;letter-spacing:-.01em;margin:20px 0 0;}
-  .policy-title em{font-style:italic;font-weight:300;opacity:.85}
+  .policy-header-inner{
+    max-width:var(--max);margin:0 auto;
+    display:grid;grid-template-columns:1fr auto;gap:64px;align-items:end;
+  }
+  .eyebrow{
+    font-family:var(--font-sans);font-size:11px;font-weight:400;
+    text-transform:uppercase;letter-spacing:.5em;opacity:.55;
+  }
+  .policy-title{
+    font-family:var(--font-serif);font-weight:500;
+    font-size:clamp(2.4rem,4.6vw,4rem);
+    line-height:1;letter-spacing:-.01em;
+    margin:20px 0 0;
+  }
 
-  main.policy{background:var(--bone);color:var(--black);padding:72px 48px 96px;}
+  main.policy{
+    background:var(--bone);color:var(--black);
+    padding:72px 48px 96px;
+  }
   .policy-inner{max-width:var(--read);margin:0 auto;}
 
-  .meta-line{font-size:.85rem;line-height:1.5;font-weight:300;color:var(--ink-dim);margin-bottom:28px;}
-  .meta-line strong{font-weight:500;color:var(--black)}
   .intro{font-size:.95rem;line-height:1.65;font-weight:300;color:var(--black);margin-bottom:16px;max-width:68ch;}
   .intro strong{font-weight:500}
   .intro + .intro{margin-bottom:36px}
 
+  .email-display{
+    display:inline-block;
+    font-family:var(--font-sans);font-size:1rem;font-weight:500;
+    letter-spacing:.04em;color:var(--black);
+    border-bottom:1px solid var(--black);
+    padding-bottom:2px;margin:8px 0 32px;
+  }
+  .email-display:hover{opacity:.55}
+
   .section{padding-top:32px;margin-top:24px;border-top:1px solid var(--hairline-dark);scroll-margin-top:100px;}
   .section:first-of-type{border-top:0;margin-top:0;padding-top:0}
-  .section-title{font-family:var(--font-sans);font-weight:600;font-size:1rem;line-height:1.3;letter-spacing:0;margin-bottom:12px;max-width:60ch;}
-  .section p,.section ul{font-size:.95rem;line-height:1.62;font-weight:300;color:var(--black);margin-bottom:12px;max-width:68ch;}
-  .section p strong{font-weight:500}
-  .section ul{padding-left:0;list-style:none}
-  .section ul li{position:relative;padding-left:24px;margin-bottom:6px;}
-  .section ul li::before{content:"";position:absolute;left:0;top:.85em;width:14px;height:1px;background:var(--black);opacity:.45;}
+  .section-title{font-family:var(--font-sans);font-weight:600;font-size:1rem;line-height:1.3;letter-spacing:0;margin-bottom:20px;max-width:60ch;}
+  .section p{font-size:.95rem;line-height:1.62;font-weight:300;color:var(--black);margin-bottom:12px;max-width:68ch;}
 
-  .contact-card{font-size:.95rem;line-height:1.85;font-weight:300;border-left:1px solid var(--hairline-dark-strong);padding-left:20px;margin-top:8px;}
-  .contact-card strong{font-weight:500}
+  /* Contact form */
+  .contact-form{display:flex;flex-direction:column;gap:24px}
+  .field{display:flex;flex-direction:column;gap:8px}
+  .field label{
+    font-size:10px;letter-spacing:.35em;text-transform:uppercase;
+    color:var(--ink-mute);display:flex;justify-content:space-between;
+  }
+  .field label .opt{opacity:.6;font-size:9px;letter-spacing:.3em}
+  .field input,
+  .field textarea{
+    appearance:none;-webkit-appearance:none;
+    background:transparent;color:var(--black);
+    border:0;border-bottom:1px solid var(--hairline-dark-strong);
+    padding:14px 0;
+    font-family:var(--font-sans);font-size:.95rem;font-weight:300;
+    outline:none;transition:border-color 200ms ease;
+    width:100%;
+  }
+  .field textarea{resize:vertical;min-height:130px;line-height:1.55}
+  .field input::placeholder,
+  .field textarea::placeholder{color:rgba(10,10,10,.28)}
+  .field input:focus,
+  .field textarea:focus{border-bottom-color:var(--black)}
+
+  .contact-submit{
+    align-self:flex-start;
+    background:var(--black);color:var(--white);
+    border:1px solid var(--black);
+    padding:18px 40px;
+    font-family:var(--font-sans);font-size:11px;letter-spacing:.4em;text-transform:uppercase;
+    font-weight:500;cursor:pointer;
+    transition:background 180ms ease,color 180ms ease;
+  }
+  .contact-submit:hover:not(:disabled){background:transparent;color:var(--black)}
+  .contact-submit:disabled{opacity:.45;cursor:default}
+
+  .form-notice{
+    display:none;
+    font-size:.875rem;line-height:1.55;font-weight:300;
+    color:var(--ink-dim);padding:16px 0;
+    border-top:1px solid var(--hairline-dark);
+    margin-top:4px;
+  }
+  .form-notice strong{font-weight:500;color:var(--black)}
 
   footer{background:var(--black);color:var(--white);padding:120px 48px 48px;position:relative;overflow:hidden;}
   .footer-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1.4fr .8fr .8fr .8fr;gap:80px;align-items:start}
@@ -123,10 +181,11 @@
     main.policy{padding:48px 20px 64px}
     .footer-grid{grid-template-columns:1fr;gap:40px}
     .watermark{font-size:32vw}
+    .contact-submit{width:100%}
   }
 </style>
 </head>
-<body data-screen-label="Refund Policy">
+<body data-screen-label="Contact">
 
 <nav id="navbar">
   <div class="nav-links">
@@ -143,66 +202,48 @@
 
 <header class="policy-header">
   <div class="policy-header-inner">
-    <h1 class="policy-title">Refund Policy</h1>
+    <h1 class="policy-title">Contact</h1>
   </div>
 </header>
 
 <main class="policy">
   <div class="policy-inner">
 
-    <p class="meta-line"><strong>Last updated:</strong> June 30, 2026</p>
-
-    <p class="intro">Each piece in The DeAngelo Series is made to order at the time of purchase and produced specifically for you. This website is operated by Tony DeAngelo, doing business as The DeAngelo Series. Please read this policy carefully before placing your order.</p>
-
     <section class="section">
-      <h2 class="section-title">All Sales Are Final</h2>
-      <p>Because all pieces are made to order, <strong>all sales are final</strong>. We do not accept returns, exchanges, or issue refunds for:</p>
-      <ul>
-        <li>Change of mind or buyer's remorse</li>
-        <li>Incorrect size selection</li>
-        <li>Incorrect color selection</li>
-        <li>Incorrect shipping address entered at checkout</li>
-        <li>Minor variations in color, texture, print placement, or garment dimensions that are within normal production tolerances</li>
-      </ul>
-      <p>Nothing in this policy limits any rights you may have under applicable consumer protection law.</p>
+      <p class="intro">Questions about an order, a piece, or the series — we're here.</p>
+      <p class="intro">For the fastest response, email us directly:</p>
+      <a class="email-display" href="mailto:support@thedeangeloseries.com">support@thedeangeloseries.com</a>
+      <p class="intro">For order questions, include your order number if available. Damage and defect claims must be reported within 14 days of delivery.</p>
     </section>
 
     <section class="section">
-      <h2 class="section-title">Damaged or Defective Items</h2>
-      <p>If your piece arrives damaged, materially defective, or significantly misprinted, please contact us at <strong>support@thedeangeloseries.com</strong> within <strong>14 days</strong> of the delivery date.</p>
-      <p>Include the following in your message:</p>
-      <ul>
-        <li>Your order number</li>
-        <li>A description of the issue</li>
-        <li>Clear photographs of the damage or defect and the original packaging</li>
-      </ul>
-      <p>We will review your claim and, if approved, may offer a replacement, reprint, or refund to the original payment method, at our discretion and depending on the situation and applicable law.</p>
-    </section>
+      <h2 class="section-title">Send a message</h2>
 
-    <section class="section">
-      <h2 class="section-title">Wrong Item Received</h2>
-      <p>If you receive a piece that is materially different from what you ordered (wrong garment, wrong artwork), contact us at <strong>support@thedeangeloseries.com</strong> within <strong>14 days</strong> of delivery with your order number and photographs.</p>
-      <p>We will arrange a resolution, which may include a replacement or refund.</p>
-    </section>
-
-    <section class="section">
-      <h2 class="section-title">Edition Card</h2>
-      <p>Each piece ships with a signed, hand-numbered edition card. This card is part of the piece. Any eligible return or replacement requires the original edition card to be included and in good condition.</p>
-    </section>
-
-    <section class="section">
-      <h2 class="section-title">Refund Processing</h2>
-      <p>Where a refund is approved, it will be issued to the original payment method used at checkout. Processing times depend on your payment provider and may take 5–10 business days to appear.</p>
-    </section>
-
-    <section class="section">
-      <h2 class="section-title">Contact</h2>
-      <p>For refund or return inquiries, contact us at:</p>
-      <p class="contact-card">
-        <strong>The DeAngelo Series</strong><br>
-        Email: <strong>support@thedeangeloseries.com</strong>
-      </p>
-      <p style="margin-top:16px">Please include your order number and relevant photographs in your initial message to help us resolve your inquiry as quickly as possible.</p>
+      <!-- Form scaffolded for /api/contact — not yet connected. Submit handler intercepts until backend is live. -->
+      <form class="contact-form" id="contactForm" action="/api/contact" method="POST" novalidate>
+        <div class="field">
+          <label for="cf-name">Name</label>
+          <input type="text" id="cf-name" name="name" placeholder="Your name" autocomplete="name" required>
+        </div>
+        <div class="field">
+          <label for="cf-email">Email</label>
+          <input type="email" id="cf-email" name="email" placeholder="your@email.com" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="cf-order">Order number <span class="opt">Optional</span></label>
+          <input type="text" id="cf-order" name="order_number" placeholder="e.g. DS-0001">
+        </div>
+        <div class="field">
+          <label for="cf-message">Message</label>
+          <textarea id="cf-message" name="message" placeholder="How can we help?" rows="5" required></textarea>
+        </div>
+        <button type="submit" class="contact-submit" id="contactSubmit">Send message</button>
+        <p class="form-notice" id="formNotice">
+          <strong>Form not yet live.</strong> Email us directly at
+          <a href="mailto:support@thedeangeloseries.com">support@thedeangeloseries.com</a>
+          — we respond within one business day.
+        </p>
+      </form>
     </section>
 
   </div>
@@ -252,6 +293,17 @@
 <script>
   window.addEventListener('scroll', () => {
     document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+  });
+
+  document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    // /api/contact not yet configured — show direct email prompt
+    var btn = document.getElementById('contactSubmit');
+    btn.textContent = 'Form not yet live';
+    btn.disabled = true;
+    var notice = document.getElementById('formNotice');
+    notice.style.display = 'block';
+    notice.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
 </script>
 <script src="site-ui.js"></script>

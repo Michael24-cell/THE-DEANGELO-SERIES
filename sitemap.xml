@@ -31,6 +31,16 @@
     <changefreq>monthly</changefreq>
   </url>
   <url>
+    <loc>https://thedeangeloseries.com/contact.html</loc>
+    <priority>0.5</priority>
+    <changefreq>yearly</changefreq>
+  </url>
+  <url>
+    <loc>https://thedeangeloseries.com/archive.html</loc>
+    <priority>0.4</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
     <loc>https://thedeangeloseries.com/shipping-policy.html</loc>
     <priority>0.3</priority>
     <changefreq>yearly</changefreq>
