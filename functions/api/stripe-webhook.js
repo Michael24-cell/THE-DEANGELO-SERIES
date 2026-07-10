@@ -2,14 +2,15 @@
 // Route: POST /api/stripe-webhook
 // Event: checkout.session.completed
 //
+// Zero npm dependencies — uses Web Crypto API (HMAC-SHA256) for signature verification.
+// This is the same algorithm stripe.webhooks.constructEvent() uses internally.
+//
 // Required secrets (Cloudflare Pages Dashboard > Settings > Environment Variables):
 //   STRIPE_SECRET_KEY       — sk_test_... (test) or sk_live_... (live)
 //   STRIPE_WEBHOOK_SECRET   — whsec_... from Stripe Dashboard > Webhooks > endpoint secret
 //
 // Stripe webhook endpoint URL: https://thedeangeloseries.com/api/stripe-webhook
 // Selected event: checkout.session.completed
-
-import Stripe from 'stripe';
 
 export async function onRequest({ request, env }) {
   // ── Method guard ──────────────────────────────────────────────────────────────
@@ -18,8 +19,8 @@ export async function onRequest({ request, env }) {
   }
 
   // ── Env guard ─────────────────────────────────────────────────────────────────
-  if (!env.STRIPE_SECRET_KEY || !env.STRIPE_WEBHOOK_SECRET) {
-    console.error('[stripe-webhook] Missing required environment variables');
+  if (!env.STRIPE_WEBHOOK_SECRET) {
+    console.error('[stripe-webhook] Missing env var: STRIPE_WEBHOOK_SECRET');
     return json({ error: 'Server misconfiguration — contact site owner' }, 500);
   }
 
@@ -30,7 +31,7 @@ export async function onRequest({ request, env }) {
     return json({ error: 'Missing stripe-signature header' }, 400);
   }
 
-  // Read raw body — must not be consumed before signature verification
+  // ── Read raw body before any other processing ─────────────────────────────────
   let rawBody;
   try {
     rawBody = await request.text();
@@ -38,20 +39,10 @@ export async function onRequest({ request, env }) {
     return json({ error: 'Failed to read request body' }, 400);
   }
 
-  // ── Verify signature (Web Crypto — Workers-compatible, no Node.js crypto) ─────
-  const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
-    httpClient: Stripe.createFetchHttpClient(),
-  });
-
+  // ── Verify signature (Web Crypto HMAC-SHA256 — no npm package needed) ─────────
   let event;
   try {
-    event = await stripe.webhooks.constructEventAsync(
-      rawBody,
-      signature,
-      env.STRIPE_WEBHOOK_SECRET,
-      undefined,
-      Stripe.createSubtleCryptoProvider(),
-    );
+    event = await verifyStripeWebhook(rawBody, signature, env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
     console.error('[stripe-webhook] Signature verification failed:', err.message);
     return json({ error: `Webhook error: ${err.message}` }, 400);
@@ -93,6 +84,64 @@ export async function onRequest({ request, env }) {
   // await sendOrderConfirmationEmail(order, env);
 
   return json({ received: true }, 200);
+}
+
+// ---------------------------------------------------------------------------
+// Stripe HMAC-SHA256 signature verification using Web Crypto API.
+// Equivalent to stripe.webhooks.constructEvent() but with zero dependencies.
+//
+// Stripe signs: HMAC-SHA256(secret, "{timestamp}.{rawBody}")
+// Header format: stripe-signature: t=1234567890,v1=<hex_digest>[,v1=...]
+// ---------------------------------------------------------------------------
+async function verifyStripeWebhook(rawBody, signatureHeader, secret) {
+  // Parse "t=timestamp,v1=hash" pairs
+  const pairs = {};
+  for (const part of signatureHeader.split(',')) {
+    const idx = part.indexOf('=');
+    if (idx === -1) continue;
+    const k = part.slice(0, idx).trim();
+    const v = part.slice(idx + 1).trim();
+    (pairs[k] ??= []).push(v);
+  }
+
+  const timestamp = pairs.t?.[0];
+  const v1Sigs    = pairs.v1 ?? [];
+
+  if (!timestamp || v1Sigs.length === 0) {
+    throw new Error('Invalid stripe-signature header format');
+  }
+
+  // Reject replayed events older than 5 minutes
+  const nowSec = Math.floor(Date.now() / 1000);
+  if (Math.abs(nowSec - parseInt(timestamp, 10)) > 300) {
+    throw new Error('Webhook timestamp outside tolerance window');
+  }
+
+  // Compute HMAC-SHA256 of "{timestamp}.{rawBody}"
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw',
+    enc.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign'],
+  );
+  const mac = await crypto.subtle.sign('HMAC', key, enc.encode(`${timestamp}.${rawBody}`));
+  const computed = Array.from(new Uint8Array(mac))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+
+  // Constant-time comparison across all v1 signatures (prevents timing attacks)
+  const valid = v1Sigs.some(sig => {
+    if (sig.length !== computed.length) return false;
+    let diff = 0;
+    for (let i = 0; i < sig.length; i++) diff |= sig.charCodeAt(i) ^ computed.charCodeAt(i);
+    return diff === 0;
+  });
+
+  if (!valid) throw new Error('No matching v1 signature found');
+
+  return JSON.parse(rawBody);
 }
 
 function json(body, status = 200, extraHeaders = {}) {

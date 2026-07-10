@@ -5,7 +5,4 @@
   "engines": {
     "node": "20.x"
   },
-  "dependencies": {
-    "stripe": "^17.0.0"
-  }
 }
