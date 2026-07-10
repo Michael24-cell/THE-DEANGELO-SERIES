@@ -4,7 +4,11 @@
 
 - [ ] **Stripe Checkout session creation** — Server endpoint `POST /api/checkout` creates a Stripe Checkout Session with line items from cart. Redirect customer to `session.url`.
 - [ ] **Stripe success/cancel URLs** — Configure in Stripe Dashboard: success → `https://thedeangeloseries.com/checkout-success.html`, cancel → `https://thedeangeloseries.com/checkout-cancel.html`
-- [ ] **Stripe webhook** — Endpoint `POST /api/stripe-webhook` verifies signature and handles `checkout.session.completed`. Triggers Printify order creation and sends order confirmation email.
+- [x] **Stripe webhook endpoint created** — `functions/api/stripe-webhook.js` (Cloudflare Pages Function) deployed at `https://thedeangeloseries.com/api/stripe-webhook`. Verifies signature using Web Crypto API (`constructEventAsync` + `createSubtleCryptoProvider`), handles `checkout.session.completed`, logs order data. Printify and email stubs are in place but commented out.
+- [ ] **Enable nodejs_compat flag** — Cloudflare Pages Dashboard > Settings > Functions > Compatibility flags. Add `nodejs_compat` (required for Stripe SDK). Compatibility date: `2024-12-18`.
+- [ ] **Register webhook in Stripe Dashboard** — Stripe Dashboard > Developers > Webhooks > Add endpoint. URL: `https://thedeangeloseries.com/api/stripe-webhook`. Event: `checkout.session.completed`. Copy the signing secret into `STRIPE_WEBHOOK_SECRET`.
+- [ ] **Test webhook locally** — Install wrangler (`npm install -g wrangler`), run `wrangler pages dev . --compatibility-flag nodejs_compat`, then use Stripe CLI: `stripe listen --forward-to http://localhost:8788/api/stripe-webhook`.
+- [ ] **Test webhook in test mode** — Trigger a test event from Stripe Dashboard > Webhooks > endpoint > Send test event. Confirm 200 response and correct logging in Cloudflare Pages Dashboard > Functions > Real-time Logs.
 - [ ] **Printify order creation** — On `checkout.session.completed`: call Printify `POST /v1/shops/{shop_id}/orders.json` with line items, variant IDs, shipping address. Store Printify order ID against Stripe session ID.
 - [ ] **Printify tracking** — Poll or webhook Printify order status. On shipment, send tracking email to customer.
 - [ ] **Order confirmed email** — Send via Resend on `checkout.session.completed`. Include order number, items, shipping address, estimated dispatch window (5–7 business days).
@@ -12,15 +16,20 @@
 - [ ] **Contact form** — Wire `POST /api/contact` in contact.html. Validate fields server-side, send email via Resend to `SUPPORT_EMAIL`. Rate-limit submissions.
 
 ### Environment variables required
+Set all of these in **Cloudflare Pages Dashboard > Settings > Environment Variables**.
+Never commit values to git. See `.env.local.example` for reference.
 ```
-STRIPE_SECRET_KEY=
-STRIPE_WEBHOOK_SECRET=
-PRINTIFY_API_TOKEN=
-PRINTIFY_SHOP_ID=
-RESEND_API_KEY=
+STRIPE_SECRET_KEY=sk_test_...                   # Stripe secret key (test → live at launch)
+STRIPE_WEBHOOK_SECRET=whsec_...                 # From Stripe Dashboard > Webhooks > endpoint secret
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...  # Publishable key (browser-safe)
+NEXT_PUBLIC_SITE_URL=https://thedeangeloseries.com
+PRINTIFY_API_TOKEN=                             # Printify account API token
+PRINTIFY_SHOP_ID=                               # Printify shop ID (numeric)
+PRINTIFY_AUTO_SEND_TO_PRODUCTION=false          # "true" only when live; keep false in test mode
+PRINTIFY_SHIPPING_METHOD_ID=                    # Printify shipping profile ID
+RESEND_API_KEY=                                 # Resend API key for transactional email
 FROM_EMAIL=orders@thedeangeloseries.com
 SUPPORT_EMAIL=support@thedeangeloseries.com
-NEXT_PUBLIC_SITE_URL=https://thedeangeloseries.com
 ```
 
 ### Printify pre-launch
@@ -40,8 +49,8 @@ NEXT_PUBLIC_SITE_URL=https://thedeangeloseries.com
 ## Domain & DNS
 
 - [ ] **Purchase domain** — thedeangeloseries.com (or preferred)
-- [ ] **Connect domain to Vercel** — Add custom domain in Vercel project settings
-- [ ] **SSL certificate** — Auto-provisioned by Vercel on domain connect
+- [ ] **Connect domain to Cloudflare Pages** — Add custom domain in Cloudflare Pages project settings
+- [ ] **SSL certificate** — Auto-provisioned by Cloudflare on domain connect
 
 ## Business Email
 
