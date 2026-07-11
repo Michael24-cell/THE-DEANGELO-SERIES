@@ -3,22 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Statement — The DeAngelo Series</title>
-<meta name="description" content="The DeAngelo Series — original artwork translated onto limited-edition heavyweight garments. Numbered. Collected. Never restocked.">
+<title>The Artist — The DeAngelo Series</title>
+<meta name="description" content="Tony DeAngelo — architect, developer, artist, and traveler. The hand behind The DeAngelo Series.">
 <meta name="theme-color" content="#0A0A0A">
 <link rel="icon" href="deangeloseries-favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="deangeloseries-favicon.png">
-<link rel="canonical" href="https://thedeangeloseries.com/statement.html">
+<link rel="canonical" href="https://thedeangeloseries.com/artist.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="The DeAngelo Series">
-<meta property="og:title" content="The Statement — The DeAngelo Series">
-<meta property="og:description" content="Original artwork translated onto limited-edition heavyweight garments. Numbered. Collected. Never restocked.">
-<meta property="og:image" content="https://thedeangeloseries.com/Hero-desert-model.png">
-<meta property="og:url" content="https://thedeangeloseries.com/statement.html">
+<meta property="og:title" content="The Artist — The DeAngelo Series">
+<meta property="og:description" content="Tony DeAngelo — architect, developer, artist, and traveler. The hand behind The DeAngelo Series.">
+<meta property="og:image" content="https://thedeangeloseries.com/tony-deangelo.jpg">
+<meta property="og:url" content="https://thedeangeloseries.com/artist.html">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="The Statement — The DeAngelo Series">
-<meta name="twitter:description" content="Original artwork translated onto limited-edition heavyweight garments. Numbered. Collected. Never restocked.">
-<meta name="twitter:image" content="https://thedeangeloseries.com/Hero-desert-model.png">
+<meta name="twitter:title" content="The Artist — The DeAngelo Series">
+<meta name="twitter:description" content="Tony DeAngelo — architect, developer, artist, and traveler. The hand behind The DeAngelo Series.">
+<meta name="twitter:image" content="https://thedeangeloseries.com/tony-deangelo.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;0,600;1,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
@@ -39,7 +39,6 @@
     --font-serif:'Cormorant Garamond',serif;
     --font-sans:'Inter',sans-serif;
     --max:1400px;
-    --read:640px;
   }
 
   *{margin:0;padding:0;box-sizing:border-box}
@@ -48,6 +47,7 @@
   a{color:inherit;text-decoration:none;transition:opacity 220ms ease}
   a:hover{opacity:.6}
 
+  /* ── Nav ───────────────────────────────────────────────────────────── */
   nav#navbar{
     position:fixed;inset:0 0 auto 0;
     display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
@@ -61,14 +61,14 @@
   .nav-links,.nav-cart{display:flex;gap:32px}
   .nav-cart{justify-content:flex-end}
 
+  /* ── Dark header ────────────────────────────────────────────────────── */
   header.policy-header{
     background:var(--black);color:var(--white);
-    padding:140px 48px 48px;
+    padding:140px 48px 64px;
     border-bottom:1px solid var(--hairline-light);
   }
   .policy-header-inner{
     max-width:var(--max);margin:0 auto;
-    display:grid;grid-template-columns:1fr auto;gap:64px;align-items:end;
   }
   .eyebrow{
     font-family:var(--font-sans);font-size:11px;font-weight:400;
@@ -81,38 +81,106 @@
     margin:20px 0 0;
   }
 
-  main.policy{
+  /* ── Bone body ──────────────────────────────────────────────────────── */
+  main.artist-main{
     background:var(--bone);color:var(--black);
     padding:88px 48px 120px;
   }
-  .policy-inner{max-width:var(--read);margin:0 auto;}
 
-  .statement-body{
+  /* ── Bio grid ───────────────────────────────────────────────────────── */
+  .bio-grid{
+    max-width:960px;margin:0 auto;
+    display:grid;
+    grid-template-columns:1fr 1.55fr;
+    gap:72px;
+    align-items:start;
+  }
+
+  /* ── Photo column ───────────────────────────────────────────────────── */
+  .bio-photo-wrap{
+    position:sticky;top:120px;
+  }
+  .bio-photo-wrap img{
+    display:block;width:100%;
+    filter:grayscale(100%);
+  }
+  .bio-photo-placeholder{
+    width:100%;aspect-ratio:3/4;
+    background:var(--bone-deep);
+  }
+  .bio-caption{
+    margin-top:20px;
+    font-family:var(--font-sans);
+    font-size:10px;letter-spacing:.4em;
+    text-transform:uppercase;
+    color:var(--ink-mute);
+    line-height:2;
+  }
+  .bio-caption em{
     font-family:var(--font-serif);
-    font-size:clamp(1.25rem,2.2vw,1.6rem);
-    line-height:1.7;
+    font-style:italic;
+    font-size:13px;
+    text-transform:none;
+    letter-spacing:.05em;
+    display:block;
+    color:var(--black);
+    margin-bottom:2px;
+  }
+
+  /* ── Text column ────────────────────────────────────────────────────── */
+  .bio-copy{
+    padding-top:4px;
+  }
+  .bio-name{
+    font-family:var(--font-serif);
+    font-weight:500;
+    font-size:clamp(2rem,3.2vw,2.8rem);
+    line-height:1;
+    letter-spacing:-.01em;
+    margin-bottom:36px;
+  }
+  .bio-body{
+    font-family:var(--font-sans);
+    font-size:.975rem;
     font-weight:300;
+    line-height:1.8;
     color:var(--black);
   }
-  .statement-body p{margin-bottom:1.6em;}
-  .statement-body p:last-child{margin-bottom:0}
-  .statement-body strong{font-weight:500}
-  .statement-body em{font-style:italic}
-
-  .statement-rule{
-    width:40px;height:1px;background:var(--black);opacity:.2;
-    margin:56px 0;
+  .bio-body p + p{
+    margin-top:1.4em;
   }
-
-  .statement-cta{
+  .bio-body em{font-style:italic}
+  .bio-rule{
+    width:32px;height:1px;
+    background:var(--black);opacity:.2;
+    margin:44px 0;
+  }
+  .bio-signoff{
+    font-family:var(--font-serif);
+    font-size:1.2rem;
+    font-weight:300;
+    line-height:1.6;
+    color:var(--black);
+  }
+  .bio-signoff-brand{
+    display:block;
+    font-family:var(--font-serif);
+    font-style:italic;
+    font-size:1rem;
+    font-weight:300;
+    margin-top:6px;
+    opacity:.65;
+  }
+  .bio-cta{
     display:inline-block;
     font-family:var(--font-sans);
     font-size:10px;letter-spacing:.4em;text-transform:uppercase;font-weight:500;
     color:var(--black);border-bottom:1px solid var(--black);
-    padding-bottom:3px;margin-top:8px;
+    padding-bottom:3px;margin-top:44px;
   }
-  .statement-cta:hover{opacity:.5}
+  .bio-cta:hover{opacity:.5}
 
+  /* ── Footer ─────────────────────────────────────────────────────────── */
   footer{background:var(--black);color:var(--white);padding:120px 48px 48px;position:relative;overflow:hidden;}
   .footer-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1.4fr .8fr .8fr .8fr;gap:80px;align-items:start}
   .footer-col h4{font-family:var(--font-sans);font-size:11px;font-weight:500;letter-spacing:.3em;text-transform:uppercase;opacity:.55;margin-bottom:24px;}
@@ -124,30 +192,35 @@
   .footer-fine{max-width:1200px;margin:96px auto 0;display:flex;justify-content:space-between;align-items:flex-end;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.4);padding-top:32px;border-top:1px solid var(--hairline-light);}
   .watermark{font-family:var(--font-sans);font-weight:900;font-size:18vw;line-height:.85;letter-spacing:-.05em;color:rgba(255,255,255,.025);text-align:center;margin-top:80px;pointer-events:none;user-select:none;}
 
+  /* ── Responsive ─────────────────────────────────────────────────────── */
   @media (max-width:1024px){
     nav#navbar{padding:20px 24px}
     .nav-links{gap:20px}
     .nav-cart{gap:20px}
-    header.policy-header{padding:112px 24px 40px}
-    .policy-header-inner{grid-template-columns:1fr;gap:24px;align-items:start}
-    main.policy{padding:64px 24px 88px}
+    header.policy-header{padding:112px 24px 48px}
+    main.artist-main{padding:64px 24px 88px}
+    .bio-grid{gap:48px}
+    .bio-photo-wrap{position:static}
     .footer-grid{grid-template-columns:1fr 1fr;gap:48px}
     .footer-fine{flex-direction:column;align-items:flex-start;gap:16px}
   }
-  @media (max-width:640px){
+  @media (max-width:680px){
     nav#navbar{grid-template-columns:auto 1fr auto;padding:18px 20px}
     .nav-links{display:none}
     .nav-cart{gap:16px}
     .nav-brand{font-size:11px;letter-spacing:.3em}
-    header.policy-header{padding:96px 20px 32px}
+    header.policy-header{padding:96px 20px 40px}
     .policy-title{font-size:11vw}
-    main.policy{padding:48px 20px 72px}
+    main.artist-main{padding:48px 20px 72px}
+    .bio-grid{grid-template-columns:1fr;gap:0}
+    .bio-copy{order:-1;margin-bottom:48px}
+    .bio-name{margin-bottom:28px}
     .footer-grid{grid-template-columns:1fr;gap:40px}
     .watermark{font-size:32vw}
   }
 </style>
 </head>
-<body data-screen-label="The Statement">
+<body data-screen-label="The Artist">
 
 <nav id="navbar">
   <div class="nav-links">
@@ -164,31 +237,42 @@
 
 <header class="policy-header">
   <div class="policy-header-inner">
-    <div>
-      <p class="eyebrow">The DeAngelo Series</p>
-      <h1 class="policy-title">The Statement</h1>
-    </div>
+    <p class="eyebrow">The DeAngelo Series</p>
+    <h1 class="policy-title">The Artist</h1>
   </div>
 </header>
 
-<main class="policy">
-  <div class="policy-inner">
+<main class="artist-main">
+  <div class="bio-grid">
 
-    <div class="statement-body">
-      <p>The DeAngelo Series begins with a painting.</p>
-
-      <p>Not a licensed graphic. Not a manufactured pattern. A painting — <em>Venezia</em>, 1979, watercolour. Isola di San Giorgio Maggiore, Venice. Translated once onto heavyweight cotton through a process that refuses speed.</p>
-
-      <p>Each piece is produced after an order is placed. Gallery-grade water-based screen printing. Hand-pulled. Limited to an edition of 200. Numbered from first to last.</p>
-
-      <p>When the edition closes, it closes. The piece moves to The Archive. <strong>There is no restock.</strong></p>
-
-      <p>The series is not fashion. It is collected.</p>
+    <!-- Photo -->
+    <div class="bio-photo-wrap">
+      <img src="tony-deangelo.jpg" alt="Tony DeAngelo — Villa d'Este, Tivoli, Italy, 1980">
+      <div class="bio-caption">
+        <em>Villa d'Este</em>
+        Tivoli, Italy &nbsp;·&nbsp; 1980
+      </div>
     </div>
 
-    <div class="statement-rule"></div>
+    <!-- Bio -->
+    <div class="bio-copy">
+      <h2 class="bio-name">Tony DeAngelo</h2>
 
-    <a href="collection.html" class="statement-cta">Shop Series 01 →</a>
+      <div class="bio-body">
+        <p>Tony is an award-winning architect, developer, business leader, designer, writer, and artist. His love of all creative things, both old and new, reflects in this <em>series</em> of vintage photographs and art in all media.</p>
+
+        <p>His love of travel and history are exemplified in the bespoke pieces selected for our curation of elegant t-shirts and crews. You will find in the collection an affinity for European history and a tribute to his life living on both coasts of America.</p>
+      </div>
+
+      <div class="bio-rule"></div>
+
+      <p class="bio-signoff">
+        Enjoy a piece of original art.
+        <span class="bio-signoff-brand">The DeAngelo Series</span>
+      </p>
+
+      <a href="collection.html" class="bio-cta">Shop Series 01 →</a>
+    </div>
 
   </div>
 </main>
@@ -210,6 +294,7 @@
       <a href="collection.html">Collection</a>
       <a href="archive.html">Archive</a>
       <a href="statement.html">Statement</a>
+      <a href="artist.html">The Artist</a>
     </div>
     <div class="footer-col">
       <h4>Service</h4>

@@ -36,6 +36,11 @@
     <changefreq>yearly</changefreq>
   </url>
   <url>
+    <loc>https://thedeangeloseries.com/artist.html</loc>
+    <priority>0.6</priority>
+    <changefreq>yearly</changefreq>
+  </url>
+  <url>
     <loc>https://thedeangeloseries.com/contact.html</loc>
     <priority>0.5</priority>
     <changefreq>yearly</changefreq>

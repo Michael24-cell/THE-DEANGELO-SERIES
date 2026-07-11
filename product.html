@@ -377,6 +377,16 @@
     .watermark{font-size:30vw}
   }
 
+  /* ── SIZE CHART ───────────────────────────────────────────── */
+  .sg-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .sg-table{width:100%;border-collapse:collapse;min-width:290px}
+  .sg-table th{padding:0 10px 12px;font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-mute);font-weight:500;text-align:center;border-bottom:1px solid var(--hairline-dark);white-space:nowrap}
+  .sg-table th:first-child{text-align:left;padding-left:0;min-width:130px}
+  .sg-table td{padding:12px 10px;font-size:.85rem;font-weight:300;text-align:center;border-bottom:1px solid var(--hairline-soft)}
+  .sg-table td:first-child{text-align:left;padding-left:0;font-size:10.5px;letter-spacing:.1em;color:var(--ink-mute);white-space:nowrap}
+  .sg-table tbody tr:nth-child(odd){background:var(--bone-tint)}
+  .sg-note{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-mute);margin-top:14px;opacity:.75}
+
   /* ── Tweak-driven variants ─────────────────────────────────── */
   body[data-sticky="off"] .info{position:static}
   body[data-cta="outline"] .cta-primary{background:transparent;color:var(--ink)}
@@ -505,7 +515,7 @@
     </div>
 
     <h1 class="product-title" id="productTitle">Venezia<br><em>Tee</em></h1>
-    <p class="product-price" id="productPrice">$72 USD</p>
+    <p class="product-price" id="productPrice">$64 USD</p>
 
     <div class="hairline"></div>
 
@@ -514,18 +524,17 @@
         <span>Size</span>
         <a href="#" class="aside" data-size-guide>Size guide →</a>
       </div>
-      <div class="sizes" id="sizes">
-        <button class="size">XS</button>
+      <div class="sizes" id="sizes" data-base="64" data-2xl="68">
         <button class="size">S</button>
         <button class="size is-active">M</button>
         <button class="size">L</button>
         <button class="size">XL</button>
-        <button class="size is-disabled" disabled>XXL</button>
+        <button class="size">2XL</button>
       </div>
     </div>
 
     <div class="cta-row">
-      <button class="cta-primary" id="ctaBtn" data-add-to-cart data-kind="model" data-price="72" data-name="Venezia Tee">Add to Collection — $72</button>
+      <button class="cta-primary" id="ctaBtn" data-add-to-cart data-kind="model" data-price="64" data-name="Venezia Tee">Add to Collection — $64</button>
       <button class="cta-secondary">Save to Archive</button>
     </div>
 
@@ -585,6 +594,52 @@
           </dl>
         </div></div>
       </div>
+
+      <div class="du-acc-item">
+        <button class="du-acc-trigger"><span class="du-acc-label">Size Chart</span><span class="du-acc-sign"></span></button>
+        <div class="du-acc-panel"><div class="du-acc-inner">
+
+          <div id="sgTee">
+            <div class="sg-wrap">
+              <table class="sg-table">
+                <thead>
+                  <tr><th></th><th>S</th><th>M</th><th>L</th><th>XL</th><th>2XL</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Length</td><td>22.75</td><td>24.75</td><td>26.50</td><td>28.00</td><td>30.00</td></tr>
+                  <tr><td>Width</td><td>26.75</td><td>27.25</td><td>29.25</td><td>31.25</td><td>31.25</td></tr>
+                  <tr><td>Sleeve length</td><td>10.25</td><td>10.50</td><td>11.50</td><td>11.50</td><td>11.75</td></tr>
+                  <tr><td>Size tolerance</td><td>1.00</td><td>1.00</td><td>1.00</td><td>1.00</td><td>1.00</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="sg-note">All measurements in inches &nbsp;&middot;&nbsp; Tolerance &plusmn;1"</p>
+          </div>
+
+          <div id="sgCrew" style="display:none">
+            <div class="sg-wrap">
+              <table class="sg-table">
+                <thead>
+                  <tr><th></th><th>S</th><th>M</th><th>L</th><th>XL</th><th>2XL</th><th>3XL</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Width</td><td>21.00</td><td>23.00</td><td>25.00</td><td>26.50</td><td>28.00</td><td>29.50</td></tr>
+                  <tr><td>Length</td><td>27.50</td><td>28.50</td><td>29.50</td><td>30.50</td><td>31.50</td><td>32.50</td></tr>
+                  <tr><td>Sleeve from center back</td><td>31.50</td><td>33.50</td><td>35.25</td><td>36.75</td><td>38.25</td><td>39.25</td></tr>
+                  <tr><td>Size tolerance</td><td>1.50</td><td>1.50</td><td>1.50</td><td>1.50</td><td>1.50</td><td>1.50</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="sg-note">All measurements in inches &nbsp;&middot;&nbsp; Tolerance &plusmn;1.5"</p>
+          </div>
+
+          <div id="sgHoodie" style="display:none">
+            <p class="sg-note">Size chart coming soon.</p>
+          </div>
+
+        </div></div>
+      </div>
+
     </div>
   </aside>
 </section>
@@ -595,23 +650,23 @@
     <div>
       <div class="source-art"><img src="Venezia-Original.png" alt="Venezia — Original Artwork, Tony DeAngelo, 1979"></div>
       <div class="source-art-caption">
-        <span>Venezia · Oil on canvas</span>
+        <span>Venezia · Watercolour</span>
         <span>1979</span>
       </div>
     </div>
 
     <div class="source-copy">
       <span class="eyebrow">The Source &nbsp;/&nbsp; Artwork 01</span>
-      <h2 class="source-title">Oil on Canvas, <em>1979</em></h2>
+      <h2 class="source-title">Watercolour, <em>1979</em></h2>
       <p class="source-medium">Venezia — Artwork No. 01</p>
       <p class="source-pull">"The source image becomes the garment."</p>
       <div class="source-body">
-        <p>Artwork 01 is translated onto heavyweight cotton, released once, documented, and archived. The series does not reprint.</p>
+        <p>Isola di San Giorgio Maggiore, Venice. Artwork 01 is translated onto heavyweight cotton, released once, documented, and archived. The series does not reprint.</p>
       </div>
       <div class="source-sign">
         <span>By</span>
         <span class="name">Tony DeAngelo</span>
-        <span>· Oil on canvas · 1979</span>
+        <span>· Watercolour · 1979</span>
       </div>
     </div>
   </div>
@@ -754,9 +809,9 @@
   // Product switching via ?p= query param
   (function() {
     var PRODS = {
-      tee:    { plate:'01', garment:'Tee',      price:'$72', priceNum:72, model:'Venezia-tee-m.png',    flat:'Venezia-tee.png' },
-      hoodie: { plate:'02', garment:'Hoodie',   price:'$88', priceNum:88, model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png' },
-      crew:   { plate:'03', garment:'Crewneck', price:'$82', priceNum:82, model:'Venezia-crew-m.png',   flat:'Venezia-crew.png' }
+      tee:    { plate:'01', garment:'Tee',      price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'Venezia-tee-m.png',    flat:'Venezia-tee.png',    sizes:['S','M','L','XL','2XL'] },
+      hoodie: { plate:'02', garment:'Hoodie',   price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png', sizes:['S','M','L','XL','2XL'] },
+      crew:   { plate:'03', garment:'Crewneck', price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'Venezia-crew-m.png',   flat:'Venezia-crew.png',   sizes:['S','M','L','XL','2XL','3XL'] }
     };
     var key = new URLSearchParams(location.search).get('p') || 'tee';
     var p = PRODS[key] || PRODS.tee;
@@ -788,6 +843,23 @@
     var tFlat = document.getElementById('thumbFlat');
     tFlat.style.backgroundImage = "url('" + p.flat + "')";
 
+    // Sizes — generate buttons dynamically per product
+    var sizesEl = document.getElementById('sizes');
+    sizesEl.dataset.base = p.priceNum;
+    sizesEl.dataset['2xl'] = p.priceNum2xl;
+    sizesEl.style.gridTemplateColumns = 'repeat(' + p.sizes.length + ',1fr)';
+    sizesEl.innerHTML = p.sizes.map(function(s, i) {
+      return '<button class="size' + (i === 1 ? ' is-active' : '') + '">' + s + '</button>';
+    }).join('');
+
+    // Size chart — show the correct table for this product
+    ['sgTee','sgCrew','sgHoodie'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
+    var chartEl = document.getElementById({ tee:'sgTee', hoodie:'sgHoodie', crew:'sgCrew' }[key]);
+    if (chartEl) chartEl.style.display = '';
+
     // Per-product details
     var DETAILS = {
       tee:    { material:'10.5oz organic heavyweight cotton. Soft-hand, garment-dyed in small lots.', fit:'Oversized editorial. Boxy crew, dropped shoulder, slightly cropped hem.', print:'Six-colour water-based screen print, hand-pulled. Front placement.' },
@@ -802,16 +874,16 @@
     // Also on the wall — other Venezia garments
     var ALSO = {
       tee:    [
-        { plate:'02', garment:'Hoodie',   price:'$88', slug:'hoodie', model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png' },
-        { plate:'03', garment:'Crewneck', price:'$82', slug:'crew',   model:'Venezia-crew-m.png',   flat:'Venezia-crew.png' }
+        { plate:'02', garment:'Hoodie',   price:'$84', slug:'hoodie', model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png' },
+        { plate:'03', garment:'Crewneck', price:'$84', slug:'crew',   model:'Venezia-crew-m.png',   flat:'Venezia-crew.png' }
       ],
       hoodie: [
-        { plate:'01', garment:'Tee',      price:'$72', slug:'tee',    model:'Venezia-tee-m.png',    flat:'Venezia-tee.png' },
-        { plate:'03', garment:'Crewneck', price:'$82', slug:'crew',   model:'Venezia-crew-m.png',   flat:'Venezia-crew.png' }
+        { plate:'01', garment:'Tee',      price:'$64', slug:'tee',    model:'Venezia-tee-m.png',    flat:'Venezia-tee.png' },
+        { plate:'03', garment:'Crewneck', price:'$84', slug:'crew',   model:'Venezia-crew-m.png',   flat:'Venezia-crew.png' }
       ],
       crew:   [
-        { plate:'01', garment:'Tee',      price:'$72', slug:'tee',    model:'Venezia-tee-m.png',    flat:'Venezia-tee.png' },
-        { plate:'02', garment:'Hoodie',   price:'$88', slug:'hoodie', model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png' }
+        { plate:'01', garment:'Tee',      price:'$64', slug:'tee',    model:'Venezia-tee-m.png',    flat:'Venezia-tee.png' },
+        { plate:'02', garment:'Hoodie',   price:'$84', slug:'hoodie', model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png' }
       ]
     };
     var alsoGrid = document.getElementById('alsoGrid');
@@ -856,6 +928,18 @@
     if (!btn || btn.classList.contains('is-disabled')) return;
     [...e.currentTarget.querySelectorAll('.size')].forEach(s => s.classList.remove('is-active'));
     btn.classList.add('is-active');
+    // Update displayed price for 2XL / 3XL upcharge
+    const sz = btn.textContent.trim();
+    const isLarge = sz === '2XL' || sz === '3XL';
+    const base = parseInt(e.currentTarget.dataset.base || 0);
+    const xl2  = parseInt(e.currentTarget.dataset['2xl'] || e.currentTarget.dataset.base || 0);
+    if (base) {
+      const price = isLarge ? xl2 : base;
+      document.getElementById('productPrice').textContent = '$' + price + ' USD';
+      const cta = document.getElementById('ctaBtn');
+      cta.setAttribute('data-price', price);
+      cta.textContent = 'Add to Collection — $' + price;
+    }
   });
 
   // nav scroll
@@ -870,9 +954,9 @@
 // Search
 (function() {
   var PLATES = [
-    { title:'Venezia', garment:'Tee', price:'$72', slug:'tee', model:'Venezia-tee-m.png' },
-    { title:'Venezia', garment:'Hoodie', price:'$88', slug:'hoodie', model:'Venezia-Hoodie-m.png' },
-    { title:'Venezia', garment:'Crewneck', price:'$82', slug:'crew', model:'Venezia-crew-m.png' },
+    { title:'Venezia', garment:'Tee', price:'$64', slug:'tee', model:'Venezia-tee-m.png' },
+    { title:'Venezia', garment:'Hoodie', price:'$84', slug:'hoodie', model:'Venezia-Hoodie-m.png' },
+    { title:'Venezia', garment:'Crewneck', price:'$84', slug:'crew', model:'Venezia-crew-m.png' },
     { title:'Japan', price:'—', soon:true, model:'bella-hoodie.png' },
     { title:'Arthus, The Old Town', price:'—', soon:true, model:'Arhus, The Old Town.png' },
     { title:'New York Chrysler', price:'—', soon:true, model:'New york chystler hoodie.png' }
