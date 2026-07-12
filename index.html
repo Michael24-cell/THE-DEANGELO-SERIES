@@ -113,8 +113,140 @@
 
         .btn:hover { background: rgba(255,255,255,0.08); }
 
-        .hero-visual { flex: 0.9; position: relative; }
-        .hero-visual img { width: 100%; height: 100%; object-fit: cover; }
+        .hero-visual {
+            flex: 0.9;
+            position: relative;
+            overflow: hidden;
+            background: #0f0f0f;
+            touch-action: pan-y;
+            cursor: grab;
+            /* Archival reveal — the print pulled from its sleeve (the black panel) */
+            clip-path: inset(0 100% 0 0);
+        }
+
+        .hero-visual.is-revealed {
+            animation: heroReveal 1000ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        @keyframes heroReveal {
+            to { clip-path: inset(0 0 0 0); }
+        }
+
+        .hero-track {
+            display: flex;
+            height: 100%;
+            transition: transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+            will-change: transform;
+        }
+
+        .hero-track.is-dragging { transition: none; }
+
+        .hero-slide {
+            flex: 0 0 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .hero-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            display: block;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .hero-visual.is-revealed .hero-slide:first-child img {
+            animation: heroSlideIn 1000ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        @keyframes heroSlideIn {
+            from { transform: translateX(-5%); }
+            to   { transform: translateX(0); }
+        }
+
+        /* Gallery chrome — counter, arrows, progress */
+        .hero-gallery-ui {
+            position: absolute;
+            bottom: 28px;
+            right: 32px;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            color: var(--white);
+        }
+
+        .hero-arrow {
+            background: rgba(10,10,10,0.55);
+            border: 1px solid rgba(255,255,255,0.25);
+            color: var(--white);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-sans);
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 200ms ease, border-color 200ms ease;
+            -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(4px);
+        }
+
+        .hero-arrow:hover { background: rgba(10,10,10,0.8); border-color: rgba(255,255,255,0.6); }
+        .hero-arrow:focus-visible { outline: 1px solid var(--white); outline-offset: 2px; }
+
+        .hero-counter {
+            font-size: 10px;
+            letter-spacing: 0.35em;
+            font-weight: 400;
+            text-shadow: 0 1px 8px rgba(10,10,10,0.7);
+            min-width: 58px;
+            text-align: center;
+        }
+
+        .hero-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: rgba(255,255,255,0.12);
+            z-index: 3;
+        }
+
+        .hero-progress-fill {
+            height: 100%;
+            width: 25%;
+            background: var(--white);
+            transition: width 620ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .hero-visual:focus-visible { outline: none; }
+        .hero-visual:focus-visible .hero-gallery-ui .hero-counter { text-decoration: underline; text-underline-offset: 4px; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .hero-visual { clip-path: none; }
+            .hero-visual.is-revealed { animation: none; }
+            .hero-visual.is-revealed .hero-slide:first-child img { animation: none; }
+            .hero-track { transition: none; }
+            .hero-progress-fill { transition: none; }
+        }
+
+        /* Scroll reveals — below hero only, subtle */
+        .reveal {
+            opacity: 0;
+            transform: translateY(26px);
+            transition: opacity 800ms ease, transform 800ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .reveal.in-view { opacity: 1; transform: none; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .reveal { opacity: 1; transform: none; transition: none; }
+        }
 
         /* ── CURRENT RELEASE ───────────────────────────────────── */
         .release-section {
@@ -374,15 +506,43 @@
             position: relative;
             overflow: hidden;
             background: #0f0f0f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 64px;
         }
 
-        .source-image img {
+        /* Archival mat + hairline frame around the original work */
+        .source-frame {
+            position: relative;
+            max-width: 100%;
+            max-height: 100%;
+            padding: 22px;
+            background: rgba(245,245,241,0.035);
+            border: 1px solid rgba(255,255,255,0.09);
+        }
+
+        .source-frame img {
+            display: block;
+            max-width: 100%;
+            max-height: 62vh;
+            width: auto;
+            height: auto;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .source-frame-caption {
             position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            padding: 48px;
+            bottom: -32px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            font-size: 9px;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            opacity: 0.35;
+            white-space: nowrap;
         }
 
         .source-copy {
@@ -556,14 +716,37 @@
             margin: 0 auto;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 2px;
+            gap: 24px;
         }
 
-        .vote-card { display: flex; flex-direction: column; transition: opacity 500ms ease; cursor: pointer; }
+        .vote-meta { padding-left: 2px; padding-right: 2px; }
+
+        /* Vote cards read as archived art slides — mounted, referenced, filed */
+        .vote-card {
+            display: flex;
+            flex-direction: column;
+            transition: opacity 500ms ease, border-color 300ms ease;
+            cursor: pointer;
+            background: #101010;
+            border: 1px solid rgba(255,255,255,0.07);
+            padding: 14px 14px 20px;
+        }
+        .vote-card:hover { border-color: rgba(255,255,255,0.18); }
         .vote-card.is-dim { opacity: 0.18; }
         .vote-section.has-voted .vote-card { cursor: default; }
 
-        .vote-img { position: relative; aspect-ratio: 3/4; overflow: hidden; background: #111; }
+        .vote-slide-ref {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: 9px;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            opacity: 0.35;
+            padding-bottom: 12px;
+        }
+
+        .vote-img { position: relative; aspect-ratio: 3/4; overflow: hidden; background: #111; border: 1px solid rgba(255,255,255,0.05); }
         .vote-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 500ms ease; }
         .vote-card:hover .vote-img img { transform: scale(1.02); }
 
@@ -707,7 +890,8 @@
             .pieces-section { grid-template-columns: 1fr; }
             .pieces-preview { min-height: 56vw; border-right: none; border-bottom: 1px solid rgba(0,0,0,0.06); }
             .source-section { grid-template-columns: 1fr; padding: 48px 0; }
-            .source-image { min-height: 65vw; position: relative; }
+            .source-image { min-height: 65vw; position: relative; padding: 40px 32px 56px; }
+            .source-frame img { max-height: 56vh; }
             .source-copy { padding: 80px 48px; }
         }
 
@@ -725,8 +909,11 @@
             .system-col { border-right: none; margin-right: 0; padding-right: 0; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 40px; margin-bottom: 40px; }
             .system-col:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
             .system-artist { flex-direction: column; gap: 8px; }
-            .vote-grid { grid-template-columns: 1fr; gap: 48px; }
+            .vote-grid { grid-template-columns: 1fr; gap: 32px; }
             .vote-section { padding: 64px 24px 80px; }
+            .hero-gallery-ui { bottom: 20px; right: 20px; gap: 14px; }
+            .hero-arrow { width: 44px; height: 44px; }
+            .source-frame-caption { font-size: 8px; letter-spacing: 0.3em; }
         }
     </style>
 </head>
@@ -761,14 +948,25 @@
             <h1>WEAR<br>THE<br>CANVAS</h1>
             <a href="collection.html" class="btn">View Drop 01</a>
         </div>
-        <div class="hero-visual">
-            <img src="Hero-desert-model.png" alt="Venezia — Series 01 Campaign">
+        <div class="hero-visual" id="heroGallery" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Series 01 campaign gallery — use arrow keys to browse">
+            <div class="hero-track" id="heroTrack">
+                <div class="hero-slide"><img src="Hero-desert-model.png" alt="Venezia — Series 01 Campaign" draggable="false"></div>
+                <div class="hero-slide"><img src="Venezia-tee-m.png" alt="Venezia Tee — Piece 01" loading="lazy" draggable="false"></div>
+                <div class="hero-slide"><img src="Venezia-Hoodie-m.png" alt="Venezia Hoodie — Piece 02" loading="lazy" draggable="false"></div>
+                <div class="hero-slide"><img src="Venezia-crew-m.png" alt="Venezia Crewneck — Piece 03" loading="lazy" draggable="false"></div>
+            </div>
+            <div class="hero-gallery-ui">
+                <button class="hero-arrow" data-hero-dir="-1" aria-label="Previous image">&larr;</button>
+                <span class="hero-counter" aria-live="polite"><span id="heroIdx">01</span>&nbsp;/&nbsp;04</span>
+                <button class="hero-arrow" data-hero-dir="1" aria-label="Next image">&rarr;</button>
+            </div>
+            <div class="hero-progress" aria-hidden="true"><div class="hero-progress-fill" id="heroProgressFill"></div></div>
         </div>
     </section>
 
     <!-- CURRENT RELEASE -->
     <section class="release-section">
-        <div class="release-copy">
+        <div class="release-copy reveal">
             <p class="release-eyebrow">Current Release &nbsp;/&nbsp; Series 01</p>
             <h2 class="release-title">Venezia</h2>
             <p class="release-sub">Artwork 01 &nbsp;&mdash;&nbsp; Edition of 200</p>
@@ -799,7 +997,7 @@
                             <div class="piece-row-type">Heavyweight Cotton &nbsp;&middot;&nbsp; Artwork 01</div>
                         </div>
                         <div class="piece-row-right">
-                            <span class="piece-row-price">$72</span>
+                            <span class="piece-row-price">$64</span>
                             <span class="piece-row-cta">View Piece &rarr;</span>
                         </div>
                     </a>
@@ -812,7 +1010,7 @@
                             <div class="piece-row-type">Heavyweight Fleece &nbsp;&middot;&nbsp; Artwork 01</div>
                         </div>
                         <div class="piece-row-right">
-                            <span class="piece-row-price">$88</span>
+                            <span class="piece-row-price">$84</span>
                             <span class="piece-row-cta">View Piece &rarr;</span>
                         </div>
                     </a>
@@ -825,7 +1023,7 @@
                             <div class="piece-row-type">Heavyweight Fleece &nbsp;&middot;&nbsp; Artwork 01</div>
                         </div>
                         <div class="piece-row-right">
-                            <span class="piece-row-price">$82</span>
+                            <span class="piece-row-price">$84</span>
                             <span class="piece-row-cta">View Piece &rarr;</span>
                         </div>
                     </a>
@@ -839,10 +1037,16 @@
 
     <!-- THE SOURCE -->
     <section class="source-section">
-        <div class="source-image">
-            <img src="Venezia-Original.png" alt="Venezia — Original Artwork, Tony DeAngelo, 1979">
+        <div class="source-image reveal">
+            <div class="source-frame">
+                <img src="Venezia-Original.png" alt="Venezia — Original Artwork, Tony DeAngelo, 1979" loading="lazy">
+                <div class="source-frame-caption">
+                    <span>Venezia &middot; No. 01</span>
+                    <span>Watercolour &middot; 1979</span>
+                </div>
+            </div>
         </div>
-        <div class="source-copy">
+        <div class="source-copy reveal">
             <p class="source-eyebrow">The Source &nbsp;/&nbsp; Artwork 01</p>
             <h2 class="source-title">Watercolour, <em>1979</em></h2>
             <div class="source-meta-grid">
@@ -891,13 +1095,14 @@
 
     <!-- VOTE ON NEXT DROP -->
     <section class="vote-section" id="vote">
-        <div class="vote-head">
+        <div class="vote-head reveal">
             <p class="vote-eyebrow">Series 02</p>
             <h2 class="vote-heading">Cast your vote.</h2>
         </div>
         <div class="vote-grid">
 
-            <article class="vote-card" data-candidate="japan">
+            <article class="vote-card reveal" data-candidate="japan">
+                <div class="vote-slide-ref"><span>Slide S02&ndash;A</span><span>Proposed</span></div>
                 <div class="vote-img">
                     <img src="bella-hoodie.png" alt="Japan">
                     <div class="vote-bar-wrap"><div class="vote-bar-fill"></div></div>
@@ -909,7 +1114,8 @@
                 <button class="vote-btn">Cast vote</button>
             </article>
 
-            <article class="vote-card" data-candidate="arthus">
+            <article class="vote-card reveal" data-candidate="arthus">
+                <div class="vote-slide-ref"><span>Slide S02&ndash;B</span><span>Proposed</span></div>
                 <div class="vote-img">
                     <img src="Arhus, The Old Town.png" alt="Arthus, The Old Town">
                     <div class="vote-bar-wrap"><div class="vote-bar-fill"></div></div>
@@ -921,7 +1127,8 @@
                 <button class="vote-btn">Cast vote</button>
             </article>
 
-            <article class="vote-card" data-candidate="newyork">
+            <article class="vote-card reveal" data-candidate="newyork">
+                <div class="vote-slide-ref"><span>Slide S02&ndash;C</span><span>Proposed</span></div>
                 <div class="vote-img">
                     <img src="New york chystler hoodie.png" alt="New York Chrysler">
                     <div class="vote-bar-wrap"><div class="vote-bar-fill"></div></div>
@@ -975,12 +1182,99 @@
             document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
         });
 
+        // Hero gallery — manual control only: drag, swipe, keys, arrows
+        (function() {
+            var gallery = document.getElementById('heroGallery');
+            var track = document.getElementById('heroTrack');
+            if (!gallery || !track) return;
+
+            var slides = track.children.length;
+            var idx = 0;
+            var idxEl = document.getElementById('heroIdx');
+            var fill = document.getElementById('heroProgressFill');
+
+            // One-time archival reveal on load
+            requestAnimationFrame(function() { gallery.classList.add('is-revealed'); });
+
+            function render() {
+                track.style.transform = 'translateX(-' + (idx * 100) + '%)';
+                idxEl.textContent = String(idx + 1).padStart(2, '0');
+                fill.style.width = ((idx + 1) / slides * 100) + '%';
+            }
+
+            function go(dir) {
+                idx = Math.min(slides - 1, Math.max(0, idx + dir));
+                render();
+            }
+
+            document.querySelectorAll('[data-hero-dir]').forEach(function(btn) {
+                btn.addEventListener('click', function() { go(parseInt(btn.dataset.heroDir, 10)); });
+            });
+
+            gallery.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowLeft'  || e.key === 'Left')  { e.preventDefault(); go(-1); }
+                if (e.key === 'ArrowRight' || e.key === 'Right') { e.preventDefault(); go(1); }
+            });
+
+            // Pointer drag / touch swipe
+            var startX = null, currentX = null, dragging = false;
+
+            gallery.addEventListener('pointerdown', function(e) {
+                if (e.target.closest('.hero-arrow')) return;
+                startX = e.clientX; currentX = e.clientX; dragging = true;
+                track.classList.add('is-dragging');
+                gallery.setPointerCapture(e.pointerId);
+            });
+
+            gallery.addEventListener('pointermove', function(e) {
+                if (!dragging) return;
+                currentX = e.clientX;
+                var dx = currentX - startX;
+                // Rubber-band at ends
+                if ((idx === 0 && dx > 0) || (idx === slides - 1 && dx < 0)) dx *= 0.3;
+                track.style.transform = 'translateX(calc(-' + (idx * 100) + '% + ' + dx + 'px))';
+            });
+
+            function endDrag() {
+                if (!dragging) return;
+                dragging = false;
+                track.classList.remove('is-dragging');
+                var dx = currentX - startX;
+                if (Math.abs(dx) > 60) go(dx < 0 ? 1 : -1);
+                else render();
+                startX = currentX = null;
+            }
+
+            gallery.addEventListener('pointerup', endDrag);
+            gallery.addEventListener('pointercancel', endDrag);
+
+            render();
+        })();
+
+        // Scroll reveals — subtle, below the hero only
+        (function() {
+            var els = document.querySelectorAll('.reveal');
+            if (!els.length || !('IntersectionObserver' in window)) {
+                els.forEach(function(el) { el.classList.add('in-view'); });
+                return;
+            }
+            var io = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('in-view');
+                        io.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+            els.forEach(function(el) { io.observe(el); });
+        })();
+
         // Search
         (function() {
             var PLATES = [
-                { title:'Venezia', garment:'Tee', price:'$72', slug:'tee', model:'Venezia-tee-m.png' },
-                { title:'Venezia', garment:'Hoodie', price:'$88', slug:'hoodie', model:'Venezia-Hoodie-m.png' },
-                { title:'Venezia', garment:'Crewneck', price:'$82', slug:'crew', model:'Venezia-crew-m.png' },
+                { title:'Venezia', garment:'Tee', price:'$64', slug:'tee', model:'Venezia-tee-m.png' },
+                { title:'Venezia', garment:'Hoodie', price:'$84', slug:'hoodie', model:'Venezia-Hoodie-m.png' },
+                { title:'Venezia', garment:'Crewneck', price:'$84', slug:'crew', model:'Venezia-crew-m.png' },
                 { title:'Japan', price:'—', soon:true, model:'bella-hoodie.png' },
                 { title:'Arthus, The Old Town', price:'—', soon:true, model:'Arhus, The Old Town.png' },
                 { title:'New York Chrysler', price:'—', soon:true, model:'New york chystler hoodie.png' }
