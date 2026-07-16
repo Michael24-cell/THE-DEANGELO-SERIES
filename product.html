@@ -310,6 +310,16 @@
 
   .also-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:56px}
 
+  /* ── REVIEWS ──────────────────────────────────────────────── */
+  .reviews{background:var(--bone);padding:0 48px 144px}
+  .reviews-inner{max-width:var(--max);margin:0 auto;border-top:1px solid var(--hairline-soft);padding-top:56px}
+  .reviews-head{display:flex;justify-content:space-between;align-items:baseline;gap:24px;margin-bottom:72px}
+  .reviews-head h2{font-family:var(--font-serif);font-size:clamp(3rem,6vw,5.5rem);font-weight:400;line-height:.95;letter-spacing:-.025em}
+  .reviews-count{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-mute)}
+  .reviews-empty{display:grid;grid-template-columns:1fr 2fr;gap:48px;padding:48px 0;border-top:1px solid var(--hairline-soft);border-bottom:1px solid var(--hairline-soft)}
+  .reviews-empty-title{font-family:var(--font-serif);font-size:clamp(1.8rem,3vw,2.6rem);font-weight:400;font-style:italic}
+  .reviews-empty-copy{max-width:48ch;font-size:.95rem;font-weight:300;color:var(--ink-dim);line-height:1.65}
+
   /* plate component */
   .plate{display:flex;flex-direction:column;gap:22px}
   .plate-link{display:block;color:inherit}
@@ -358,6 +368,7 @@
     .also{padding:96px 24px}
     .also-head{flex-wrap:wrap;gap:24px}
     .also-grid{grid-template-columns:1fr;gap:64px}
+    .reviews{padding:0 24px 104px}
     .footer-grid{grid-template-columns:1fr 1fr;gap:48px}
   }
   @media (max-width:640px){
@@ -374,6 +385,9 @@
     .prov-item .prov-value{font-size:1.7rem}
     .also{padding:72px 20px}
     .footer-grid{grid-template-columns:1fr;gap:40px}
+    .reviews{padding:0 20px 80px}
+    .reviews-head{align-items:flex-end;margin-bottom:48px}
+    .reviews-empty{grid-template-columns:1fr;gap:16px;padding:36px 0}
     .watermark{font-size:30vw}
   }
 
@@ -564,12 +578,12 @@
         <div class="du-acc-panel"><div class="du-acc-inner">
           <dl>
             <div class="meta-pair">
-              <dt>Dispatch</dt>
-              <dd>Made to order. Ships from our U.S. production partner within 5&ndash;7 business days.</dd>
+              <dt>Production</dt>
+              <dd>Production and delivery estimates will be shown during checkout when available.</dd>
             </div>
             <div class="meta-pair">
               <dt>Shipping</dt>
-              <dd>Tracked worldwide. Duties calculated at checkout. <a href="shipping-policy.html" style="border-bottom:1px solid var(--hairline-dark);padding-bottom:1px">Shipping policy &rarr;</a></dd>
+              <dd>Shipping calculated at checkout. <a href="shipping-policy.html" style="border-bottom:1px solid var(--hairline-dark);padding-bottom:1px">Shipping policy &rarr;</a></dd>
             </div>
             <div class="meta-pair">
               <dt>Returns</dt>
@@ -709,6 +723,26 @@
     <div class="also-grid" id="alsoGrid"></div>
   </div>
 </section>
+
+<!-- Reviews: intentionally read-only until verified-order review infrastructure exists. -->
+<section class="reviews" aria-labelledby="reviewsTitle" data-screen-label="Reviews">
+  <div class="reviews-inner">
+    <header class="reviews-head">
+      <h2 id="reviewsTitle">Reviews</h2>
+      <span class="reviews-count" aria-label="Zero reviews">Reviews (0)</span>
+    </header>
+    <div class="reviews-empty" role="status">
+      <p class="reviews-empty-title">No reviews yet.</p>
+      <p class="reviews-empty-copy">Verified customer reviews will appear here after launch.</p>
+    </div>
+  </div>
+</section>
+
+<!--
+  TODO: Real reviews require a Cloudflare D1 reviews table, a verified order/review
+  token, pending moderation status, approved-reviews-only rendering, and a verified
+  purchase label. Do not enable public submission before those controls exist.
+-->
 
 <!-- Vote on next drop -->
 <section class="vote-section" id="vote">

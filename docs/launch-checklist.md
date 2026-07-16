@@ -11,7 +11,7 @@
 - [ ] **Test webhook in test mode** — Trigger a test event from Stripe Dashboard > Webhooks > endpoint > Send test event. Confirm 200 response and correct logging in Cloudflare Pages Dashboard > Functions > Real-time Logs.
 - [ ] **Printify order creation** — On `checkout.session.completed`: call Printify `POST /v1/shops/{shop_id}/orders.json` with line items, variant IDs, shipping address. Store Printify order ID against Stripe session ID.
 - [ ] **Printify tracking** — Poll or webhook Printify order status. On shipment, send tracking email to customer.
-- [ ] **Order confirmed email** — Send via Resend on `checkout.session.completed`. Include order number, items, shipping address, estimated dispatch window (5–7 business days).
+- [ ] **Order confirmed email** — Send via Resend after payment and order persistence. Include order number, items, shipping address, and confirmed production/delivery estimates when available.
 - [ ] **Order shipped email** — Send via Resend when Printify order status = `shipped`. Include carrier and tracking link.
 - [ ] **Contact form** — Wire `POST /api/contact` in contact.html. Validate fields server-side, send email via Resend to `SUPPORT_EMAIL`. Rate-limit submissions.
 
@@ -22,7 +22,7 @@ Never commit values to git. See `.env.local.example` for reference.
 STRIPE_SECRET_KEY=sk_test_...                   # Stripe secret key (test → live at launch)
 STRIPE_WEBHOOK_SECRET=whsec_...                 # From Stripe Dashboard > Webhooks > endpoint secret
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...  # Publishable key (browser-safe)
-NEXT_PUBLIC_SITE_URL=https://thedeangeloseries.com
+SITE_URL=https://thedeangeloseries.com
 PRINTIFY_API_TOKEN=                             # Printify account API token
 PRINTIFY_SHOP_ID=                               # Printify shop ID (numeric)
 PRINTIFY_AUTO_SEND_TO_PRODUCTION=false          # "true" only when live; keep false in test mode
@@ -74,13 +74,13 @@ SUPPORT_EMAIL=support@thedeangeloseries.com
 
 - [ ] **Confirm fulfillment partner** — Finalize Printify setup (see Printify pre-launch above)
 - [ ] **Connect fulfillment to orders** — Wire Stripe order webhooks to Printify API
-- [ ] **Confirm processing time** — Verify 5–7 business day production estimate with Printify
+- [ ] **Confirm production and delivery estimates** — Verify Printify production timing and carrier estimates before displaying them
 - [ ] **International shipping** — Confirm which countries are supported and at what cost
-- [ ] **Express shipping pricing** — Set actual cost in Stripe Checkout shipping options
+- [ ] **Shipping rates and methods** — Configure verified Printify/Stripe Checkout shipping options; do not hardcode unconfirmed rates
 
 ## Product & Pricing
 
-- [ ] **Confirm final prices** — Tee $72 / Hoodie $88 / Crewneck $82 (verify margins after fulfillment cost)
+- [ ] **Confirm final prices** — Tee $64 ($68 in 2XL) / Hoodie $84 ($88 in 2XL) / Crewneck $84 ($88 in 2XL/3XL); verify margins after fulfillment cost
 - [ ] **Confirm edition size** — Edition of 200 per piece
 - [ ] **Inventory tracking** — Set up sold-out handling (hide add-to-cart or show waitlist when edition closes)
 - [ ] **Size availability** — Confirm which sizes are available; update `is-disabled` in product.html
@@ -110,3 +110,6 @@ SUPPORT_EMAIL=support@thedeangeloseries.com
 - Checkout is currently scaffolded (no real payment processing). Do not promote checkout until Stripe is live.
 - checkout-success.html and checkout-cancel.html are Stripe redirect destinations — noindex, not linked from nav.
 - Contact form in contact.html intercepts submit and shows direct email until `/api/contact` backend is wired.
+- Cart data currently lives only in browser `localStorage`; it is not yet sent to a Pages Function or stored server-side.
+- No Cloudflare D1 binding or order/review database exists yet.
+- See `docs/commerce-architecture.md` for the intended Stripe → D1 → Printify → Resend flow and data gaps.
