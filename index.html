@@ -219,7 +219,7 @@
 
         .hero-progress-fill {
             height: 100%;
-            width: 25%;
+            width: 33.4%;
             background: var(--white);
             transition: width 620ms cubic-bezier(0.22, 1, 0.36, 1);
         }
@@ -376,14 +376,14 @@
             font-size: 11px;
             letter-spacing: 0.45em;
             text-transform: uppercase;
-            opacity: 0.50;
+            opacity: 0.55;
         }
 
         .pieces-edition {
             font-size: 11px;
             letter-spacing: 0.3em;
             text-transform: uppercase;
-            opacity: 0.38;
+            opacity: 0.55;
         }
 
         .pieces-list { list-style: none; flex: 1; }
@@ -444,7 +444,7 @@
             font-size: 11px;
             letter-spacing: 0.35em;
             text-transform: uppercase;
-            opacity: 0.40;
+            opacity: 0.55;
         }
 
         .piece-row-right {
@@ -583,7 +583,7 @@
             font-size: 10px;
             letter-spacing: 0.5em;
             text-transform: uppercase;
-            opacity: 0.38;
+            opacity: 0.55;
             white-space: nowrap;
         }
 
@@ -699,7 +699,7 @@
             font-size: 11px;
             letter-spacing: 0.4em;
             text-transform: uppercase;
-            opacity: 0.35;
+            opacity: 0.55;
             margin-bottom: 20px;
         }
 
@@ -818,7 +818,7 @@
             font-size: 11px;
             letter-spacing: 0.15em;
             text-transform: uppercase;
-            opacity: 0.25;
+            opacity: 0.55;
             font-weight: 300;
         }
 
@@ -865,8 +865,19 @@
         .search-sugg-price{font-size:.9rem;font-weight:300;color:rgba(10,10,10,.45);white-space:nowrap}
         .search-no-results{padding:16px 0 4px;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:rgba(10,10,10,.45)}
 
-        /* ── FOOTER ────────────────────────────────────────────── */
-        footer { padding: 120px 48px 64px; background: var(--black); }
+        /* ── FOOTER (shared system) ────────────────────────────── */
+        footer { padding: 120px 48px 48px; background: var(--black); position: relative; overflow: hidden; }
+        .footer-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1.4fr .8fr .8fr .8fr; gap: 80px; align-items: start; }
+        .footer-col h4 { font-family: var(--font-sans); font-size: 11px; font-weight: 500; letter-spacing: .3em; text-transform: uppercase; opacity: .55; margin-bottom: 24px; }
+        .footer-col a { display: block; margin-bottom: 10px; font-size: .95rem; font-weight: 300; }
+        .footer-note { font-weight: 300; font-size: .95rem; color: rgba(255,255,255,.6); margin-bottom: 24px; max-width: 38ch; }
+        .footer-sub { display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,.12); }
+        .footer-sub input { background: transparent; border: 0; color: inherit; font: inherit; padding: 12px 0; flex: 1; outline: none; font-size: .95rem; font-weight: 300; }
+        .footer-sub input::placeholder { color: rgba(255,255,255,.35); letter-spacing: .2em; text-transform: uppercase; font-size: 11px; }
+        .footer-sub input:disabled { opacity: .5; }
+        .footer-sub button { background: none; border: 0; color: inherit; padding: 12px 0 12px 16px; font-size: 11px; letter-spacing: .3em; text-transform: uppercase; }
+        .footer-sub button:disabled { opacity: .55; cursor: default; }
+        .footer-fine { max-width: 1200px; margin: 96px auto 0; display: flex; justify-content: space-between; align-items: flex-end; font-size: 11px; letter-spacing: .25em; text-transform: uppercase; color: rgba(255,255,255,.55); padding-top: 32px; border-top: 1px solid rgba(255,255,255,.12); }
 
         .watermark {
             font-size: 15vw;
@@ -880,9 +891,12 @@
 
         /* ── MOBILE ────────────────────────────────────────────── */
         @media (max-width: 1024px) {
-            .hero { flex-direction: column; }
-            .hero-text { padding: 120px 48px; order: 2; }
-            .hero-visual { order: 1; height: 60vh; }
+            /* Stacked hero must never clip the CTA: release the fixed height
+               and let content size the section. */
+            .hero { flex-direction: column; height: auto; min-height: 100vh; overflow: visible; }
+            .hero-text { padding: 72px 48px 88px; order: 2; flex: none; }
+            .hero-visual { order: 1; height: 52vh; min-height: 320px; flex: none; }
+            .hero h1 { font-size: clamp(3.6rem, 13vw, 6rem); margin-bottom: 36px; }
             .release-section { grid-template-columns: 1fr; }
             .release-image { min-height: 80vw; position: relative; }
             .release-image img { padding: 32px 24px; }
@@ -893,9 +907,12 @@
             .source-image { min-height: 65vw; position: relative; padding: 40px 32px 56px; }
             .source-frame img { max-height: 56vh; }
             .source-copy { padding: 80px 48px; }
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 48px; }
+            .footer-fine { flex-direction: column; align-items: flex-start; gap: 16px; }
         }
 
         @media (max-width: 768px) {
+            .footer-grid { grid-template-columns: 1fr; gap: 40px; }
             nav { padding: 20px 24px; }
             .release-copy { padding: 64px 24px; }
             .release-title { font-size: clamp(4rem, 14vw, 6rem); }
@@ -946,18 +963,17 @@
     <section class="hero">
         <div class="hero-text">
             <h1>WEAR<br>THE<br>CANVAS</h1>
-            <a href="collection.html" class="btn">View Drop 01</a>
+            <a href="collection.html" class="btn">Shop Series 01</a>
         </div>
         <div class="hero-visual" id="heroGallery" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Series 01 campaign gallery — use arrow keys to browse">
             <div class="hero-track" id="heroTrack">
                 <div class="hero-slide"><img src="Hero-desert-model.png" alt="Venezia — Series 01 Campaign" draggable="false"></div>
-                <div class="hero-slide"><img src="Venezia-tee-m.png" alt="Venezia Tee — Piece 01" loading="lazy" draggable="false"></div>
                 <div class="hero-slide"><img src="Venezia-Hoodie-m.png" alt="Venezia Hoodie — Piece 02" loading="lazy" draggable="false"></div>
                 <div class="hero-slide"><img src="Venezia-crew-m.png" alt="Venezia Crewneck — Piece 03" loading="lazy" draggable="false"></div>
             </div>
             <div class="hero-gallery-ui">
                 <button class="hero-arrow" data-hero-dir="-1" aria-label="Previous image">&larr;</button>
-                <span class="hero-counter" aria-live="polite"><span id="heroIdx">01</span>&nbsp;/&nbsp;04</span>
+                <span class="hero-counter" aria-live="polite"><span id="heroIdx">01</span>&nbsp;/&nbsp;03</span>
                 <button class="hero-arrow" data-hero-dir="1" aria-label="Next image">&rarr;</button>
             </div>
             <div class="hero-progress" aria-hidden="true"><div class="hero-progress-fill" id="heroProgressFill"></div></div>
@@ -969,9 +985,9 @@
         <div class="release-copy reveal">
             <p class="release-eyebrow">Current Release &nbsp;/&nbsp; Series 01</p>
             <h2 class="release-title">Venezia</h2>
-            <p class="release-sub">Artwork 01 &nbsp;&mdash;&nbsp; Edition of 200</p>
+            <p class="release-sub">Artwork 01 &nbsp;&mdash;&nbsp; Wearable Release</p>
             <p class="release-body">Released as three limited wearable pieces. Tee, hoodie, and crewneck.</p>
-            <a href="collection.html" class="release-cta">Shop the Release</a>
+            <a href="collection.html" class="release-cta">Shop Series 01</a>
         </div>
         <div class="release-image">
             <img src="hanging-venezia.png" alt="Venezia — Series 01">
@@ -986,7 +1002,7 @@
         <div class="pieces-right">
             <div class="pieces-header">
                 <span class="pieces-label">Series 01 &nbsp;/&nbsp; Available Pieces</span>
-                <span class="pieces-edition">Edition of 200</span>
+                <span class="pieces-edition">Three Pieces</span>
             </div>
             <ul class="pieces-list">
                 <li>
@@ -1030,7 +1046,7 @@
                 </li>
             </ul>
             <div class="pieces-view-all">
-                <a href="collection.html">View full collection &rarr;</a>
+                <a href="collection.html">View the Collection &rarr;</a>
             </div>
         </div>
     </section>
@@ -1060,12 +1076,8 @@
                 <span class="source-meta-value">1979</span>
                 <span class="source-meta-label">Artwork</span>
                 <span class="source-meta-value">No. 01 &nbsp;/&nbsp; Venezia</span>
-                <span class="source-meta-label">Edition</span>
-                <span class="source-meta-value">200 pieces</span>
-                <span class="source-meta-label">Released</span>
-                <span class="source-meta-value">February 2026</span>
             </div>
-            <p class="source-desc">The source image becomes the garment. Artwork 01 is translated onto heavyweight cotton, released once, documented, and archived.</p>
+            <p class="source-desc">The source image becomes the garment. Artwork 01 is translated onto heavyweight cotton, documented, and archived.</p>
         </div>
     </section>
 
@@ -1079,11 +1091,11 @@
             </div>
             <div class="system-col">
                 <h3 class="system-col-title">Piece</h3>
-                <p class="system-col-body">The artwork becomes a limited wearable edition. Each piece is numbered and ships with a signed edition card.</p>
+                <p class="system-col-body">The artwork becomes a wearable release, documented as part of its series.</p>
             </div>
             <div class="system-col">
                 <h3 class="system-col-title">Archive</h3>
-                <p class="system-col-body">Once the edition closes, the work is documented and archived. The series does not reprint.</p>
+                <p class="system-col-body">When a series closes, the work is photographed, documented, and archived.</p>
             </div>
         </div>
         <hr class="system-rule">
@@ -1102,79 +1114,83 @@
         <div class="vote-grid">
 
             <article class="vote-card" data-candidate="japan">
-                <div class="vote-slide-ref"><span>Slide S02&ndash;A</span><span>Proposed</span></div>
+                <div class="vote-slide-ref" aria-hidden="true"><span>Slide S02&ndash;A</span><span>Proposed</span></div>
                 <div class="vote-img">
                     <img src="bella-hoodie.png" alt="Japan">
-                    <div class="vote-bar-wrap"><div class="vote-bar-fill"></div></div>
                 </div>
                 <div class="vote-meta">
                     <span class="vote-name">Japan</span>
-                    <span class="vote-pct"></span>
                 </div>
-                <button class="vote-btn">Cast vote</button>
+                <button class="vote-btn" aria-pressed="false">Select</button>
             </article>
 
             <article class="vote-card" data-candidate="arthus">
-                <div class="vote-slide-ref"><span>Slide S02&ndash;B</span><span>Proposed</span></div>
+                <div class="vote-slide-ref" aria-hidden="true"><span>Slide S02&ndash;B</span><span>Proposed</span></div>
                 <div class="vote-img">
-                    <img src="Arhus, The Old Town.png" alt="Arthus, The Old Town">
-                    <div class="vote-bar-wrap"><div class="vote-bar-fill"></div></div>
+                    <img src="Arhus, The Old Town.png" alt="Arhus, The Old Town">
                 </div>
                 <div class="vote-meta">
-                    <span class="vote-name">Arthus, The Old Town</span>
-                    <span class="vote-pct"></span>
+                    <span class="vote-name">Arhus, The Old Town</span>
                 </div>
-                <button class="vote-btn">Cast vote</button>
+                <button class="vote-btn" aria-pressed="false">Select</button>
             </article>
 
             <article class="vote-card" data-candidate="newyork">
-                <div class="vote-slide-ref"><span>Slide S02&ndash;C</span><span>Proposed</span></div>
+                <div class="vote-slide-ref" aria-hidden="true"><span>Slide S02&ndash;C</span><span>Proposed</span></div>
                 <div class="vote-img">
                     <img src="New york chystler hoodie.png" alt="New York Chrysler">
-                    <div class="vote-bar-wrap"><div class="vote-bar-fill"></div></div>
                 </div>
                 <div class="vote-meta">
                     <span class="vote-name">New York Chrysler</span>
-                    <span class="vote-pct"></span>
                 </div>
-                <button class="vote-btn">Cast vote</button>
+                <button class="vote-btn" aria-pressed="false">Select</button>
             </article>
 
         </div>
         <div class="vote-footer">
-            <p class="vote-note">One vote. Series 02 drops when the studio is ready.</p>
+            <p class="vote-note">Your selection is saved on this device. Series 02 arrives when the studio is ready.</p>
             <button class="vote-back" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Back to collection</button>
         </div>
     </section>
 
     <footer>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 64px; max-width: var(--max-width); margin: 0 auto;">
-            <div>
-                <p style="text-transform: uppercase; letter-spacing: 0.2em; font-size: 11px; margin-bottom: 24px;">Newsletter</p>
-                <input type="text" placeholder="EMAIL ADDRESS" style="background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.2); padding: 12px 0; color: white; width: 100%; outline: none; font-size: 14px;">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4>Newsletter</h4>
+                <p class="footer-note">First word on each new piece. No noise, no promotions — one note per release.</p>
+                <form class="footer-sub" onsubmit="event.preventDefault()">
+                    <input type="email" placeholder="Email address" aria-label="Email address" disabled>
+                    <button type="button" disabled aria-disabled="true">Opens at launch</button>
+                </form>
             </div>
-            <div>
-                <p style="text-transform: uppercase; letter-spacing: 0.2em; font-size: 11px; margin-bottom: 24px;">Collection</p>
-                <a href="collection.html" style="display: block; margin-bottom: 8px;">Series 01</a>
-                <a href="archive.html" style="display: block; margin-bottom: 8px;">The Archive</a>
+            <div class="footer-col">
+                <h4>The Series</h4>
+                <a href="collection.html">Collection</a>
+                <a href="archive.html">Archive</a>
+                <a href="statement.html">Statement</a>
+                <a href="artist.html">The Artist</a>
             </div>
-            <div>
-                <p style="text-transform: uppercase; letter-spacing: 0.2em; font-size: 11px; margin-bottom: 24px;">Legal</p>
-                <a href="shipping-policy.html" style="display: block; margin-bottom: 8px;">Shipping</a>
-                <a href="refund-policy.html" style="display: block; margin-bottom: 8px;">Returns</a>
-                <a href="privacy-policy.html" style="display: block; margin-bottom: 8px;">Privacy Policy</a>
-                <a href="terms.html" style="display: block; margin-bottom: 8px;">Terms &amp; Conditions</a>
+            <div class="footer-col">
+                <h4>Service</h4>
+                <a href="shipping-policy.html">Shipping</a>
+                <a href="refund-policy.html">Returns</a>
+                <a href="#" data-size-guide>Size Guide</a>
+                <a href="contact.html">Contact</a>
+                <a href="mailto:support@thedeangeloseries.com">support@thedeangeloseries.com</a>
+            </div>
+            <div class="footer-col">
+                <h4>Legal</h4>
+                <a href="privacy-policy.html">Privacy Policy</a>
+                <a href="terms.html">Terms of Service</a>
+                <a href="shipping-policy.html">Shipping Policy</a>
+                <a href="refund-policy.html">Refund Policy</a>
             </div>
         </div>
-        <div style="max-width:var(--max-width);margin:64px auto 0;padding-top:24px;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.35)">
+        <div class="footer-fine">
             <span>© MMXXVI The DeAngelo Series</span>
-            <div style="display:flex;gap:24px">
-                <a href="privacy-policy.html" style="color:inherit;text-decoration:none;transition:opacity .2s ease" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=''">Privacy Policy</a>
-                <a href="terms.html" style="color:inherit;text-decoration:none;transition:opacity .2s ease" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=''">Terms &amp; Conditions</a>
-            </div>
             <span>California</span>
         </div>
-        <div class="watermark">DEANGELO</div>
+        <div class="watermark" aria-hidden="true">DEANGELO</div>
     </footer>
 
     <script>
@@ -1276,7 +1292,7 @@
                 { title:'Venezia', garment:'Hoodie', price:'$84', slug:'hoodie', model:'Venezia-Hoodie-m.png' },
                 { title:'Venezia', garment:'Crewneck', price:'$84', slug:'crew', model:'Venezia-crew-m.png' },
                 { title:'Japan', price:'—', soon:true, model:'bella-hoodie.png' },
-                { title:'Arthus, The Old Town', price:'—', soon:true, model:'Arhus, The Old Town.png' },
+                { title:'Arhus, The Old Town', price:'—', soon:true, model:'Arhus, The Old Town.png' },
                 { title:'New York Chrysler', price:'—', soon:true, model:'New york chystler hoodie.png' }
             ];
             var drop  = document.getElementById('searchDrop');
@@ -1324,11 +1340,19 @@
             });
         })();
 
-        // Pieces preview image swap on hover
+        // Pieces preview image swap on hover — images preloaded so the
+        // crossfade never reveals a blank frame.
         (function() {
             var img = document.getElementById('piecesPreviewImg');
             if (!img) return;
-            document.querySelectorAll('.piece-row').forEach(function(row) {
+            var rows = document.querySelectorAll('.piece-row');
+
+            rows.forEach(function(row) {
+                var src = row.getAttribute('data-img');
+                if (src) { var pre = new Image(); pre.src = src; }
+            });
+
+            rows.forEach(function(row) {
                 row.addEventListener('mouseenter', function() {
                     var src = row.getAttribute('data-img');
                     if (src && img.src.indexOf(src) === -1) {
@@ -1339,36 +1363,6 @@
             });
         })();
 
-        // Vote section
-        (function() {
-            var SEEDS = { japan: 312, arthus: 198, newyork: 247 };
-
-            document.querySelectorAll('.vote-section').forEach(function(section) {
-                var voted = false;
-
-                section.querySelectorAll('.vote-card').forEach(function(card) {
-                    card.addEventListener('click', function() {
-                        if (voted) return;
-                        voted = true;
-
-                        var candidate = card.dataset.candidate;
-                        SEEDS[candidate]++;
-
-                        var total = Object.values(SEEDS).reduce(function(a, b) { return a + b; }, 0);
-
-                        section.classList.add('has-voted');
-
-                        section.querySelectorAll('.vote-card').forEach(function(c) {
-                            var cand = c.dataset.candidate;
-                            var pct = Math.round(SEEDS[cand] / total * 100);
-                            c.querySelector('.vote-bar-fill').style.width = pct + '%';
-                            c.querySelector('.vote-pct').textContent = pct + '%';
-                            if (cand !== candidate) c.classList.add('is-dim');
-                        });
-                    });
-                });
-            });
-        })();
     </script>
     <script src="site-ui.js"></script>
 </body>

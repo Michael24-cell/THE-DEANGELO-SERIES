@@ -55,7 +55,8 @@
   body{min-height:100vh;overflow-x:hidden}
   a{color:inherit;text-decoration:none;transition:opacity 220ms ease}
   a:hover{opacity:.6}
-  button{font:inherit;cursor:default}
+  button{font:inherit}
+  button:not(:disabled){cursor:pointer}
   img{max-width:100%;display:block}
 
   /* ── Minimal nav ────────────────────────────────────────────── */
@@ -409,7 +410,7 @@
 
   /* ── VOTE SECTION ─────────────────────────────────────────── */
   .vote-section{background:var(--black);color:var(--white);padding:80px 48px 100px;border-top:1px solid rgba(255,255,255,.06)}
-  .vote-eyebrow{font-size:11px;letter-spacing:.4em;text-transform:uppercase;opacity:.35;margin-bottom:48px;max-width:1400px;margin-left:auto;margin-right:auto}
+  .vote-eyebrow{font-size:11px;letter-spacing:.4em;text-transform:uppercase;opacity:.55;margin-bottom:48px;max-width:1400px;margin-left:auto;margin-right:auto}
   .vote-grid{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
   .vote-card{display:flex;flex-direction:column;transition:opacity 500ms ease}
   .vote-card.is-dim{opacity:.18}
@@ -427,7 +428,7 @@
   .vote-btn:hover{border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.04)}
   .vote-section.has-voted .vote-btn{display:none}
   .vote-footer{max-width:1400px;margin:48px auto 0;display:flex;justify-content:space-between;align-items:baseline}
-  .vote-note{font-size:11px;letter-spacing:.15em;text-transform:uppercase;opacity:.25;font-weight:300}
+  .vote-note{font-size:11px;letter-spacing:.15em;text-transform:uppercase;opacity:.55;font-weight:300}
   .vote-section.has-voted .vote-note{opacity:0;transition:opacity 300ms ease}
   .vote-back{background:none;border:0;font:inherit;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--white);opacity:0;pointer-events:none;transition:opacity 400ms ease 600ms;cursor:default}
   .vote-back:hover{opacity:.8!important}
@@ -454,7 +455,7 @@
       <div class="form-head">
         <div class="eyebrow">Checkout // Series 01</div>
         <h1>Complete your <em>piece</em></h1>
-        <p class="sub">Three short steps. Edition number is assigned and recorded against your name on dispatch.</p>
+        <p class="sub">Three short steps.</p>
       </div>
 
       <!-- Step 01 — Contact -->
@@ -566,8 +567,7 @@
           <span class="total">Not yet live</span>
         </button>
         <p class="submit-fine">
-          By completing this order you accept the <a href="terms.html">Terms</a> &amp; <a href="privacy-policy.html">Privacy</a>. <br>
-          Edition number assigned on dispatch.
+          By completing this order you accept the <a href="terms.html">Terms</a> &amp; <a href="privacy-policy.html">Privacy</a>.
         </p>
       </div>
 
@@ -609,7 +609,7 @@
       <div class="summ-caption">
         <div class="left">
           <div class="plate-line"><span>01</span><span class="sep">//</span><span>Venezia — Tee</span></div>
-          <div class="plate-meta">Size M · Qty 01 · Edition of 200</div>
+          <div class="plate-meta">Size M · Qty 01 · Series 01</div>
         </div>
         <div class="price">$64.00</div>
       </div>
@@ -617,7 +617,7 @@
       <div class="placard">
         <div class="eyebrow-mini">The Piece</div>
         <p class="pull">The painting, translated to cotton.</p>
-        <p>Heavyweight 10.5oz organic cotton, oversized boxy tee. Gallery-grade water-based screen print. Printed once, numbered, and archived when sold out.</p>
+        <p>Heavyweight 10.5oz organic cotton, oversized boxy tee. Gallery-grade water-based screen print.</p>
       </div>
 
       <div class="source-mini">
@@ -643,8 +643,8 @@
 
       <div class="reassure">
         <span>Damage &amp; defect claims within 14 days</span>
-        <span>Hand-numbered on dispatch</span>
-        <span>Signed edition card included</span>
+        <span>Made to order in the U.S.</span>
+        <span>Tracked shipping</span>
       </div>
     </div>
   </aside>
@@ -659,42 +659,36 @@
     <article class="vote-card" data-candidate="japan">
       <div class="vote-img">
         <img src="bella-hoodie.png" alt="Japan">
-        <div class="vote-bar-wrap"><div class="vote-bar-fill"></div></div>
       </div>
       <div class="vote-meta">
         <span class="vote-name">Japan</span>
-        <span class="vote-pct"></span>
       </div>
-      <button class="vote-btn">Cast vote</button>
+      <button class="vote-btn" aria-pressed="false">Select</button>
     </article>
 
     <article class="vote-card" data-candidate="arthus">
       <div class="vote-img">
-        <img src="Arhus, The Old Town.png" alt="Arthus, The Old Town">
-        <div class="vote-bar-wrap"><div class="vote-bar-fill"></div></div>
+        <img src="Arhus, The Old Town.png" alt="Arhus, The Old Town">
       </div>
       <div class="vote-meta">
-        <span class="vote-name">Arthus, The Old Town</span>
-        <span class="vote-pct"></span>
+        <span class="vote-name">Arhus, The Old Town</span>
       </div>
-      <button class="vote-btn">Cast vote</button>
+      <button class="vote-btn" aria-pressed="false">Select</button>
     </article>
 
     <article class="vote-card" data-candidate="newyork">
       <div class="vote-img">
         <img src="New york chystler hoodie.png" alt="New York Chrysler">
-        <div class="vote-bar-wrap"><div class="vote-bar-fill"></div></div>
       </div>
       <div class="vote-meta">
         <span class="vote-name">New York Chrysler</span>
-        <span class="vote-pct"></span>
       </div>
-      <button class="vote-btn">Cast vote</button>
+      <button class="vote-btn" aria-pressed="false">Select</button>
     </article>
 
   </div>
   <div class="vote-footer">
-    <p class="vote-note">One vote. Series 02 drops when the studio is ready.</p>
+    <p class="vote-note">Your selection is saved on this device. Series 02 arrives when the studio is ready.</p>
     <a href="collection.html" class="vote-back" style="text-decoration:none">Browse Series 01 →</a>
   </div>
 </section>
@@ -724,35 +718,54 @@
   // Pre-launch: payment is not live. The disabled button must not submit or
   // navigate to checkout-success.html until a real Stripe Session exists.
 
-  // Vote section
-  (function() {
-    var SEEDS = { japan: 312, arthus: 198, newyork: 247 };
+  // Series 02 vote — presentation-only local selection (same key as site-ui.js).
+  // No aggregate counts, no backend. Persisted per device, changeable.
+  (function () {
+    var KEY = 'deangelo_vote_s02';
+    var section = document.querySelector('.vote-section');
+    if (!section) return;
 
-    document.querySelectorAll('.vote-section').forEach(function(section) {
-      var voted = false;
+    var style = document.createElement('style');
+    style.textContent =
+      '.vote-section .vote-bar-wrap{display:none !important}' +
+      '.vote-section .vote-pct{display:none !important}' +
+      '.vote-section .vote-btn{cursor:pointer;display:block !important}' +
+      '.vote-section .vote-btn:focus-visible{outline:1px solid currentColor;outline-offset:3px}' +
+      '.vote-section .vote-card{cursor:pointer}' +
+      '.vote-section.has-selection .vote-card{opacity:.62}' +
+      '.vote-section.has-selection .vote-card.is-selected{opacity:1}' +
+      '.vote-section .vote-card.is-selected .vote-btn{border-color:currentColor}';
+    document.head.appendChild(style);
 
-      section.querySelectorAll('.vote-card').forEach(function(card) {
-        card.addEventListener('click', function() {
-          if (voted) return;
-          voted = true;
+    function read() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
+    function write(v) { try { v ? localStorage.setItem(KEY, v) : localStorage.removeItem(KEY); } catch (e) {} }
 
-          var candidate = card.dataset.candidate;
-          SEEDS[candidate]++;
-
-          var total = Object.values(SEEDS).reduce(function(a, b) { return a + b; }, 0);
-          section.classList.add('has-voted');
-
-          section.querySelectorAll('.vote-card').forEach(function(c) {
-            var cand = c.dataset.candidate;
-            var pct = Math.round(SEEDS[cand] / total * 100);
-            c.querySelector('.vote-bar-fill').style.width = pct + '%';
-            c.querySelector('.vote-pct').textContent = pct + '%';
-            if (cand !== candidate) c.classList.add('is-dim');
-          });
-        });
+    function render(sel) {
+      section.classList.toggle('has-selection', !!sel);
+      section.querySelectorAll('.vote-card').forEach(function (card) {
+        var is = !!sel && card.getAttribute('data-candidate') === sel;
+        card.classList.toggle('is-selected', is);
+        var btn = card.querySelector('.vote-btn');
+        if (btn) {
+          btn.textContent = is ? 'Selected ✓' : 'Select';
+          btn.setAttribute('aria-pressed', is ? 'true' : 'false');
+        }
       });
+    }
+
+    section.addEventListener('click', function (e) {
+      var card = e.target.closest('.vote-card');
+      if (!card) return;
+      var cand = card.getAttribute('data-candidate');
+      if (!cand) return;
+      var next = read() === cand ? null : cand;
+      write(next);
+      render(next);
     });
+
+    render(read());
   })();
+
 </script>
 
 </body>

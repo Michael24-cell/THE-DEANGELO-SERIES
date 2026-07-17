@@ -33,15 +33,13 @@
   /* ---- menu information architecture (expandable dropdown groups) ------- */
   var MENU_GROUPS = [
     { label: "Shop", items: [
-      { label: "Series 01", href: "collection.html" },
-      { label: "Collection", href: "collection.html" },
-      { label: "The Archive", href: "archive.html" },
-      { label: "New Release", href: "#" }
+      { label: "Shop Series 01", href: "collection.html" },
+      { label: "The Archive", href: "archive.html" }
     ]},
     { label: "The Source", items: [
-      { label: "The Artwork", href: "#" },
-      { label: "The Process", href: "#" },
-      { label: "Lookbook", href: "#" }
+      { label: "The Artwork", href: "art.html" },
+      { label: "Statement", href: "statement.html" },
+      { label: "The Artist", href: "artist.html" }
     ]},
     { label: "Information", items: [
       { label: "Shipping", href: "shipping-policy.html" },
@@ -50,10 +48,7 @@
       { label: "Contact", href: "contact.html" }
     ]}
   ];
-  var MENU_DIRECT = [
-    { label: "Studio", href: "#" },
-    { label: "Journal", href: "#" }
-  ];
+  var MENU_DIRECT = [];
 
   /* ---- size guide data (oversized heavyweight tee, flat measures / in) --- */
   var SIZE_ROWS = [
@@ -345,7 +340,8 @@
       "</div>" +
       "<div class=\"du-mnav\">" + groups + '<div class="du-mdirect-wrap">' + direct + "</div></div>" +
       '<div class="du-foot">' +
-        '<a href="#">Search</a><a href="#">Sign in</a>' +
+        '<a href="contact.html">Contact</a>' +
+        '<a href="mailto:support@thedeangeloseries.com">Support</a>' +
         '<span class="loc">California</span>' +
       "</div>";
     return menu;
@@ -463,7 +459,7 @@
     foot.style.display = "";
     foot.innerHTML =
       '<div class="du-cart-sub"><span class="lbl">Subtotal</span><span class="val">' + money(cartSubtotal()) + "</span></div>" +
-      '<p class="du-cart-note">Shipping calculated at checkout. Each piece ships with a signed, numbered edition card.</p>' +
+      '<p class="du-cart-note">Shipping and tax calculated at checkout.</p>' +
       '<a class="du-cart-checkout" href="checkout.html">Proceed to Checkout</a>' +
       '<button class="du-cart-cont" data-cart-close>Continue browsing</button>';
   }
@@ -649,6 +645,79 @@
   /* ======================================================================
      INIT
      ====================================================================== */
+  /* ======================================================================
+     SERIES 02 VOTE — presentation-only local selection.
+     No aggregate counts, no backend. One selection per device, stored in
+     localStorage, changeable, restored on reload. Shared by every page
+     that renders a .vote-section.
+     ====================================================================== */
+  var VOTE_KEY = "deangelo_vote_s02";
+
+  var VOTE_CSS = [
+    /* percentages/bars retired — selection is the only state shown */
+    ".vote-section .vote-bar-wrap{display:none !important}",
+    ".vote-section .vote-pct{display:none !important}",
+    ".vote-section .vote-btn{cursor:pointer;display:block !important}",
+    ".vote-section .vote-btn:focus-visible{outline:1px solid currentColor;outline-offset:3px}",
+    ".vote-section .vote-card{cursor:pointer}",
+    /* selected state: quiet dim on the others, never illegible */
+    ".vote-section.has-selection .vote-card{opacity:.62}",
+    ".vote-section.has-selection .vote-card.is-selected{opacity:1}",
+    ".vote-section .vote-card.is-selected .vote-btn{border-color:currentColor}",
+    /* retire legacy voted-state rules that hid the buttons */
+    ".vote-section.has-voted .vote-btn{display:block !important}"
+  ].join("");
+
+  function readVote() {
+    try { return localStorage.getItem(VOTE_KEY); } catch (e) { return null; }
+  }
+  function writeVote(v) {
+    try {
+      if (v) localStorage.setItem(VOTE_KEY, v);
+      else localStorage.removeItem(VOTE_KEY);
+    } catch (e) { /* private mode — selection just won't persist */ }
+  }
+
+  function renderVote(selected) {
+    [].forEach.call(document.querySelectorAll(".vote-section"), function (section) {
+      section.classList.toggle("has-selection", !!selected);
+      [].forEach.call(section.querySelectorAll(".vote-card"), function (card) {
+        var isSel = !!selected && card.getAttribute("data-candidate") === selected;
+        card.classList.toggle("is-selected", isSel);
+        var btn = card.querySelector(".vote-btn");
+        if (btn) {
+          btn.textContent = isSel ? "Selected ✓" : "Select";
+          btn.setAttribute("aria-pressed", isSel ? "true" : "false");
+        }
+      });
+    });
+  }
+
+  function initVote() {
+    var sections = document.querySelectorAll(".vote-section");
+    if (!sections.length) return;
+
+    var style = document.createElement("style");
+    style.id = "du-vote-css";
+    style.textContent = VOTE_CSS;
+    document.head.appendChild(style);
+
+    [].forEach.call(sections, function (section) {
+      section.addEventListener("click", function (e) {
+        var card = e.target.closest(".vote-card");
+        if (!card || !section.contains(card)) return;
+        var cand = card.getAttribute("data-candidate");
+        if (!cand) return;
+        var current = readVote();
+        var next = current === cand ? null : cand; // clicking again clears
+        writeVote(next);
+        renderVote(next);
+      });
+    });
+
+    renderVote(readVote());
+  }
+
   function init() {
     var style = document.createElement("style");
     style.id = "du-site-ui";
@@ -669,6 +738,7 @@
     renderCart();
     syncCount();
     initAccordions(document);
+    initVote();
     // open the first menu group by default
     [].forEach.call(els.menu.querySelectorAll(".du-mgroup.is-open .du-msub-panel"), function (p) {
       p.style.height = "auto";

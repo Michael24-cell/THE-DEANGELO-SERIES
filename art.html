@@ -131,7 +131,7 @@
   }
   .artwork-eyebrow{
     font-size:10px;letter-spacing:.5em;text-transform:uppercase;
-    opacity:.35;margin-bottom:40px;
+    opacity:.5;margin-bottom:40px;
   }
   .artwork-title{
     font-family:var(--font-serif);font-weight:300;font-style:italic;
@@ -141,7 +141,7 @@
   }
   .artwork-artist{
     font-size:11px;letter-spacing:.3em;text-transform:uppercase;
-    opacity:.38;margin-bottom:48px;
+    opacity:.55;margin-bottom:48px;
   }
   .artwork-desc{
     font-size:14px;font-weight:300;line-height:1.8;
@@ -230,7 +230,7 @@
   .vote-head{max-width:var(--max);margin:0 auto 72px}
   .vote-eyebrow{
     font-size:10px;letter-spacing:.5em;text-transform:uppercase;
-    opacity:.35;margin-bottom:24px;
+    opacity:.55;margin-bottom:24px;
   }
   .vote-heading{
     font-family:var(--font-serif);font-weight:300;font-style:italic;
@@ -295,7 +295,7 @@
   }
   .vote-note{
     font-size:11px;letter-spacing:.15em;text-transform:uppercase;
-    opacity:.25;font-weight:300;
+    opacity:.55;font-weight:300;
   }
   .vote-section.has-voted .vote-note{opacity:0;transition:opacity 300ms ease}
   .vote-back{
@@ -430,7 +430,7 @@
     <p class="artwork-eyebrow">Artwork 01 &nbsp;/&nbsp; Series 01</p>
     <h2 class="artwork-title">Venezia</h2>
     <p class="artwork-artist">Tony DeAngelo &nbsp;&middot;&nbsp; Watercolour &nbsp;&middot;&nbsp; 1979</p>
-    <p class="artwork-desc">A watercolour of Isola di San Giorgio Maggiore, Venice, 1979. Artwork 01 is translated onto heavyweight cotton and released as three limited wearable pieces — tee, hoodie, and crewneck. Printed once. Numbered. Archived.</p>
+    <p class="artwork-desc">A watercolour of Isola di San Giorgio Maggiore, Venice, 1979. Artwork 01 is translated onto heavyweight cotton and released as three wearable pieces — tee, hoodie, and crewneck. Documented. Archived.</p>
 
     <a href="collection.html" class="artwork-cta">Shop Series 01</a>
   </div>
@@ -460,42 +460,36 @@
     <article class="vote-card" data-candidate="japan">
       <div class="vote-img">
         <img src="bella-hoodie.png" alt="Japan">
-        <div class="vote-bar-wrap"><div class="vote-bar-fill"></div></div>
       </div>
       <div class="vote-meta">
         <span class="vote-name">Japan</span>
-        <span class="vote-pct"></span>
       </div>
-      <button class="vote-btn">Cast vote</button>
+      <button class="vote-btn" aria-pressed="false">Select</button>
     </article>
 
     <article class="vote-card" data-candidate="arthus">
       <div class="vote-img">
-        <img src="Arhus, The Old Town.png" alt="Arthus, The Old Town">
-        <div class="vote-bar-wrap"><div class="vote-bar-fill"></div></div>
+        <img src="Arhus, The Old Town.png" alt="Arhus, The Old Town">
       </div>
       <div class="vote-meta">
-        <span class="vote-name">Arthus, The Old Town</span>
-        <span class="vote-pct"></span>
+        <span class="vote-name">Arhus, The Old Town</span>
       </div>
-      <button class="vote-btn">Cast vote</button>
+      <button class="vote-btn" aria-pressed="false">Select</button>
     </article>
 
     <article class="vote-card" data-candidate="newyork">
       <div class="vote-img">
         <img src="New york chystler hoodie.png" alt="New York Chrysler">
-        <div class="vote-bar-wrap"><div class="vote-bar-fill"></div></div>
       </div>
       <div class="vote-meta">
         <span class="vote-name">New York Chrysler</span>
-        <span class="vote-pct"></span>
       </div>
-      <button class="vote-btn">Cast vote</button>
+      <button class="vote-btn" aria-pressed="false">Select</button>
     </article>
 
   </div>
   <div class="vote-footer">
-    <p class="vote-note">One vote. Series 02 drops when the studio is ready.</p>
+    <p class="vote-note">Your selection is saved on this device. Series 02 arrives when the studio is ready.</p>
     <button class="vote-back" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Back to top</button>
   </div>
 </section>
@@ -508,8 +502,8 @@
         First word on each new piece. No noise, no promotions — one note per drop.
       </p>
       <form class="footer-sub" onsubmit="event.preventDefault()">
-        <input type="email" placeholder="Email address" aria-label="Email address">
-        <button type="submit">Subscribe →</button>
+        <input type="email" placeholder="Email address" aria-label="Email address" disabled>
+        <button type="button" disabled aria-disabled="true">Opens at launch</button>
       </form>
     </div>
     <div class="footer-col">
@@ -540,7 +534,7 @@
     </div>
     <span>California</span>
   </div>
-  <div class="watermark">DEANGELO</div>
+  <div class="watermark" aria-hidden="true">DEANGELO</div>
 </footer>
 
 <script src="site-ui.js"></script>
@@ -558,7 +552,7 @@ window.addEventListener('scroll', function() {
     { title:'Venezia', garment:'Hoodie', price:'$88', slug:'hoodie', model:'Venezia-Hoodie-m.png' },
     { title:'Venezia', garment:'Crewneck', price:'$82', slug:'crew', model:'Venezia-crew-m.png' },
     { title:'Japan', price:'—', soon:true, model:'bella-hoodie.png' },
-    { title:'Arthus, The Old Town', price:'—', soon:true, model:'Arhus, The Old Town.png' },
+    { title:'Arhus, The Old Town', price:'—', soon:true, model:'Arhus, The Old Town.png' },
     { title:'New York Chrysler', price:'—', soon:true, model:'New york chystler hoodie.png' }
   ];
   var drop  = document.getElementById('searchDrop');
@@ -606,30 +600,6 @@ window.addEventListener('scroll', function() {
   });
 })();
 
-// Vote
-(function() {
-  var SEEDS = { japan: 312, arthus: 198, newyork: 247 };
-  document.querySelectorAll('.vote-section').forEach(function(section) {
-    var voted = false;
-    section.querySelectorAll('.vote-card').forEach(function(card) {
-      card.addEventListener('click', function() {
-        if (voted) return;
-        voted = true;
-        var candidate = card.dataset.candidate;
-        SEEDS[candidate]++;
-        var total = Object.values(SEEDS).reduce(function(a, b) { return a + b; }, 0);
-        section.classList.add('has-voted');
-        section.querySelectorAll('.vote-card').forEach(function(c) {
-          var key = c.dataset.candidate;
-          var pct = Math.round((SEEDS[key] / total) * 100);
-          c.querySelector('.vote-pct').textContent = pct + '%';
-          c.querySelector('.vote-bar-fill').style.width = pct + '%';
-          if (key !== candidate) c.classList.add('is-dim');
-        });
-      });
-    });
-  });
-})();
 </script>
 
 </body>

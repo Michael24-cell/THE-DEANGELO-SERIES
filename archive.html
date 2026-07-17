@@ -160,7 +160,6 @@
   </div>
   <a class="nav-brand" href="index.html">THE DEANGELO SERIES</a>
   <div class="nav-cart">
-    <a href="#">Search</a>
     <a href="#" data-cart-toggle>Cart (0)</a>
   </div>
 </nav>
@@ -181,7 +180,7 @@
       <div class="empty-rule"></div>
       <h2 class="empty-heading">No archived pieces yet.</h2>
       <p class="empty-body">
-        Past releases will appear here once an edition closes. Each piece in The Archive is part of a numbered, limited run — once it's gone, it's gone.
+        Past releases will appear here when a series closes. Each archived piece is documented as part of its series.
       </p>
       <a href="collection.html" class="empty-cta">Shop Series 01 →</a>
     </div>
@@ -197,8 +196,8 @@
         First word on each new drop. No noise, no promotions — one note per release.
       </p>
       <form class="footer-sub" onsubmit="event.preventDefault()">
-        <input type="email" placeholder="Email address" aria-label="Email address">
-        <button type="submit">Subscribe →</button>
+        <input type="email" placeholder="Email address" aria-label="Email address" disabled>
+        <button type="button" disabled aria-disabled="true">Opens at launch</button>
       </form>
     </div>
     <div class="footer-col">
@@ -227,7 +226,7 @@
     <span>© MMXXVI The DeAngelo Series</span>
     <span>California</span>
   </div>
-  <div class="watermark">DEANGELO</div>
+  <div class="watermark" aria-hidden="true">DEANGELO</div>
 </footer>
 
 <script>
