@@ -316,6 +316,14 @@
   .plate.is-soon .plate-image-wrap:hover{opacity:.85}
   .plate-soon{font-size:10px;letter-spacing:.35em;text-transform:uppercase;opacity:.6;margin-top:6px}
 
+  /* Single-image plates (no separate flat/model shot yet) — cancel the
+     hover crossfade so hovering never fades to a blank layer. */
+  .plate.plate--single .plate-image-wrap{opacity:.6;cursor:default}
+  .plate.plate--single .plate-image-wrap:hover{opacity:.8}
+  @media (hover:hover){
+    .plate.plate--single:hover .plate-image--model{opacity:1}
+  }
+
   /* nav search button */
   .nav-search-btn{background:none;border:0;color:inherit;font:inherit;font-size:11px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;padding:0;transition:opacity 220ms ease}
   .nav-search-btn:hover{opacity:.6}
@@ -504,7 +512,38 @@
       desc:"Series 02 candidate. Cast your vote on the homepage to shape the next series." },
   ];
 
+  // Mockups exist; artwork, pricing, and full details are still being
+  // finalized. Shown separately from Series 01 and the Series 02 vote.
+  const PREVIEWS = [
+    { title:"Leaning Tower of Pizza", slug:"leaningtowerofpizza", img:"Leaningtowerofpizza-mock.png" },
+    { title:"Palatine Hill",          slug:"palatinehill",        img:"palatine-hill.png" },
+    { title:"Villa d'Este",           slug:"villadeste",          img:"villa-d-este.png" },
+    { title:"Spiaggia San Marco",     slug:"spiaggiasanmarco",    img:"spaggia-sanmarco.png" },
+    { title:"The Wedge",              slug:"thewedge",            img:"thewedge.png" },
+    { title:"Ostia Antica",           slug:"ostiaantica",         img:"ostia-antica.png" },
+    { title:"Verona — Oat",           slug:"verona-oat",          img:"verona-oat.png" },
+    { title:"Verona — Black",         slug:"verona-black",        img:"verona-black.png" },
+    { title:"Wind & Sea",             slug:"windsea",             img:"wind-sea.png" },
+    { title:"Waves of Life",          slug:"wavesoflife",         img:"wavesoflife-mock.png" },
+  ];
+
   const grid = document.getElementById('grid');
+
+  function previewPlateHTML(p) {
+    return `<article class="plate plate--single" data-type="tee" data-series="03" data-searchable="${p.title.toLowerCase()}">
+      <a class="plate-link" href="product.html?p=${p.slug}" aria-label="View ${p.title}">
+        <div class="plate-image-wrap">
+          <div class="plate-image plate-image--model"><img src="${p.img}" alt="${p.title}"></div>
+        </div>
+      </a>
+      <div class="plate-caption">
+        <div class="plate-line">
+          <span class="plate-title">${p.title}</span>
+        </div>
+        <p class="plate-soon">Coming Soon</p>
+      </div>
+    </article>`;
+  }
 
   function plateHTML(p) {
     const title = p.title + (p.garment ? ' — ' + p.garment : '');
@@ -539,7 +578,12 @@
       <span>Series 02 &mdash; Candidates</span>
       <span class="grid-divider-sub">Three artworks under consideration. Not yet available &mdash; cast your vote on the homepage.</span>
     </div>` +
-    s2.map(plateHTML).join('');
+    s2.map(plateHTML).join('') +
+    `<div class="grid-divider" id="gridDividerDev">
+      <span>In Development</span>
+      <span class="grid-divider-sub">New pieces with mockups ready. Artwork, pricing, and full details are still being finalized.</span>
+    </div>` +
+    PREVIEWS.map(previewPlateHTML).join('');
 
   // Series dropdown
   document.getElementById('seriesFilter').addEventListener('change', () => {
@@ -562,6 +606,7 @@
     const plates = document.querySelectorAll('#grid .plate');
     let visible = 0;
     let candidatesVisible = 0;
+    let devVisible = 0;
     plates.forEach(plate => {
       const typeMatch = filter === 'all' || plate.dataset.type === filter;
       const seriesMatch = series === 'all' || plate.dataset.series === series;
@@ -571,10 +616,13 @@
       if (show) {
         visible++;
         if (plate.dataset.series === '02') candidatesVisible++;
+        if (plate.dataset.series === '03') devVisible++;
       }
     });
     const divider = document.getElementById('gridDivider');
     if (divider) divider.style.display = candidatesVisible === 0 ? 'none' : '';
+    const devDivider = document.getElementById('gridDividerDev');
+    if (devDivider) devDivider.style.display = devVisible === 0 ? 'none' : '';
     const empty = document.getElementById('gridEmpty');
     empty.style.display = visible === 0 ? '' : 'none';
   }

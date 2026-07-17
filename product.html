@@ -499,7 +499,7 @@
 <div class="crumb">
   <a href="collection.html">The Collection</a>
   <span class="sep">/</span>
-  <span>Series 01</span>
+  <span id="crumbSeries">Series 01</span>
   <span class="sep">/</span>
   <span id="crumbPlate">Piece 01</span>
 </div>
@@ -524,7 +524,7 @@
 
   <aside class="info">
     <div class="info-eyebrow eyebrow">
-      <span>Series 01 // MMXXVI</span>
+      <span id="eyebrowSeries">Series 01 // MMXXVI</span>
       <span class="dot"></span>
       <span id="eyebrowPlate">Artwork 01 · Piece 01</span>
     </div>
@@ -534,7 +534,7 @@
 
     <div class="hairline"></div>
 
-    <div class="info-block">
+    <div class="info-block" id="sizeBlock">
       <div class="info-block-label">
         <span>Size</span>
         <a href="#" class="aside" data-size-guide>Size guide →</a>
@@ -594,7 +594,7 @@
         </div></div>
       </div>
 
-      <div class="du-acc-item">
+      <div class="du-acc-item" id="accEdition">
         <button class="du-acc-trigger"><span class="du-acc-label">The Edition</span><span class="du-acc-sign"></span></button>
         <div class="du-acc-panel"><div class="du-acc-inner">
           <dl>
@@ -610,7 +610,7 @@
         </div></div>
       </div>
 
-      <div class="du-acc-item">
+      <div class="du-acc-item" id="accSizeChart">
         <button class="du-acc-trigger"><span class="du-acc-label">Size Chart</span><span class="du-acc-sign"></span></button>
         <div class="du-acc-panel"><div class="du-acc-inner">
 
@@ -660,7 +660,7 @@
 </section>
 
 <!-- The Source -->
-<section class="source-section" data-screen-label="The Source">
+<section class="source-section" id="sourceSection" data-screen-label="The Source">
   <div class="source-inner">
     <div>
       <div class="source-art"><img src="Venezia-Original.png" alt="Venezia — Original Artwork, Tony DeAngelo, 1979"></div>
@@ -688,7 +688,7 @@
 </section>
 
 <!-- Provenance -->
-<section class="provenance" data-screen-label="Provenance">
+<section class="provenance" id="provenanceSection" data-screen-label="Provenance">
   <div class="provenance-inner">
     <div class="prov-item">
       <div class="prov-label">Artwork</div>
@@ -717,8 +717,8 @@
 <section class="also" data-screen-label="Also in Series 01">
   <div class="also-inner">
     <header class="also-head">
-      <span class="eyebrow">Series 01 // Continued</span>
-      <h3>Also on the wall</h3>
+      <span class="eyebrow" id="alsoEyebrow">Series 01 // Continued</span>
+      <h3 id="alsoHeading">Also on the wall</h3>
       <a href="collection.html" class="all">View all pieces →</a>
     </header>
     <div class="also-grid" id="alsoGrid"></div>
@@ -837,12 +837,33 @@
 <script>
   // Product switching via ?p= query param
   (function() {
+    // Pieces with a mockup image but no confirmed artwork, pricing, or sizing yet.
+    // Rendered in a stripped-down "preview" mode below — no invented details.
+    var PREVIEWS = {
+      leaningtowerofpizza: { title:'Leaning Tower of Pizza', img:'Leaningtowerofpizza-mock.png' },
+      palatinehill:        { title:'Palatine Hill',          img:'palatine-hill.png' },
+      villadeste:          { title:'Villa d\'Este',           img:'villa-d-este.png' },
+      spiaggiasanmarco:    { title:'Spiaggia San Marco',      img:'spaggia-sanmarco.png' },
+      thewedge:            { title:'The Wedge', sub:'1990',  img:'thewedge.png' },
+      ostiaantica:         { title:'Ostia Antica',            img:'ostia-antica.png' },
+      'verona-oat':        { title:'Verona', sub:'Oat',      img:'verona-oat.png' },
+      'verona-black':      { title:'Verona', sub:'Black',    img:'verona-black.png' },
+      windsea:             { title:'Wind & Sea', sub:'1999', img:'wind-sea.png' },
+      wavesoflife:         { title:'Waves of Life', sub:'1990', img:'wavesoflife-mock.png' }
+    };
+
+    var key = new URLSearchParams(location.search).get('p') || 'tee';
+
+    if (PREVIEWS[key]) {
+      renderPreview(PREVIEWS[key], key);
+      return;
+    }
+
     var PRODS = {
       tee:    { plate:'01', garment:'Tee',      price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'Venezia-tee-m.png',    flat:'Venezia-tee.png',    sizes:['S','M','L','XL','2XL'] },
       hoodie: { plate:'02', garment:'Hoodie',   price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png', sizes:['S','M','L','XL','2XL'] },
       crew:   { plate:'03', garment:'Crewneck', price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'Venezia-crew-m.png',   flat:'Venezia-crew.png',   sizes:['S','M','L','XL','2XL','3XL'] }
     };
-    var key = new URLSearchParams(location.search).get('p') || 'tee';
     var p = PRODS[key] || PRODS.tee;
 
     document.title = 'Venezia ' + p.garment + ' — The DeAngelo Series';
@@ -931,6 +952,73 @@
           '</div>' +
         '</article>';
       }).join('');
+    }
+
+    // ── Preview mode: mockup exists, artwork/pricing/sizing do not yet.
+    // No invented details are ever shown — every unconfirmed field is
+    // replaced with an honest "to be announced" state.
+    function renderPreview(p, slug) {
+      var titleHtml = p.sub ? (p.title + '<br><em>' + p.sub + '</em>') : p.title;
+      document.title = p.title + ' — The DeAngelo Series';
+
+      document.getElementById('crumbSeries').textContent = 'In Development';
+      document.getElementById('crumbPlate').textContent = p.title;
+      document.getElementById('eyebrowSeries').textContent = 'In Development // MMXXVI';
+      document.getElementById('eyebrowPlate').textContent = 'Details coming soon';
+      document.getElementById('productTitle').innerHTML = titleHtml;
+      document.getElementById('productPrice').textContent = 'Coming Soon';
+
+      var sizeBlock = document.getElementById('sizeBlock');
+      if (sizeBlock) sizeBlock.style.display = 'none';
+
+      var cta = document.getElementById('ctaBtn');
+      cta.textContent = 'Coming Soon';
+      cta.disabled = true;
+      cta.setAttribute('aria-disabled', 'true');
+      cta.removeAttribute('data-add-to-cart');
+
+      var mImg = document.getElementById('frameModel');
+      mImg.src = p.img;
+      mImg.alt = p.title;
+
+      var thumbsEl = document.getElementById('thumbs');
+      if (thumbsEl) thumbsEl.style.display = 'none';
+      var counterEl = document.getElementById('counter');
+      if (counterEl) counterEl.style.display = 'none';
+
+      ['detailMaterial', 'detailFit', 'detailPrint'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = 'To be announced.';
+      });
+
+      ['accEdition', 'accSizeChart', 'sourceSection', 'provenanceSection'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+      });
+
+      var alsoEyebrow = document.getElementById('alsoEyebrow');
+      var alsoHeading = document.getElementById('alsoHeading');
+      if (alsoEyebrow) alsoEyebrow.textContent = 'In Development // Continued';
+      if (alsoHeading) alsoHeading.textContent = 'More in development';
+
+      var alsoGrid = document.getElementById('alsoGrid');
+      if (alsoGrid) {
+        var others = Object.keys(PREVIEWS).filter(function(k) { return k !== slug; });
+        alsoGrid.innerHTML = others.map(function(k) {
+          var o = PREVIEWS[k];
+          return '<article class="plate">' +
+            '<a class="plate-link" href="product.html?p=' + k + '">' +
+              '<div class="plate-image-wrap">' +
+                '<div class="plate-image plate-image--model"><img src="' + o.img + '" alt="' + o.title + '"></div>' +
+              '</div>' +
+            '</a>' +
+            '<div>' +
+              '<div class="plate-line"><span>' + o.title + '</span></div>' +
+              '<p class="plate-price">Coming Soon</p>' +
+            '</div>' +
+          '</article>';
+        }).join('');
+      }
     }
   })();
 </script>
