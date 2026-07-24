@@ -218,7 +218,6 @@
     <section class="section">
       <h2 class="section-title">Send a message</h2>
 
-      <!-- Form scaffolded for /api/contact — not yet connected. Submit handler intercepts until backend is live. -->
       <form class="contact-form" id="contactForm" action="/api/contact" method="POST" novalidate>
         <div class="field">
           <label for="cf-name">Name</label>
@@ -234,14 +233,16 @@
         </div>
         <div class="field">
           <label for="cf-message">Message</label>
-          <textarea id="cf-message" name="message" placeholder="How can we help?" rows="5" required></textarea>
+          <textarea id="cf-message" name="message" placeholder="How can we help?" rows="5" required minlength="10"></textarea>
+        </div>
+        <!-- Honeypot — hidden from real visitors, left blank by them. Bots that
+             fill every input tip themselves off; server silently ignores it. -->
+        <div style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden" aria-hidden="true">
+          <label for="cf-company">Company</label>
+          <input type="text" id="cf-company" name="company" tabindex="-1" autocomplete="off">
         </div>
         <button type="submit" class="contact-submit" id="contactSubmit">Send message</button>
-        <p class="form-notice" id="formNotice">
-          <strong>Form not yet live.</strong> Email us directly at
-          <a href="mailto:support@thedeangeloseries.com">support@thedeangeloseries.com</a>
-          — we respond within one business day.
-        </p>
+        <p class="form-notice" id="formNotice"></p>
       </form>
     </section>
 
@@ -294,16 +295,63 @@
     document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
   });
 
-  document.getElementById('contactForm').addEventListener('submit', function(e) {
+  document.getElementById('contactForm').addEventListener('submit', function (e) {
     e.preventDefault();
-    // /api/contact not yet configured — show direct email prompt
+
+    var form = e.currentTarget;
     var btn = document.getElementById('contactSubmit');
-    btn.textContent = 'Form not yet live';
-    btn.disabled = true;
     var notice = document.getElementById('formNotice');
-    notice.style.display = 'block';
-    notice.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    function showNotice(html) {
+      notice.innerHTML = html;
+      notice.style.display = 'block';
+      notice.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    var payload = {
+      name: form.name.value.trim(),
+      email: form.email.value.trim(),
+      order_number: form.order_number.value.trim(),
+      message: form.message.value.trim(),
+      company: form.company.value, // honeypot
+    };
+
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    notice.style.display = 'none';
+
+    fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+      .then(function (res) {
+        return res.json().then(function (data) { return { ok: res.ok, data: data }; });
+      })
+      .then(function (result) {
+        if (!result.ok) throw new Error(result.data.error || 'Something went wrong. Please try again.');
+        form.reset();
+        btn.textContent = 'Message sent';
+        showNotice(
+          '<strong>Message sent.</strong> We’ve received it and will reply within one business day. ' +
+          'A confirmation is on its way to <strong>' + escapeHtml(payload.email) + '</strong>.'
+        );
+      })
+      .catch(function (err) {
+        btn.disabled = false;
+        btn.textContent = 'Send message';
+        showNotice(
+          '<strong>' + escapeHtml(err.message) + '</strong><br>' +
+          'You can also email us directly at <a href="mailto:support@thedeangeloseries.com">support@thedeangeloseries.com</a>.'
+        );
+      });
   });
+
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
 </script>
 <script src="site-ui.js"></script>
 </body>

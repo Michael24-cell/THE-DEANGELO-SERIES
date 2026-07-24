@@ -4,6 +4,7 @@ node_modules/
 .env
 .env.local
 .env.*.local
+.dev.vars
 
 # Vercel build output
 .vercel/
