@@ -8,5 +8,8 @@ node_modules/
 # Vercel build output
 .vercel/
 
+# Wrangler local dev state/cache (includes local D1 SQLite state)
+.wrangler/
+
 # macOS
 .DS_Store
