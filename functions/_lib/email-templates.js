@@ -131,11 +131,11 @@ export function deliveredTemplate(order) {
   const bodyHtml = `
     <p style="margin:0 0 16px;">${greeting}</p>
     <p style="margin:0 0 20px;">Your order <strong>${escapeHtml(order.orderNumber)}</strong> has been delivered.</p>
-    <p style="margin:0;color:${BRAND.muted};">Damage or defect claims can be reported within 14 days of delivery — just reply to this email.</p>
+    <p style="margin:0;color:${BRAND.muted};">All sales are final. Damage, manufacturing-defect, or incorrect-item claims must be submitted within 7 days of delivery and are subject to review — just reply to this email.</p>
   `;
   return {
     subject: `Delivered — ${order.orderNumber}`,
     html: layout({ preheader: `Order ${order.orderNumber} delivered`, bodyHtml }),
-    text: `${greeting}\n\nYour order ${order.orderNumber} has been delivered.\n\nDamage or defect claims can be reported within 14 days of delivery — just reply to this email.`,
+    text: `${greeting}\n\nYour order ${order.orderNumber} has been delivered.\n\nAll sales are final. Damage, manufacturing-defect, or incorrect-item claims must be submitted within 7 days of delivery and are subject to review — just reply to this email.`,
   };
 }
