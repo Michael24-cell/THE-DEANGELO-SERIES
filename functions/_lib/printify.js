@@ -109,16 +109,23 @@ export async function getShippingRates(env, { items, address }) {
 
   const data = await printifyRequest(env, 'POST', `/shops/${env.PRINTIFY_SHOP_ID}/orders/shipping.json`, payload);
 
-  // Printify's shipping response shape is { standard: <cents>, express: <cents>, ... }
-  // (cost per named method, not a list) — normalize to a stable option list.
+  // Printify's shipping response shape is { standard: <cents>, express: <cents>,
+  // priority: <cents>, economy: <cents>, ... } (cost per named method, not a
+  // list). The site only ever offers Economy and Standard — Express, Priority,
+  // and Printify Express are not options we support, so they are dropped here
+  // rather than merely hidden by the frontend. If Printify doesn't return an
+  // `economy` rate for this cart/print-provider combo, only `standard` (if
+  // present) comes through — nothing is fabricated to fill the gap.
+  const ALLOWED_METHOD_KEYS = ['economy', 'standard'];
   const options = Object.entries(data || {})
-    .filter(([, cents]) => Number.isFinite(cents))
+    .filter(([methodKey, cents]) => ALLOWED_METHOD_KEYS.includes(methodKey) && Number.isFinite(cents))
     .map(([methodKey, cents]) => ({
       id: methodKey,
       label: methodKey.charAt(0).toUpperCase() + methodKey.slice(1),
       amountCents: cents,
       currency: 'usd',
-    }));
+    }))
+    .sort((a, b) => ALLOWED_METHOD_KEYS.indexOf(a.id) - ALLOWED_METHOD_KEYS.indexOf(b.id));
 
   return { options };
 }
