@@ -7,3 +7,10 @@ pages_build_output_dir = "."
 binding = "DB"
 database_name = "deangelo-series-orders"
 database_id = "89676fb8-49c5-4824-9b1c-3dacc59c0455"
+
+[vars]
+PRINTIFY_SHOP_ID = "26931439"
+PRINTIFY_AUTO_SEND_TO_PRODUCTION = "false"
+FROM_EMAIL = "The DeAngelo Series <orders@thedeangeloseries.com>"
+SUPPORT_EMAIL = "support@thedeangeloseries.com"
+REPLY_TO_EMAIL = "support@thedeangeloseries.com"
