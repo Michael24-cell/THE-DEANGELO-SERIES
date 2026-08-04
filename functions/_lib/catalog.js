@@ -53,7 +53,7 @@ export const CATALOG = {
   },
   'arhus-old-town-tee': {
     name: 'Arhus, The Old Town — Tee',
-    image: 'https://thedeangeloseries.com/Arhus, The Old Town.png',
+    image: 'https://thedeangeloseries.com/Arhus%2C%20The%20Old%20Town.png',
     currency: 'usd',
     sizes: ['S', 'M', 'L', 'XL', '2XL'],
     colors: ['Black'],
