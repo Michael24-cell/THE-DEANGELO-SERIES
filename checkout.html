@@ -466,8 +466,8 @@
 
         <div class="field-group">
           <div class="field">
-            <label>Email address</label>
-            <input type="email" placeholder="you@email.com">
+            <label>Email address <span class="opt">Optional — you can enter it on Stripe instead</span></label>
+            <input type="email" id="checkoutEmail" placeholder="you@email.com">
           </div>
           <label class="check">
             <input type="checkbox" checked>
@@ -484,25 +484,9 @@
         </div>
 
         <div class="field-group">
-          <div class="field-row two">
-            <div class="field"><label>First name</label><input></div>
-            <div class="field"><label>Last name</label><input></div>
-          </div>
-          <div class="field"><label>Address</label><input></div>
-          <div class="field"><label>Apartment, suite <span class="opt">Optional</span></label><input></div>
-          <div class="field-row three">
-            <div class="field"><label>City</label><input></div>
-            <div class="field"><label>State</label><input></div>
-            <div class="field"><label>ZIP</label><input></div>
-          </div>
-          <div class="field-row two">
-            <div class="field">
-              <label>Country</label>
-              <select><option>United States</option><option>Canada</option><option>United Kingdom</option><option>Italy</option><option>France</option><option>Japan</option></select>
-            </div>
-            <div class="field"><label>Phone <span class="opt">For delivery only</span></label><input></div>
-          </div>
-
+          <p style="font-size:.85rem;font-weight:300;color:var(--ink-dim);margin-top:-4px">
+            Your shipping address is collected securely on the next step, at Stripe.
+          </p>
           <div class="ship-methods">
             <button class="ship-method is-active" type="button" data-ship="standard">
               <span class="ship-radio"></span>
@@ -523,51 +507,25 @@
           <span class="step-aside">All transactions in USD</span>
         </div>
 
-        <div class="pay-card" aria-label="Payment placeholder">
-          <div class="pay-row">
-            <div class="pay-field">
-              <label>Card number</label>
-              <div class="input">1234  1234  1234  1234</div>
-            </div>
-          </div>
-          <div class="pay-row split">
-            <div class="pay-field">
-              <label>Expiry</label>
-              <div class="input">MM / YY</div>
-            </div>
-            <div class="pay-field">
-              <label>CVC</label>
-              <div class="input">CVC</div>
-            </div>
-          </div>
-          <div class="pay-row">
-            <div class="pay-field">
-              <label>Cardholder name</label>
-              <div class="input">Name as it appears on the card</div>
-            </div>
-          </div>
-        </div>
-
-        <label class="check">
-          <input type="checkbox" checked>
-          <span>Billing address is the same as shipping address.</span>
-        </label>
-
-        <div class="pay-note">
+        <div class="pay-note" style="margin-top:0">
           <span class="lock"></span>
-          <span>Stripe payment integration — coming at launch</span>
+          <span>Card details are entered securely on Stripe. This page never collects card data.</span>
         </div>
       </div>
 
       <!-- Submit -->
       <div class="submit-row">
-        <p class="submit-policy">All sales are final. Checkout payment processing is not yet live — no order will be placed.</p>
-        <button class="submit" type="button" disabled aria-disabled="true">
-          <span>Checkout coming soon</span>
-          <span class="total">Not yet live</span>
+        <p class="submit-policy" id="checkoutPolicyNote">Test mode — no real payment will be charged.</p>
+        <button class="submit" type="button" id="checkoutSubmit">
+          <span id="checkoutSubmitLabel">Continue to Payment</span>
+          <span class="total" id="checkoutSubmitTotal">Calculated at checkout</span>
         </button>
+        <p class="submit-fine" id="checkoutError" role="alert" style="display:none;color:#a33"></p>
         <p class="submit-fine">
           By completing this order you accept the <a href="terms.html">Terms</a> &amp; <a href="privacy-policy.html">Privacy</a>.
+        </p>
+        <p class="submit-fine">
+          All sales are final. Damage, manufacturing-defect, or incorrect-item claims must be submitted within 7 days of delivery and are subject to review. <a href="refund-policy.html">View policy</a>
         </p>
       </div>
 
@@ -579,72 +537,54 @@
     <div class="summary">
 
       <div class="summary-eyebrow">
-        <span>Your Piece</span>
-        <span class="right">01 item</span>
+        <span>Your Collection</span>
+        <span class="right" id="summItemCount">0 items</span>
       </div>
 
-      <div class="summ-stage" id="summStage">
-        <div class="frame is-active" data-kind="front">
-          <img src="Venezia-tee-m.png" alt="Venezia Tee — Model">
-        </div>
-        <div class="frame" data-kind="back">
-          <img src="Venezia-tee.png" alt="Venezia Tee — Flat">
-        </div>
-        <div class="frame" data-kind="detail">
-          <img src="Venezia-Hoodie-m.png" alt="Venezia — Hoodie">
-        </div>
-        <div class="frame" data-kind="artwork">
-          <img src="Venezia-Original.png" alt="Venezia — Original Artwork, Tony DeAngelo, 1979" style="object-fit:contain;background:#F5F5F1;">
-        </div>
-
-        <button class="summ-arrow prev" id="summPrev" aria-label="Previous image">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M15 5 L7 12 L15 19"/></svg>
-        </button>
-        <button class="summ-arrow next" id="summNext" aria-label="Next image">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M9 5 L17 12 L9 19"/></svg>
-        </button>
-        <div class="summ-counter" id="summCounter">01 / 04</div>
+      <div id="checkoutEmpty" style="display:none;padding:48px 0;text-align:center">
+        <p style="font-family:var(--font-serif);font-style:italic;font-size:1.3rem;color:var(--ink-dim);margin-bottom:16px">Your collection is empty.</p>
+        <a href="collection.html" style="font-size:11px;letter-spacing:.3em;text-transform:uppercase;text-decoration:underline">Browse the series &rarr;</a>
       </div>
 
-      <div class="summ-caption">
-        <div class="left">
-          <div class="plate-line"><span>01</span><span class="sep">//</span><span>Venezia — Tee</span></div>
-          <div class="plate-meta">Size M · Qty 01 · Series 01</div>
+      <div id="checkoutFilled">
+        <div class="summ-stage" id="summStage">
+          <img id="summStageImg" src="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
         </div>
-        <div class="price">$64.00</div>
-      </div>
 
-      <div class="placard">
-        <div class="eyebrow-mini">The Piece</div>
-        <p class="pull">The painting, translated to cotton.</p>
-        <p>Heavyweight 10.5oz organic cotton, oversized boxy tee. Gallery-grade water-based screen print.</p>
-      </div>
+        <div id="summItems"></div>
 
-      <div class="source-mini">
-        <div class="source-mini-art">
-          <img src="Venezia-Original.png" alt="Venezia — Original Artwork" style="width:100%;height:100%;object-fit:contain;padding:6px;">
+        <div class="placard">
+          <div class="eyebrow-mini">The Piece</div>
+          <p class="pull">The painting, translated to cotton.</p>
+          <p>Heavyweight 10.5oz organic cotton, oversized boxy tee. Gallery-grade water-based screen print.</p>
         </div>
-        <div class="source-mini-text">
-          <div class="eyebrow-mini">The Source</div>
-          <div class="title">Venezia</div>
-          <div class="meta">Watercolour · 1979 · Tony DeAngelo</div>
-        </div>
-      </div>
 
-      <div class="totals">
-        <div class="totals-row"><span class="label">Subtotal</span><span>$64.00</span></div>
-        <div class="totals-row"><span class="label">Shipping</span><span>Calculated at checkout</span></div>
-        <div class="totals-row"><span class="label">Tax <span class="est">Est.</span></span><span>Calculated at checkout</span></div>
-        <div class="totals-total">
-          <span class="label">Total <em style="font-style:normal;font-size:9px;letter-spacing:.3em;opacity:.6;">USD</em></span>
-          <span class="amount" style="font-family:var(--font-sans);font-size:1rem;letter-spacing:.12em;text-transform:uppercase">Calculated at checkout</span>
+        <div class="source-mini">
+          <div class="source-mini-art">
+            <img src="Venezia-Original.png" alt="Venezia — Original Artwork" style="width:100%;height:100%;object-fit:contain;padding:6px;">
+          </div>
+          <div class="source-mini-text">
+            <div class="eyebrow-mini">The Source</div>
+            <div class="title">Venezia</div>
+            <div class="meta">Watercolour · 1979 · Tony DeAngelo</div>
+          </div>
         </div>
-      </div>
 
-      <div class="reassure">
-        <span>Damage &amp; defect claims within 14 days</span>
-        <span>Made to order in the U.S.</span>
-        <span>Tracked shipping</span>
+        <div class="totals">
+          <div class="totals-row"><span class="label">Subtotal</span><span id="summSubtotal">$0.00</span></div>
+          <div class="totals-row"><span class="label">Shipping</span><span>Calculated at checkout</span></div>
+          <div class="totals-row"><span class="label">Tax <span class="est">Est.</span></span><span>Calculated at checkout</span></div>
+          <div class="totals-total">
+            <span class="label">Total <em style="font-style:normal;font-size:9px;letter-spacing:.3em;opacity:.6;">USD</em></span>
+            <span class="amount" style="font-family:var(--font-sans);font-size:1rem;letter-spacing:.12em;text-transform:uppercase">Calculated at checkout</span>
+          </div>
+        </div>
+
+        <div class="reassure">
+          <span>All sales final &mdash; claims reviewed within 7 days</span>
+          <span>Made to order in the U.S.</span>
+          <span>Tracked shipping</span>
+        </div>
       </div>
     </div>
   </aside>
@@ -694,20 +634,7 @@
 </section>
 
 <script>
-  // Carousel
-  const stage = document.getElementById('summStage');
-  const counter = document.getElementById('summCounter');
-  const frames = [...stage.querySelectorAll('.frame')];
-  let idx = 0;
-  function show(i){
-    idx = (i + frames.length) % frames.length;
-    frames.forEach((f, k) => f.classList.toggle('is-active', k === idx));
-    counter.textContent = String(idx+1).padStart(2,'0') + ' / 0' + frames.length;
-  }
-  document.getElementById('summPrev').addEventListener('click', () => show(idx-1));
-  document.getElementById('summNext').addEventListener('click', () => show(idx+1));
-
-  // Shipping toggle (UI only)
+  // Shipping toggle (UI only — Stripe Checkout collects the real address)
   document.querySelectorAll('.ship-method').forEach(m => {
     m.addEventListener('click', () => {
       document.querySelectorAll('.ship-method').forEach(x => x.classList.remove('is-active'));
@@ -715,8 +642,108 @@
     });
   });
 
-  // Pre-launch: payment is not live. The disabled button must not submit or
-  // navigate to checkout-success.html until a real Stripe Session exists.
+  // ── Cart summary + Stripe Checkout submission ─────────────────────────────
+  // Reads the same 'deangelo_cart' localStorage key site-ui.js writes to.
+  // Price shown here is a display estimate only — the server (create-checkout-
+  // session) looks up the trusted price itself and ignores anything the
+  // browser sends, so this value is never what the customer is actually charged.
+  (function () {
+    var CART_KEY = 'deangelo_cart';
+    function money(n) { return '$' + n.toFixed(2); }
+
+    function loadCart() {
+      try { return JSON.parse(localStorage.getItem(CART_KEY)) || []; }
+      catch (e) { return []; }
+    }
+
+    var cart = loadCart();
+    var emptyEl  = document.getElementById('checkoutEmpty');
+    var filledEl = document.getElementById('checkoutFilled');
+    var submitBtn = document.getElementById('checkoutSubmit');
+
+    if (!cart.length) {
+      emptyEl.style.display = '';
+      filledEl.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.setAttribute('aria-disabled', 'true');
+      return;
+    }
+
+    document.getElementById('summItemCount').textContent =
+      cart.length + (cart.length === 1 ? ' item' : ' items');
+
+    var firstImg = document.getElementById('summStageImg');
+    if (cart[0].img) { firstImg.src = cart[0].img; firstImg.alt = cart[0].name || ''; }
+
+    var itemsEl = document.getElementById('summItems');
+    itemsEl.innerHTML = cart.map(function (it, i) {
+      var num = String(i + 1).padStart(2, '0');
+      return '<div class="summ-caption">' +
+        '<div class="left">' +
+          '<div class="plate-line"><span>' + num + '</span><span class="sep">//</span><span>' + (it.name || '') + '</span></div>' +
+          '<div class="plate-meta">Size ' + (it.size || '') + ' &middot; Qty ' + String(it.qty).padStart(2, '0') + ' &middot; Series 01</div>' +
+        '</div>' +
+        '<div class="price">' + money((it.price || 0) * (it.qty || 1)) + '</div>' +
+      '</div>';
+    }).join('');
+
+    var subtotal = cart.reduce(function (sum, it) { return sum + (it.price || 0) * (it.qty || 1); }, 0);
+    document.getElementById('summSubtotal').textContent = money(subtotal);
+    document.getElementById('checkoutSubmitTotal').textContent = money(subtotal) + ' + shipping/tax';
+
+    function showError(msg) {
+      var el = document.getElementById('checkoutError');
+      el.textContent = msg;
+      el.style.display = '';
+    }
+    function clearError() {
+      var el = document.getElementById('checkoutError');
+      el.style.display = 'none';
+      el.textContent = '';
+    }
+
+    submitBtn.addEventListener('click', function () {
+      clearError();
+
+      var freshCart = loadCart();
+      if (!freshCart.length) {
+        showError('Your collection is empty.');
+        return;
+      }
+      if (freshCart.some(function (it) { return !it.slug; })) {
+        showError('One of the items in your collection is out of date — please remove and re-add it, then try again.');
+        return;
+      }
+
+      var items = freshCart.map(function (it) {
+        return { slug: it.slug, size: it.size, quantity: it.qty || 1 };
+      });
+      var email = (document.getElementById('checkoutEmail').value || '').trim();
+
+      submitBtn.disabled = true;
+      document.getElementById('checkoutSubmitLabel').textContent = 'Redirecting to Stripe…';
+
+      fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: items, email: email || undefined }),
+      })
+        .then(function (res) {
+          return res.json().then(function (data) { return { ok: res.ok, data: data }; });
+        })
+        .then(function (result) {
+          if (!result.ok || !result.data.url) {
+            throw new Error(result.data.error || 'Could not start checkout. Please try again.');
+          }
+          window.location.href = result.data.url;
+        })
+        .catch(function (err) {
+          showError(err.message || 'Something went wrong. Please try again.');
+          submitBtn.disabled = false;
+          document.getElementById('checkoutSubmitLabel').textContent = 'Continue to Payment';
+        });
+    });
+  })();
 
   // Series 02 vote — presentation-only local selection (same key as site-ui.js).
   // No aggregate counts, no backend. Persisted per device, changeable.

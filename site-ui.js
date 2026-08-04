@@ -274,7 +274,7 @@
   function cartSubtotal() {
     return cart.reduce(function (n, it) { return n + it.price * it.qty; }, 0);
   }
-  function keyOf(it) { return it.plate + "|" + it.size; }
+  function keyOf(it) { return (it.slug || it.plate) + "|" + it.size; }
 
   function addToCart(item) {
     var hit = null;
@@ -283,7 +283,7 @@
     }
     if (hit) hit.qty += item.qty || 1;
     else cart.push({
-      plate: item.plate, name: item.name, size: item.size,
+      slug: item.slug || "", plate: item.plate, name: item.name, size: item.size,
       price: item.price, kind: item.kind || "model", img: item.img || "", qty: item.qty || 1
     });
     saveCart(cart);
@@ -565,6 +565,7 @@
     var name = trigger.getAttribute("data-name");
     var plate = trigger.getAttribute("data-plate");
     var price = trigger.getAttribute("data-price");
+    var slug = trigger.getAttribute("data-slug") || "";
     var kind = trigger.getAttribute("data-kind") || "model";
     var size;
 
@@ -589,7 +590,7 @@
       if (activeFrame) img = activeFrame.getAttribute("src");
     }
     return {
-      name: name, plate: plate, size: size,
+      name: name, plate: plate, size: size, slug: slug,
       price: Math.round(parseFloat(price) || 0), kind: kind, img: img || "", qty: 1
     };
   }
