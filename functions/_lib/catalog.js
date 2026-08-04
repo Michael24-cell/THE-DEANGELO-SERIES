@@ -10,12 +10,24 @@
 //   Venezia Crewneck   $84.00 base / $88.00 at 2XL, 3XL
 //
 // Printify mapping confirmed live via GET /v1/shops/26931439/products.json on
-// 2026-07-31 and approved by the site owner. Mapping:
-//   tee    -> "Anhor The Old Town Tee"      (product locked in Printify)
-//   crew   -> "Venezia Crewneck"
-//   hoodie -> "Three-Panel Fleece Hoodie"
+// 2026-07-31 and re-confirmed 2026-08-03 after the Printify product rename:
+//   crew   -> "Venezia Crewneck"                       (unchanged)
+//   hoodie -> "Three-Panel Fleece Hoodie"               (unchanged)
+//   arhus-old-town-tee -> "Arhus, The Old Town - Tee"   (renamed in Printify
+//     from "Anhor The Old Town Tee" — same product ID 6a3cab048606da46840fa2e7,
+//     same print provider (74), same 5 enabled Black variant IDs/SKUs. This
+//     is a DISTINCT product from Venezia Tee — it must never fulfill `tee`.)
 // "Harbor The Old Town T-Shirt" also exists in the shop but has no site
 // product/slug and is intentionally not mapped.
+//
+// `tee` (Venezia Tee) has NO confirmed Printify product as of this pass.
+// It was incorrectly mapped to the Arhus Printify product in an earlier
+// version of this file — that mapping has been removed. Until a real
+// "Venezia Tee" product is created in Printify and its IDs are confirmed
+// here, `tee` cannot be fulfilled and printify-shipping-quote /
+// create-checkout-session will correctly refuse to quote/ship it (see
+// hasCompletePrintifyMapping below). Do not reuse Arhus's or any other
+// product's fulfillment mapping for `tee`.
 //
 // Only the Printify variants the owner confirmed as final are mapped below.
 // The Three-Panel Fleece Hoodie also has enabled XS and 3XL variants in
@@ -25,12 +37,6 @@
 // would mean inventing a retail price, which is not this pass's job. Flag
 // for the owner: if XS/3XL hoodie should be sellable, decide pricing first,
 // then extend `sizes` and the price fields below together.
-//
-// Printify's reported enabled colors are also the opposite of what this
-// catalog previously assumed (tee was previously listed as White, hoodie
-// and crew as Black) — the owner confirmed the newly-reported colors below
-// are final. The site's own product copy/imagery has not been re-audited
-// against this color change in this pass.
 
 export const CATALOG = {
   tee: {
@@ -38,13 +44,25 @@ export const CATALOG = {
     image: 'https://thedeangeloseries.com/Venezia-tee-m.png',
     currency: 'usd',
     sizes: ['S', 'M', 'L', 'XL', '2XL'],
-    colors: ['Black'],
+    colors: ['White'], // Unconfirmed — no Printify product exists yet to verify against.
     basePrice: 6400,      // $64.00, in cents
     upchargePrice: 6800,  // $68.00, in cents
     upchargeSizes: ['2XL'],
     stripeTaxCode: 'txcd_30011000', // Stripe Tax: t-shirts / apparel (clothing)
+    printify: null, // TODO: no confirmed Venezia Tee product in Printify — see module note above.
+  },
+  'arhus-old-town-tee': {
+    name: 'Arhus, The Old Town — Tee',
+    image: 'https://thedeangeloseries.com/Arhus, The Old Town.png',
+    currency: 'usd',
+    sizes: ['S', 'M', 'L', 'XL', '2XL'],
+    colors: ['Black'],
+    basePrice: 6400,      // $64.00, in cents — owner-confirmed to match Venezia Tee's price point.
+    upchargePrice: 6800,  // $68.00, in cents
+    upchargeSizes: ['2XL'],
+    stripeTaxCode: 'txcd_30011000',
     printify: {
-      productId: '6a3cab048606da46840fa2e7', // Anhor The Old Town Tee
+      productId: '6a3cab048606da46840fa2e7', // Arhus, The Old Town - Tee (Printify)
       printProviderId: 74,
       variantIdBySize: {
         S: 118085, M: 118086, L: 118087, XL: 118101, '2XL': 118088,
@@ -168,10 +186,10 @@ export function validateCartItems(items) {
       name: `${entry.name} (${size})`,
       image: entry.image,
       printify: {
-        productId: entry.printify.productId,
-        printProviderId: entry.printify.printProviderId ?? null,
-        variantId: entry.printify.variantIdBySize[size] ?? null,
-        sku: entry.printify.skuBySize?.[size] ?? null,
+        productId: entry.printify?.productId ?? null,
+        printProviderId: entry.printify?.printProviderId ?? null,
+        variantId: entry.printify?.variantIdBySize?.[size] ?? null,
+        sku: entry.printify?.skuBySize?.[size] ?? null,
       },
     };
   });
