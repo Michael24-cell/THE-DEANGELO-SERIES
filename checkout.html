@@ -311,6 +311,24 @@
     margin-top:4px;
   }
   .summ-caption .price{font-weight:300;font-size:1.2rem;font-variant-numeric:tabular-nums}
+  .summ-caption .right-col{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+  .summ-qty{
+    display:flex;align-items:center;gap:2px;
+    border:1px solid var(--ink-hair-soft);
+  }
+  .summ-qty button{
+    width:26px;height:26px;background:none;border:0;color:inherit;font:inherit;font-size:13px;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:.7;
+  }
+  .summ-qty button:hover{opacity:1}
+  .summ-qty .summ-qty-val{
+    min-width:22px;text-align:center;font-size:11px;letter-spacing:.1em;font-variant-numeric:tabular-nums;
+  }
+  .summ-remove{
+    background:none;border:0;color:inherit;font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+    cursor:pointer;opacity:.45;text-decoration:underline;padding:0;
+  }
+  .summ-remove:hover{opacity:.8}
 
   /* Placard description */
   .placard{
@@ -655,41 +673,83 @@
       try { return JSON.parse(localStorage.getItem(CART_KEY)) || []; }
       catch (e) { return []; }
     }
+    function saveCart(c) {
+      try { localStorage.setItem(CART_KEY, JSON.stringify(c)); } catch (e) {}
+    }
 
     var cart = loadCart();
     var emptyEl  = document.getElementById('checkoutEmpty');
     var filledEl = document.getElementById('checkoutFilled');
     var submitBtn = document.getElementById('checkoutSubmit');
+    var itemsEl = document.getElementById('summItems');
 
-    if (!cart.length) {
-      emptyEl.style.display = '';
-      filledEl.style.display = 'none';
-      submitBtn.disabled = true;
-      submitBtn.setAttribute('aria-disabled', 'true');
-      return;
+    function renderSummary() {
+      if (!cart.length) {
+        emptyEl.style.display = '';
+        filledEl.style.display = 'none';
+        submitBtn.disabled = true;
+        submitBtn.setAttribute('aria-disabled', 'true');
+        return;
+      }
+      emptyEl.style.display = 'none';
+      filledEl.style.display = '';
+      submitBtn.disabled = false;
+      submitBtn.removeAttribute('aria-disabled');
+
+      document.getElementById('summItemCount').textContent =
+        cart.length + (cart.length === 1 ? ' item' : ' items');
+
+      var firstImg = document.getElementById('summStageImg');
+      if (cart[0].img) { firstImg.src = cart[0].img; firstImg.alt = cart[0].name || ''; }
+
+      itemsEl.innerHTML = cart.map(function (it, i) {
+        var num = String(i + 1).padStart(2, '0');
+        return '<div class="summ-caption">' +
+          '<div class="left">' +
+            '<div class="plate-line"><span>' + num + '</span><span class="sep">//</span><span>' + (it.name || '') + '</span></div>' +
+            '<div class="plate-meta">Size ' + (it.size || '') + ' &middot; Series 01</div>' +
+          '</div>' +
+          '<div class="right-col">' +
+            '<div class="price">' + money((it.price || 0) * (it.qty || 1)) + '</div>' +
+            '<div class="summ-qty">' +
+              '<button type="button" data-dec="' + i + '" aria-label="Decrease quantity">&minus;</button>' +
+              '<span class="summ-qty-val">' + String(it.qty).padStart(2, '0') + '</span>' +
+              '<button type="button" data-inc="' + i + '" aria-label="Increase quantity">+</button>' +
+            '</div>' +
+            '<button type="button" class="summ-remove" data-remove="' + i + '">Remove</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      var subtotal = cart.reduce(function (sum, it) { return sum + (it.price || 0) * (it.qty || 1); }, 0);
+      document.getElementById('summSubtotal').textContent = money(subtotal);
+      document.getElementById('checkoutSubmitTotal').textContent = money(subtotal) + ' + shipping/tax';
     }
 
-    document.getElementById('summItemCount').textContent =
-      cart.length + (cart.length === 1 ? ' item' : ' items');
+    itemsEl.addEventListener('click', function (e) {
+      var inc = e.target.closest('[data-inc]');
+      var dec = e.target.closest('[data-dec]');
+      var rem = e.target.closest('[data-remove]');
+      if (inc) {
+        var ii = +inc.getAttribute('data-inc');
+        if (cart[ii]) cart[ii].qty = (cart[ii].qty || 1) + 1;
+      } else if (dec) {
+        var di = +dec.getAttribute('data-dec');
+        if (cart[di]) {
+          cart[di].qty = (cart[di].qty || 1) - 1;
+          if (cart[di].qty <= 0) cart.splice(di, 1);
+        }
+      } else if (rem) {
+        cart.splice(+rem.getAttribute('data-remove'), 1);
+      } else {
+        return;
+      }
+      saveCart(cart);
+      clearError();
+      renderSummary();
+    });
 
-    var firstImg = document.getElementById('summStageImg');
-    if (cart[0].img) { firstImg.src = cart[0].img; firstImg.alt = cart[0].name || ''; }
-
-    var itemsEl = document.getElementById('summItems');
-    itemsEl.innerHTML = cart.map(function (it, i) {
-      var num = String(i + 1).padStart(2, '0');
-      return '<div class="summ-caption">' +
-        '<div class="left">' +
-          '<div class="plate-line"><span>' + num + '</span><span class="sep">//</span><span>' + (it.name || '') + '</span></div>' +
-          '<div class="plate-meta">Size ' + (it.size || '') + ' &middot; Qty ' + String(it.qty).padStart(2, '0') + ' &middot; Series 01</div>' +
-        '</div>' +
-        '<div class="price">' + money((it.price || 0) * (it.qty || 1)) + '</div>' +
-      '</div>';
-    }).join('');
-
-    var subtotal = cart.reduce(function (sum, it) { return sum + (it.price || 0) * (it.qty || 1); }, 0);
-    document.getElementById('summSubtotal').textContent = money(subtotal);
-    document.getElementById('checkoutSubmitTotal').textContent = money(subtotal) + ' + shipping/tax';
+    renderSummary();
 
     function showError(msg) {
       var el = document.getElementById('checkoutError');
