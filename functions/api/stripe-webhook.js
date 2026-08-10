@@ -160,8 +160,13 @@ export async function onRequest({ request, env }) {
       shippingPostalCode: address.postal_code || null,
       shippingCountry: address.country || null,
       currency: fullSession.currency || 'usd',
+      // All four amounts come straight from Stripe's own completed-session
+      // object — never from browser input, cart metadata, or a re-computation
+      // on our side. shipping_cost.amount_total is Stripe's canonical
+      // shipping charge (falls back to total_details.amount_shipping for
+      // older API responses where shipping_cost might be absent).
       subtotalAmount: fullSession.amount_subtotal ?? 0,
-      shippingAmount: fullSession.total_details?.amount_shipping ?? 0,
+      shippingAmount: fullSession.shipping_cost?.amount_total ?? fullSession.total_details?.amount_shipping ?? 0,
       taxAmount: fullSession.total_details?.amount_tax ?? 0,
       totalAmount: fullSession.amount_total ?? 0,
       paymentStatus: fullSession.payment_status,
@@ -215,60 +220,144 @@ export async function onRequest({ request, env }) {
   // Failure here no longer withholds the customer's receipt (sent above) —
   // it instead alerts support so a human can follow up.
   if (!order.printify_order_id) {
-    try {
-      const itemsForPrintify = await loadOrderItemsForPrintify(env, order.id);
-      const shippingForPrintify = {
-        firstName: (order.shipping_name || '').split(' ')[0] || '',
-        lastName: (order.shipping_name || '').split(' ').slice(1).join(' ') || '',
-        country: order.shipping_country,
-        region: order.shipping_state,
-        address1: order.shipping_address_line1,
-        address2: order.shipping_address_line2,
-        city: order.shipping_city,
-        zip: order.shipping_postal_code,
-      };
-      const result = await createPrintifyOrder(env, {
-        orderNumber: order.public_order_number,
-        items: itemsForPrintify,
-        shipping: shippingForPrintify,
-        email: order.customer_email,
-      });
-      await updateOrder(env, order.id, {
-        printify_order_id: result.printifyOrderId,
-        fulfillment_status: 'submitted_to_printify',
-      });
-      console.log(`[stripe-webhook] Printify order ${result.printifyOrderId} created for ${order.public_order_number}`);
-    } catch (err) {
-      const reason = (err instanceof PrintifyConfigError || err instanceof PrintifyApiError)
-        ? err.message
-        : 'Unexpected error creating Printify order';
-      console.error(`[stripe-webhook] Printify order creation failed for ${order.public_order_number}:`, reason);
-      await updateOrder(env, order.id, {
-        fulfillment_status: 'awaiting_printify_setup',
-        fulfillment_error: reason,
-      });
-
-      if (env.SUPPORT_EMAIL) {
-        const alertResult = await sendOrderEmailOnce(env, {
-          orderId: order.id,
-          emailType: 'printify_failure_alert',
-          to: env.SUPPORT_EMAIL,
-          buildTemplate: () => printifyFailureAlertTemplate({
-            orderNumber: order.public_order_number, orderId: order.id, reason,
-          }),
-        });
-        if (alertResult.sent) {
-          console.log(`[stripe-webhook] Support alerted for ${order.public_order_number}`);
-        } else if (alertResult.reason !== 'duplicate') {
-          console.error(`[stripe-webhook] Support alert not sent for ${order.public_order_number}: ${alertResult.reason}`);
-        }
-      } else {
-        console.error('[stripe-webhook] SUPPORT_EMAIL not configured — could not send Printify failure alert');
-      }
+    const mismatch = detectAddressMismatch(fullSession, order);
+    if (mismatch) {
+      await handleAddressMismatch(env, order, mismatch);
+    } else {
+      await attemptPrintifyOrderCreation(env, order, fullSession);
     }
   }
 
   return json({ received: true, orderNumber: order.public_order_number }, 200);
+}
+
+// ---------------------------------------------------------------------------
+// create-checkout-session.js quotes shipping against a specific address
+// (stored on the Session as metadata.shipping_quote_*) and attaches that
+// verified amount to the Session — but Stripe's own hosted page also
+// collects a shipping address, and Stripe gives no way to lock that
+// collection to match what was quoted. If what Stripe actually collected
+// doesn't match, the charged shipping amount may not correspond to where
+// this is shipping. Returns a description string if mismatched, else null.
+// ---------------------------------------------------------------------------
+function detectAddressMismatch(fullSession, order) {
+  const quotedCountry = fullSession.metadata?.shipping_quote_country || '';
+  const quotedRegion = (fullSession.metadata?.shipping_quote_region || '').toUpperCase();
+  const quotedZip5 = (fullSession.metadata?.shipping_quote_zip || '').slice(0, 5);
+  const actualCountry = order.shipping_country || '';
+  const actualRegion = (order.shipping_state || '').toUpperCase();
+  const actualZip5 = (order.shipping_postal_code || '').slice(0, 5);
+
+  if (!quotedCountry) return null; // no quote metadata (e.g. an older/legacy session) — nothing to compare
+  const mismatched = quotedCountry !== actualCountry || quotedRegion !== actualRegion || quotedZip5 !== actualZip5;
+  if (!mismatched) return null;
+
+  return `Shipping was quoted for ${quotedCountry}/${quotedRegion}/${quotedZip5} but Stripe collected ${actualCountry}/${actualRegion}/${actualZip5} — refusing to auto-fulfill at a possibly-wrong rate.`;
+}
+
+// ---------------------------------------------------------------------------
+// Never auto-fulfills on a detected address mismatch — flags the order for
+// manual review and alerts support instead (same alert channel/template as
+// a Printify failure, just a different reason).
+// ---------------------------------------------------------------------------
+async function handleAddressMismatch(env, order, reason) {
+  console.error(`[stripe-webhook] Address mismatch for ${order.public_order_number}: ${reason}`);
+  await updateOrder(env, order.id, {
+    fulfillment_status: 'awaiting_manual_review',
+    fulfillment_error: reason,
+  });
+
+  if (!env.SUPPORT_EMAIL) {
+    console.error('[stripe-webhook] SUPPORT_EMAIL not configured — could not send address-mismatch alert');
+    return;
+  }
+  const alertResult = await sendOrderEmailOnce(env, {
+    orderId: order.id,
+    emailType: 'printify_failure_alert',
+    to: env.SUPPORT_EMAIL,
+    buildTemplate: () => printifyFailureAlertTemplate({
+      orderNumber: order.public_order_number, orderId: order.id, reason,
+    }),
+  });
+  if (alertResult.sent) {
+    console.log(`[stripe-webhook] Support alerted (address mismatch) for ${order.public_order_number}`);
+  } else if (alertResult.reason !== 'duplicate') {
+    console.error(`[stripe-webhook] Support alert not sent for ${order.public_order_number}: ${alertResult.reason}`);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// send_to_production is never called here — see functions/_lib/printify.js.
+// PRINTIFY_AUTO_SEND_TO_PRODUCTION stays irrelevant to this step; it only
+// gates the separate, unused-by-default sendPrintifyOrderToProduction().
+// Failure here no longer withholds the customer's receipt (sent earlier in
+// onRequest) — it instead alerts support so a human can follow up.
+// ---------------------------------------------------------------------------
+async function attemptPrintifyOrderCreation(env, order, fullSession) {
+  try {
+    // Confirms Printify is being asked to fulfill with the same shipping
+    // method Stripe actually charged for (requirement: "Printify receives
+    // the same selected method used by Stripe"). PRINTIFY_SHIPPING_METHOD_ID
+    // is a single global env var today because 'standard' is the only
+    // method ever offered (getShippingRates() filters everything else out
+    // before it can reach create-checkout-session.js) — if a second method
+    // (e.g. 'economy') is ever exposed, this needs a real per-option
+    // mapping instead of one global ID.
+    const shippingOptionId = fullSession.metadata?.shipping_option_id;
+    if (shippingOptionId && shippingOptionId !== 'standard') {
+      console.warn(`[stripe-webhook] Order ${order.public_order_number} was charged for shipping method "${shippingOptionId}", but Printify fulfillment still uses the single PRINTIFY_SHIPPING_METHOD_ID env var — verify these match.`);
+    }
+
+    const itemsForPrintify = await loadOrderItemsForPrintify(env, order.id);
+    const shippingForPrintify = {
+      firstName: (order.shipping_name || '').split(' ')[0] || '',
+      lastName: (order.shipping_name || '').split(' ').slice(1).join(' ') || '',
+      country: order.shipping_country,
+      region: order.shipping_state,
+      address1: order.shipping_address_line1,
+      address2: order.shipping_address_line2,
+      city: order.shipping_city,
+      zip: order.shipping_postal_code,
+    };
+    const result = await createPrintifyOrder(env, {
+      orderNumber: order.public_order_number,
+      items: itemsForPrintify,
+      shipping: shippingForPrintify,
+      email: order.customer_email,
+    });
+    await updateOrder(env, order.id, {
+      printify_order_id: result.printifyOrderId,
+      fulfillment_status: 'submitted_to_printify',
+    });
+    console.log(`[stripe-webhook] Printify order ${result.printifyOrderId} created for ${order.public_order_number}`);
+  } catch (err) {
+    const reason = (err instanceof PrintifyConfigError || err instanceof PrintifyApiError)
+      ? err.message
+      : 'Unexpected error creating Printify order';
+    console.error(`[stripe-webhook] Printify order creation failed for ${order.public_order_number}:`, reason);
+    await updateOrder(env, order.id, {
+      fulfillment_status: 'awaiting_printify_setup',
+      fulfillment_error: reason,
+    });
+
+    if (!env.SUPPORT_EMAIL) {
+      console.error('[stripe-webhook] SUPPORT_EMAIL not configured — could not send Printify failure alert');
+      return;
+    }
+    const alertResult = await sendOrderEmailOnce(env, {
+      orderId: order.id,
+      emailType: 'printify_failure_alert',
+      to: env.SUPPORT_EMAIL,
+      buildTemplate: () => printifyFailureAlertTemplate({
+        orderNumber: order.public_order_number, orderId: order.id, reason,
+      }),
+    });
+    if (alertResult.sent) {
+      console.log(`[stripe-webhook] Support alerted for ${order.public_order_number}`);
+    } else if (alertResult.reason !== 'duplicate') {
+      console.error(`[stripe-webhook] Support alert not sent for ${order.public_order_number}: ${alertResult.reason}`);
+    }
+  }
 }
 
 // ---------------------------------------------------------------------------

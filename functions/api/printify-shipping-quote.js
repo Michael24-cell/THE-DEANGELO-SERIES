@@ -1,23 +1,29 @@
 // Cloudflare Pages Function — Printify shipping quote
 // Route: POST /api/printify-shipping-quote
 //
-// NOT wired into checkout.html yet — this is a standalone capability. The
-// live checkout flow is unchanged by this endpoint's existence; it only
-// takes effect once a future frontend change calls it and passes the chosen
-// option's `id` to /api/create-checkout-session as `shippingOptionId`.
+// Called by checkout.html live, as the customer's shipping address fields
+// are filled in — see the "Shipping" step there. The chosen option's `id`
+// is then sent to /api/create-checkout-session as `shippingOptionId`,
+// alongside the same address, which independently re-quotes and verifies it.
 //
 // Required env vars:
 //   PRINTIFY_API_TOKEN   — never sent to the browser, never logged
 //   PRINTIFY_SHOP_ID
 //
 // The browser may only send { items: [{slug, size, color, quantity}], address }.
-// Every item is resolved against the trusted CATALOG server-side — nothing
-// about price or Printify IDs is ever taken from the request. If any item in
-// the cart lacks a confirmed Printify product/variant mapping (true for
-// every product as of this pass — see functions/_lib/catalog.js), this
-// endpoint returns a clear 409 rather than fabricating a shipping rate.
+// `address` is the customer's actual, full shipping destination (see
+// functions/_lib/address.js) — collected by checkout.html BEFORE a Stripe
+// Checkout Session is created, so the rate quoted here matches the
+// destination create-checkout-session.js will independently re-quote and
+// charge for. Every item is resolved against the trusted CATALOG
+// server-side — nothing about price or Printify IDs is ever taken from the
+// request. If any item in the cart lacks a confirmed Printify product/
+// variant mapping (true for every product as of this pass — see
+// functions/_lib/catalog.js), this endpoint returns a clear 409 rather
+// than fabricating a shipping rate.
 
 import { validateCartItems, CatalogValidationError, hasCompletePrintifyMapping } from '../_lib/catalog.js';
+import { validateAddress, AddressValidationError } from '../_lib/address.js';
 import { getShippingRates, PrintifyConfigError, PrintifyApiError } from '../_lib/printify.js';
 
 export async function onRequest({ request, env }) {
@@ -37,7 +43,9 @@ export async function onRequest({ request, env }) {
     items = validateCartItems(body.items);
     address = validateAddress(body.address);
   } catch (err) {
-    if (err instanceof CatalogValidationError) return json({ error: err.message }, 400);
+    if (err instanceof CatalogValidationError || err instanceof AddressValidationError) {
+      return json({ error: err.message }, 400);
+    }
     throw err;
   }
 
@@ -62,19 +70,6 @@ export async function onRequest({ request, env }) {
     }
     throw err;
   }
-}
-
-function validateAddress(raw) {
-  const country = String(raw?.country || '').trim().toUpperCase();
-  if (!country || country.length !== 2) {
-    throw new CatalogValidationError('A valid destination country is required.');
-  }
-  return {
-    country,
-    region: String(raw?.region || raw?.state || '').trim(),
-    city: String(raw?.city || '').trim(),
-    zip: String(raw?.zip || raw?.postal_code || '').trim(),
-  };
 }
 
 function json(body, status = 200, extraHeaders = {}) {

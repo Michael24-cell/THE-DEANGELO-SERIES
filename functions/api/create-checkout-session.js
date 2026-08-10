@@ -13,28 +13,42 @@
 //                         Dashboard (Settings > Tax). Defaults to disabled.
 //
 // The browser may only send { slug, size, color, quantity } per line item, plus
-// an optional email and an optional shippingOptionId. Price is never trusted
+// an optional email, a required shippingOptionId, and a required
+// shippingAddress (see functions/_lib/address.js). Price is never trusted
 // from the client — name, unit amount, currency, and tax code always come
 // from the shared CATALOG (functions/_lib/catalog.js), which mirrors the
 // prices shown on product.html. `color` is accepted but only to record which
 // of a product's ALREADY-DEFINED colors was picked; it can never introduce a
 // color (or price) that CATALOG doesn't already know about.
 //
-// Shipping: if the browser sends `shippingOptionId`, it is NOT trusted as a
-// price — the amount is independently re-resolved server-side via
-// resolveShippingOption() before being handed to Stripe. See
-// functions/_lib/printify.js for how quotes are produced in the first place.
-// Today no product has a confirmed Printify mapping, so any shippingOptionId
-// will fail to resolve and the request is rejected with a clear error — it
-// never falls through to a guessed or free shipping amount. Omitting
-// shippingOptionId (the only path checkout.html currently exercises) is
-// unaffected and behaves exactly as before: no shipping_options, "Shipping
-// calculated at checkout."
+// Shipping: `shippingOptionId` (e.g. "standard") and `shippingAddress` (the
+// customer's actual destination — collected by checkout.html's own
+// "Shipping" step, BEFORE this call) are both REQUIRED. Neither is trusted
+// for price — the amount is independently re-resolved server-side via
+// resolveShippingOption(), which re-validates the address (see
+// functions/_lib/address.js) and re-queries Printify for a fresh quote
+// against that exact destination, only accepting an amount that appears in
+// that fresh response. See functions/_lib/printify.js — getShippingRates()
+// only ever returns Economy or Standard (Express/Priority/Printify Express
+// are filtered out at that shared source), so an arbitrary, stale, or
+// premium shippingOptionId can never match and is rejected with 400 here.
+//
+// Address-mismatch note: Stripe's own hosted Checkout page also collects a
+// shipping address (`shipping_address_collection` below) — Stripe gives us
+// no API parameter to lock or force that collected address to match the one
+// quoted here, so a customer could in principle type something different on
+// Stripe's page. functions/api/stripe-webhook.js compares the two after
+// payment (country/region/zip, stored in this Session's metadata as
+// shipping_quote_*) and refuses to auto-fulfill on a mismatch rather than
+// silently shipping at a possibly-wrong rate. See that file and the launch
+// checklist for the full writeup of this limitation.
 
 import { validateCartItems, CatalogValidationError } from '../_lib/catalog.js';
+import { validateAddress, AddressValidationError } from '../_lib/address.js';
 import { getShippingRates } from '../_lib/printify.js';
 
-const ALLOWED_SHIP_COUNTRIES = ['US', 'CA', 'GB', 'IT', 'FR', 'JP'];
+const ALLOWED_SHIP_COUNTRIES = ['US'];
+const SHIPPING_LABELS = { standard: 'Standard shipping', economy: 'Economy shipping' };
 
 class ValidationError extends Error {}
 
@@ -76,18 +90,30 @@ export async function onRequest({ request, env }) {
     throw err;
   }
 
-  // ── Optional shipping — never trust a browser-submitted amount ─────────────────
-  // checkout.html does not send shippingOptionId today, so this block is inert
-  // in the current live flow. If a future frontend change starts sending one,
-  // the amount is independently re-resolved here, not taken from the request.
-  let shippingOption = null;
-  if (body.shippingOptionId) {
-    try {
-      shippingOption = await resolveShippingOption(env, body.shippingOptionId, lineItems, body.shippingAddress);
-    } catch (err) {
-      if (err instanceof ValidationError) return json({ error: err.message }, 400);
-      throw err;
-    }
+  // ── Shipping — required, never trust a browser-submitted amount ────────────────
+  // shippingOptionId and a full shippingAddress must both be present. The
+  // address is re-validated (functions/_lib/address.js) and used to get a
+  // fresh Printify quote — the amount is always re-derived here, never taken
+  // from the request body.
+  const shippingOptionId = String(body.shippingOptionId || '').trim();
+  if (!shippingOptionId) {
+    return json({ error: 'A shipping method is required.' }, 400);
+  }
+
+  let shippingAddress;
+  try {
+    shippingAddress = validateAddress(body.shippingAddress);
+  } catch (err) {
+    if (err instanceof AddressValidationError) return json({ error: err.message }, 400);
+    throw err;
+  }
+
+  let shippingOption;
+  try {
+    shippingOption = await resolveShippingOption(env, shippingOptionId, lineItems, shippingAddress);
+  } catch (err) {
+    if (err instanceof ValidationError) return json({ error: err.message }, 400);
+    throw err;
   }
 
   // ── Build the Stripe Checkout Session payload ──────────────────────────────────
@@ -111,26 +137,33 @@ export async function onRequest({ request, env }) {
       },
     })),
     shipping_address_collection: { allowed_countries: ALLOWED_SHIP_COUNTRIES },
+    // shipping_option_id is stored so the webhook/fulfillment step can confirm
+    // Printify is fulfilling with the exact method Stripe actually charged
+    // for. shipping_quote_* records the destination shipping was actually
+    // quoted against, so the webhook can compare it to whatever address
+    // Stripe's own hosted page collects and refuse to auto-fulfill on a
+    // mismatch (see functions/api/stripe-webhook.js and the note above about
+    // Stripe not supporting a locked/prefilled shipping address). Integer
+    // cents throughout; never a float dollar amount.
     metadata: {
       order_source: 'thedeangeloseries.com',
       item_count: String(lineItems.length),
+      shipping_option_id: shippingOption.id,
+      shipping_quote_country: shippingAddress.country,
+      shipping_quote_region: shippingAddress.region,
+      shipping_quote_zip: shippingAddress.zip,
     },
-  };
-
-  if (shippingOption) {
-    // Server-resolved amount only — see resolveShippingOption() below.
-    payload.shipping_options = [{
+    shipping_options: [{
       shipping_rate_data: {
         type: 'fixed_amount',
+        // Server-resolved amount only — see resolveShippingOption() below.
+        // shippingOption.amountCents already comes back as an integer (cents)
+        // from Printify via getShippingRates(); never a browser-supplied value.
         fixed_amount: { amount: shippingOption.amountCents, currency: shippingOption.currency },
-        display_name: shippingOption.label,
+        display_name: SHIPPING_LABELS[shippingOption.id] || shippingOption.label,
       },
-    }];
-  }
-  // If shippingOption is still null: no shipping_options are sent. Do NOT add a
-  // $0 entry here — that would render as "Free shipping," which is not true.
-  // "Shipping calculated at checkout" (checkout.html's current copy) stays
-  // accurate until real Printify rates exist.
+    }],
+  };
 
   if (email) payload.customer_email = email;
   if (taxEnabled) payload.automatic_tax = { enabled: true };
