@@ -41,6 +41,7 @@
 import { CATALOG } from '../_lib/catalog.js';
 import { createPrintifyOrder, PrintifyConfigError, PrintifyApiError } from '../_lib/printify.js';
 import { orderConfirmedTemplate, printifyFailureAlertTemplate } from '../_lib/email-templates.js';
+import { tryNormalizeUSState } from '../_lib/address.js';
 import {
   claimWebhookEvent, findOrderByStripeSession, insertOrder, insertOrderItems,
   updateOrder, recordStatusEvent, sendOrderEmailOnce, orderNumberFromSession,
@@ -242,13 +243,24 @@ export async function onRequest({ request, env }) {
 // ---------------------------------------------------------------------------
 function detectAddressMismatch(fullSession, order) {
   const quotedCountry = fullSession.metadata?.shipping_quote_country || '';
-  const quotedRegion = (fullSession.metadata?.shipping_quote_region || '').toUpperCase();
+  const quotedRegionRaw = fullSession.metadata?.shipping_quote_region || '';
   const quotedZip5 = (fullSession.metadata?.shipping_quote_zip || '').slice(0, 5);
   const actualCountry = order.shipping_country || '';
-  const actualRegion = (order.shipping_state || '').toUpperCase();
+  const actualRegionRaw = order.shipping_state || '';
   const actualZip5 = (order.shipping_postal_code || '').slice(0, 5);
 
   if (!quotedCountry) return null; // no quote metadata (e.g. an older/legacy session) — nothing to compare
+
+  // Normalize both sides through the same US-state table create-checkout-
+  // session.js's validateAddress() already normalizes the quoted side with —
+  // "California" vs "CA" is the same real state and must not be treated as a
+  // mismatch. tryNormalizeUSState() never throws: if either side isn't a
+  // recognized US state/territory (e.g. a non-US region slipping through),
+  // it falls back to a plain case-insensitive string compare rather than
+  // crashing the webhook.
+  const quotedRegion = tryNormalizeUSState(quotedRegionRaw) ?? quotedRegionRaw.trim().toUpperCase();
+  const actualRegion = tryNormalizeUSState(actualRegionRaw) ?? actualRegionRaw.trim().toUpperCase();
+
   const mismatched = quotedCountry !== actualCountry || quotedRegion !== actualRegion || quotedZip5 !== actualZip5;
   if (!mismatched) return null;
 
