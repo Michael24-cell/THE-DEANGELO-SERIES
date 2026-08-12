@@ -40,6 +40,10 @@ export function createFakeD1() {
               const cols = ['id','public_order_number','stripe_checkout_session_id','stripe_payment_intent_id','customer_email','customer_name','shipping_name','shipping_address_line1','shipping_address_line2','shipping_city','shipping_state','shipping_postal_code','shipping_country','currency','subtotal_amount','shipping_amount','tax_amount','total_amount','payment_status','fulfillment_status','created_at','updated_at'];
               const row = Object.fromEntries(cols.map((c, i) => [c, args[i]]));
               row.printify_order_id = null; row.production_status = null; row.carrier = null; row.tracking_number = null; row.tracking_url = null; row.fulfillment_error = null;
+              // migrations/0003_add_financial_ledger_fields.sql — all nullable, unset at insert.
+              row.stripe_balance_transaction_id = null; row.stripe_fee_amount = null; row.stripe_net_amount = null; row.paid_at = null;
+              row.printify_product_cost = null; row.printify_shipping_cost = null; row.printify_tax_amount = null; row.printify_total_cost = null;
+              row.estimated_margin_amount = null; row.financials_updated_at = null;
               tables.orders.push(row);
               return { meta: { changes: 1 } };
             }

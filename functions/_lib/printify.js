@@ -177,6 +177,58 @@ export async function createPrintifyOrder(env, { orderNumber, items, shipping, e
 }
 
 /**
+ * Fetches the authoritative order record from Printify — the create-order
+ * response only ever returns an id (see createPrintifyOrder above); actual
+ * cost data lives here, via GET /v1/shops/{shop_id}/orders/{order_id}.json.
+ */
+export async function getPrintifyOrder(env, printifyOrderId) {
+  return printifyRequest(env, 'GET', `/shops/${env.PRINTIFY_SHOP_ID}/orders/${printifyOrderId}.json`);
+}
+
+// Costs aren't final while Printify is still pricing the order. Treating a
+// 0 in these fields as "known: true, cost is $0" while an order is still in
+// one of these statuses would be wrong — it means "not calculated yet," not
+// "free." (Confirmed against a real order: a genuinely canceled order also
+// reports 0 for these fields — that 0 IS real/final, which is why 'canceled'
+// is deliberately NOT in this set.)
+const PENDING_COST_STATUSES = new Set(['on-hold', 'cost-calculation', 'payment-not-received']);
+
+/**
+ * Extracts real fulfillment-cost fields from a Printify order detail
+ * response (from getPrintifyOrder above). Never estimates.
+ *
+ * Important field-mapping note, confirmed directly against Printify's docs:
+ * the order-level `total_price`/`total_shipping` fields are documented as
+ * "Retail price"/"Shipping price" — i.e. what the SALE was for, not what
+ * Printify charges for fulfillment. They must never be used as our cost.
+ * The real per-line-item cost fields are `cost` ("fulfillment cost") and
+ * `shipping_cost` ("shipment cost"), summed across every line item.
+ * `total_tax` is the only tax-cost field Printify exposes at all; used as-is
+ * — there is no per-line-item tax breakdown documented.
+ *
+ * Returns { known: false } (never a fabricated number) while the order is
+ * still in a pending-cost status — see PENDING_COST_STATUSES above.
+ */
+export function extractPrintifyCosts(order) {
+  if (!order || PENDING_COST_STATUSES.has(order.status)) {
+    return { known: false };
+  }
+
+  const lineItems = Array.isArray(order.line_items) ? order.line_items : [];
+  const productCost = lineItems.reduce((sum, li) => sum + (Number(li.cost) || 0), 0);
+  const shippingCost = lineItems.reduce((sum, li) => sum + (Number(li.shipping_cost) || 0), 0);
+  const taxAmount = Number(order.total_tax) || 0;
+
+  return {
+    known: true,
+    productCost,
+    shippingCost,
+    taxAmount,
+    totalCost: productCost + shippingCost + taxAmount,
+  };
+}
+
+/**
  * Sends an already-created Printify order into production. NOT called from
  * anywhere in this codebase yet — "Printify approval manual" is a hard
  * safety requirement for this pass. Exists so a future, explicitly-reviewed

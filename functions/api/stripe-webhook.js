@@ -20,11 +20,23 @@
 //   2. Re-fetch the session from Stripe with line_items expanded (the
 //      webhook payload itself doesn't include them).
 //   3. Insert the order + order_items into D1 (skipped if this session
-//      already has an order — defense in depth alongside step 1).
-//   4. Send the "order received" email — UNCONDITIONALLY, as soon as the
-//      order is durably stored. A customer whose card was charged must
-//      always get a receipt, regardless of what happens with Printify next.
-//   5. Attempt to create the order in Printify (registers it; does NOT send
+//      already has an order — defense in depth alongside step 1). This
+//      happens regardless of payment_status — even an unpaid session gets a
+//      durable record — but nothing downstream (email, Printify) proceeds
+//      until step 4 confirms payment.
+//   4. Explicit paid gate: inspect fullSession.payment_status directly. If
+//      it is not "paid", record a status event explaining fulfillment is
+//      awaiting payment and return 200 — no Printify order, no confirmation
+//      email. Only once payment_status === "paid" does anything below run.
+//   5. Stamp orders.paid_at (once) and send the "order received" email — as
+//      soon as the order is confirmed paid and durably stored. A customer
+//      whose card was charged must always get a receipt, regardless of what
+//      happens with Printify next.
+//   6. Best-effort capture of the REAL Stripe fee/net (never estimated) by
+//      resolving PaymentIntent -> Charge -> BalanceTransaction — see
+//      functions/_lib/stripe.js. If not yet available, financial fields stay
+//      null and scripts/reconcile-financials.mjs fills them in later.
+//   7. Attempt to create the order in Printify (registers it; does NOT send
 //      it to production — see functions/_lib/printify.js). Every product's
 //      Printify mapping is unconfirmed as of this pass, so this step will
 //      fail cleanly. On failure: store why in orders.fulfillment_error and
@@ -33,18 +45,21 @@
 //   Note: the "in production" email is NOT sent from here. It only fires
 //   from functions/api/printify-webhook.js, driven by a real signal from
 //   Printify (order:sent-to-production or order:updated status=in-production)
-//   — this file has no way to know when that actually happens.
+//   — this file has no way to know when that actually happens. That same
+//   file is also where Printify's real fulfillment costs get captured/
+//   refreshed (never estimated) — see its module header.
 // Always returns 200 once the event is durably recorded, regardless of
 // Printify/email outcome — those failures must not cause Stripe to retry an
 // event that's already been correctly recorded.
 
 import { CATALOG } from '../_lib/catalog.js';
 import { createPrintifyOrder, PrintifyConfigError, PrintifyApiError } from '../_lib/printify.js';
+import { fetchExpandedCheckoutSession, fetchStripeFeeAndNet } from '../_lib/stripe.js';
 import { orderConfirmedTemplate, printifyFailureAlertTemplate } from '../_lib/email-templates.js';
 import { tryNormalizeUSState } from '../_lib/address.js';
 import {
   claimWebhookEvent, findOrderByStripeSession, insertOrder, insertOrderItems,
-  updateOrder, recordStatusEvent, sendOrderEmailOnce, orderNumberFromSession,
+  updateOrder, updateOrderFinancials, recordStatusEvent, sendOrderEmailOnce, orderNumberFromSession,
 } from '../_lib/orders-db.js';
 
 export async function onRequest({ request, env }) {
@@ -108,7 +123,7 @@ export async function onRequest({ request, env }) {
   // reachable via this expansion.
   let fullSession;
   try {
-    fullSession = await fetchExpandedSession(env, session.id);
+    fullSession = await fetchExpandedCheckoutSession(env, session.id);
   } catch (err) {
     // We've already durably claimed this event — do not throw and cause a
     // Stripe retry storm. Record what we can and stop; a real order will be
@@ -190,9 +205,50 @@ export async function onRequest({ request, env }) {
     console.log(`[stripe-webhook] Order ${order.public_order_number} already recorded — continuing to fulfillment/email steps`);
   }
 
-  // ── Order received email — unconditional, fires as soon as the order is ────
-  // durably stored. Must NOT be suppressed by a later Printify failure — the
-  // customer paid; they get a receipt regardless of fulfillment status.
+  // ── Explicit paid gate ───────────────────────────────────────────────────────
+  // fullSession.payment_status is the authoritative signal — checked directly
+  // here, not assumed from the fact that checkout.session.completed fired.
+  // "Completed" means the customer finished the checkout UI; it does NOT by
+  // itself mean the charge succeeded for every possible payment method.
+  //
+  // Today's create-checkout-session.js does not set payment_method_types, so
+  // this Checkout Session uses Stripe's default/Dashboard-configured methods.
+  // As of this pass that resolves to card-only, and card charges resolve
+  // synchronously — payment_status is essentially always "paid" by the time
+  // this webhook fires. But that is a Dashboard-configurable fact, not a
+  // code guarantee, and delayed-settlement methods (bank debits, some
+  // wallets) report "unpaid" here and only become "paid" via a LATER,
+  // different event (checkout.session.async_payment_succeeded), which this
+  // endpoint does not yet handle. This gate makes today's assumption
+  // explicit and safe regardless of what the Dashboard allows tomorrow; it
+  // does not by itself add the async-succeeded event handler.
+  const paymentStatus = fullSession.payment_status;
+  if (paymentStatus !== 'paid') {
+    console.warn(`[stripe-webhook] Order ${order.public_order_number} has payment_status="${paymentStatus}" — withholding Printify fulfillment and the confirmation email until payment is confirmed paid.`);
+    await recordStatusEvent(env, {
+      orderId: order.id, source: 'stripe', externalEventId: event.id, eventType: event.type,
+      safeSummary: { orderNumber: order.public_order_number, paymentStatus, note: 'fulfillment_awaiting_payment' },
+    });
+    // Durably recorded already — return 200 so Stripe does not retry an
+    // event that was correctly received; nothing further to do until (if
+    // ever) a real payment-succeeded signal for this session arrives.
+    return json({ received: true, orderNumber: order.public_order_number, awaitingPayment: true }, 200);
+  }
+
+  // First time we've observed this order as paid — stamp paid_at once,
+  // never overwritten on a later retry/duplicate delivery of the same or a
+  // different event for this same session.
+  if (!order.paid_at) {
+    await updateOrder(env, order.id, { paid_at: new Date().toISOString() });
+    order.paid_at = new Date().toISOString();
+  }
+
+  // ── Order received email — sent once payment is confirmed paid, as soon ────
+  // as the order is durably stored. Must NOT be suppressed by a later
+  // Printify failure — the customer paid; they get a receipt regardless of
+  // fulfillment status. (Deliberately gated on the paid check above — an
+  // unpaid order gets no "we've received your order" receipt, since that
+  // would misrepresent a payment that hasn't actually succeeded.)
   if (order.customer_email) {
     const emailResult = await sendOrderEmailOnce(env, {
       orderId: order.id,
@@ -212,6 +268,27 @@ export async function onRequest({ request, env }) {
     }
   } else {
     console.warn(`[stripe-webhook] No customer email on file for ${order.public_order_number} — order received email not sent`);
+  }
+
+  // ── Stripe fee/net capture ──────────────────────────────────────────────────
+  // Best-effort, never blocks fulfillment. The real balance transaction may
+  // not be attached yet even for a paid order (see fetchStripeFeeAndNet's own
+  // doc comment) — if so, the financial fields simply stay null here and
+  // scripts/reconcile-financials.mjs is what fills them in later. Skipped
+  // entirely once already captured (idempotent — no reason to re-fetch on a
+  // later duplicate/retry delivery for this same order).
+  if (!order.stripe_balance_transaction_id) {
+    const feeInfo = await fetchStripeFeeAndNet(env, { paymentIntentId: order.stripe_payment_intent_id });
+    if (feeInfo.known) {
+      await updateOrderFinancials(env, order.id, {
+        stripe_balance_transaction_id: feeInfo.balanceTransactionId,
+        stripe_fee_amount: feeInfo.feeAmount,
+        stripe_net_amount: feeInfo.netAmount,
+      });
+      console.log(`[stripe-webhook] Stripe fee/net captured for ${order.public_order_number}`);
+    } else {
+      console.log(`[stripe-webhook] Stripe fee/net not yet available for ${order.public_order_number} — will be captured by reconciliation later`);
+    }
   }
 
   // ── Attempt Printify order creation ─────────────────────────────────────────
@@ -370,28 +447,6 @@ async function attemptPrintifyOrderCreation(env, order, fullSession) {
       console.error(`[stripe-webhook] Support alert not sent for ${order.public_order_number}: ${alertResult.reason}`);
     }
   }
-}
-
-// ---------------------------------------------------------------------------
-// Re-fetches a Checkout Session with line items (and their products, for the
-// slug/size/color metadata) expanded.
-// ---------------------------------------------------------------------------
-async function fetchExpandedSession(env, sessionId) {
-  const params = new URLSearchParams();
-  params.append('expand[]', 'line_items');
-  params.append('expand[]', 'line_items.data.price.product');
-
-  const res = await fetch(`https://api.stripe.com/v1/checkout/sessions/${sessionId}?${params.toString()}`, {
-    headers: {
-      Authorization: 'Bearer ' + env.STRIPE_SECRET_KEY,
-      'Stripe-Version': '2024-06-20',
-    },
-  });
-  const data = await res.json();
-  if (!res.ok) {
-    throw new Error(data?.error?.message || `Stripe API error (${res.status})`);
-  }
-  return data;
 }
 
 async function loadOrderItemsForPrintify(env, orderId) {

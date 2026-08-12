@@ -41,12 +41,22 @@
 // Cancellation: `order:updated` carrying `status: "canceled"` — see
 // markCanceled() for the full rationale (this is a real, documented order
 // status, not an invented event).
+//
+// Fulfillment-cost capture: the create-order response only ever returns an
+// id — real cost data (never estimated) is only available via a follow-up
+// GET on the order, see refreshPrintifyCosts(). That refresh runs on both
+// `order:sent-to-production` and every `order:updated`, since Printify costs
+// an order asynchronously and neither event guarantees the cost is final by
+// the time it fires — see PENDING_COST_STATUSES in functions/_lib/printify.js.
+// scripts/reconcile-financials.mjs is the backstop for orders whose costs
+// never get filled in by a live webhook.
 
 import {
-  claimWebhookEvent, findOrderByPrintifyOrderId, updateOrder,
+  claimWebhookEvent, findOrderByPrintifyOrderId, updateOrder, updateOrderFinancials,
   recordStatusEvent, sendOrderEmailOnce, insertShipment, allShipmentsDelivered,
 } from '../_lib/orders-db.js';
 import { inProductionTemplate, shippedTemplate, deliveredTemplate, printifyFailureAlertTemplate } from '../_lib/email-templates.js';
+import { getPrintifyOrder, extractPrintifyCosts } from '../_lib/printify.js';
 
 const HANDLED_EVENTS = new Set([
   'order:sent-to-production',
@@ -138,6 +148,7 @@ export async function onRequest({ request, env }) {
 
   if (eventType === 'order:sent-to-production') {
     await markInProduction(env, order);
+    await refreshPrintifyCosts(env, order);
   } else if (eventType === 'order:updated') {
     const status = extractStatus(event.resource?.data);
     if (status === 'in-production') {
@@ -147,6 +158,10 @@ export async function onRequest({ request, env }) {
     } else {
       console.log(`[printify-webhook] order:updated for ${order.public_order_number} with status="${status}" — no action mapped`);
     }
+    // Refreshed for every order:updated, not just in-production/canceled —
+    // any status change is a reasonable point to re-check whether Printify
+    // has finished costing the order (see PENDING_COST_STATUSES).
+    await refreshPrintifyCosts(env, order);
   } else if (eventType === 'order:shipment:created') {
     const shipment = extractShipmentInfo(event.resource?.data);
     const shipmentKey = deriveShipmentKey(event.resource?.data, shipment);
@@ -260,6 +275,40 @@ async function markCanceled(env, order, data) {
 function extractCancelReason(data) {
   return data?.reason || data?.message || data?.status_note
     || 'Printify marked this order canceled; no reason field was present in the webhook payload.';
+}
+
+// ---------------------------------------------------------------------------
+// Real Printify fulfillment-cost capture — never estimated. The order-create
+// response only ever returns an id (functions/_lib/printify.js), so this is
+// the only place actual costs get read, via a follow-up GET on the order.
+// Best-effort: a fetch failure or a still-pending cost status just means
+// "try again on the next webhook or via scripts/reconcile-financials.mjs" —
+// never blocks or fails the webhook itself.
+// ---------------------------------------------------------------------------
+async function refreshPrintifyCosts(env, order) {
+  if (!order.printify_order_id) return;
+
+  let printifyOrder;
+  try {
+    printifyOrder = await getPrintifyOrder(env, order.printify_order_id);
+  } catch (err) {
+    console.error(`[printify-webhook] Could not fetch Printify order for cost refresh (${order.public_order_number}):`, err.message);
+    return;
+  }
+
+  const costs = extractPrintifyCosts(printifyOrder);
+  if (!costs.known) {
+    console.log(`[printify-webhook] Printify costs not yet available for ${order.public_order_number} (order status: ${printifyOrder?.status})`);
+    return;
+  }
+
+  await updateOrderFinancials(env, order.id, {
+    printify_product_cost: costs.productCost,
+    printify_shipping_cost: costs.shippingCost,
+    printify_tax_amount: costs.taxAmount,
+    printify_total_cost: costs.totalCost,
+  });
+  console.log(`[printify-webhook] Printify costs captured for ${order.public_order_number}: product=${costs.productCost} shipping=${costs.shippingCost} tax=${costs.taxAmount}`);
 }
 
 async function emailOnce(env, order, emailType, buildTemplate) {

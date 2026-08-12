@@ -13,6 +13,7 @@
 // or retried deliveries can never both proceed.
 
 import { sendEmail } from './resend.js';
+import { computeEstimatedMargin } from './financials.js';
 
 // ---------------------------------------------------------------------------
 // Webhook idempotency (processed_webhooks) — durable replacement for the
@@ -97,6 +98,14 @@ const UPDATABLE_ORDER_COLUMNS = new Set([
   'stripe_payment_intent_id', 'printify_order_id', 'payment_status',
   'fulfillment_status', 'production_status', 'carrier', 'tracking_number',
   'tracking_url', 'fulfillment_error',
+  // Financial ledger — migrations/0003_add_financial_ledger_fields.sql.
+  // Prefer updateOrderFinancials() below for the cost/fee fields (it keeps
+  // estimated_margin_amount in sync); this allow-list entry exists so
+  // updateOrder() itself can still write any of them directly if needed
+  // (e.g. paid_at, which has no margin dependency).
+  'stripe_balance_transaction_id', 'stripe_fee_amount', 'stripe_net_amount', 'paid_at',
+  'printify_product_cost', 'printify_shipping_cost', 'printify_tax_amount', 'printify_total_cost',
+  'estimated_margin_amount', 'financials_updated_at',
 ]);
 
 export async function updateOrder(env, orderId, fields) {
@@ -107,6 +116,46 @@ export async function updateOrder(env, orderId, fields) {
   await env.DB.prepare(`UPDATE orders SET ${setClause} WHERE id = ?`)
     .bind(...values, new Date().toISOString(), orderId)
     .run();
+}
+
+// Only the raw, upstream-sourced financial fields — never estimated_margin_amount
+// or financials_updated_at themselves, which updateOrderFinancials() below
+// always derives fresh rather than accepting from a caller.
+const RAW_FINANCIAL_COLUMNS = new Set([
+  'stripe_balance_transaction_id', 'stripe_fee_amount', 'stripe_net_amount',
+  'printify_product_cost', 'printify_shipping_cost', 'printify_tax_amount', 'printify_total_cost',
+]);
+
+/**
+ * Writes real (never estimated) financial fields for an order, then
+ * recomputes and stores estimated_margin_amount from the order's current
+ * full state, and stamps financials_updated_at. This is the one place the
+ * margin formula gets applied (see computeEstimatedMargin in financials.js)
+ * — callers (functions/api/stripe-webhook.js, functions/api/printify-webhook.js,
+ * scripts/reconcile-financials.mjs) never compute margin themselves, so it
+ * can never drift out of sync with a partial update.
+ *
+ * Safe to call with any subset of RAW_FINANCIAL_COLUMNS (including none, to
+ * just force a margin recompute after some other change). Returns the
+ * recomputed margin (or null if still not fully known).
+ */
+export async function updateOrderFinancials(env, orderId, fields) {
+  const patch = Object.fromEntries(
+    Object.entries(fields || {}).filter(([k]) => RAW_FINANCIAL_COLUMNS.has(k)),
+  );
+  if (Object.keys(patch).length > 0) {
+    await updateOrder(env, orderId, patch);
+  }
+
+  const order = await findOrderById(env, orderId);
+  if (!order) return null;
+
+  const margin = computeEstimatedMargin(order);
+  await updateOrder(env, orderId, {
+    estimated_margin_amount: margin,
+    financials_updated_at: new Date().toISOString(),
+  });
+  return margin;
 }
 
 // ---------------------------------------------------------------------------
