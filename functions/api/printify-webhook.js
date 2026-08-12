@@ -1,8 +1,8 @@
 // Cloudflare Pages Function — Printify webhook
 // Route: POST /api/printify-webhook
 //
-// Handles: order:sent-to-production, order:updated (status=in-production),
-//          order:shipment:created, order:shipment:delivered
+// Handles: order:sent-to-production, order:updated (status=in-production or
+//          status=canceled), order:shipment:created, order:shipment:delivered
 //
 // Required env vars:
 //   PRINTIFY_WEBHOOK_SECRET — HMAC-SHA256 signing secret for this endpoint,
@@ -19,26 +19,34 @@
 // against a real delivery once a webhook is registered, since it hasn't been
 // possible to observe one in this environment (no PRINTIFY_API_TOKEN).
 //
-// Printify's webhook payload shape (per their public docs):
+// Printify's webhook payload shape (per developers.printify.com — Events
+// section, read directly, not guessed):
 //   { id, type, created_at, resource: { id, type, data: {...} } }
-// `resource.id` is the Printify order ID. `resource.data`'s shape is NOT
-// verified against a real payload in this pass — extraction helpers below
-// read a few plausible field names defensively and log a warning if they
-// can't find what they expect, rather than silently storing wrong data.
+// `resource.id` is the Printify order ID. `resource.data`'s shape below is
+// copied verbatim from Printify's documented "Resource data examples":
+//   order:updated             -> { shop_id, status }
+//   order:shipment:created    -> { shop_id, shipped_at, carrier: { code, tracking_number, tracking_url }, skus: [...] }
+//   order:shipment:delivered  -> { shop_id, delivered_at, carrier: { code, tracking_number, tracking_url }, skus: [...] }
+//   order:sent-to-production  -> no resource data
+// There is no dedicated "canceled" webhook topic and no shipment-id field
+// anywhere in these payloads — see markCanceled()/deriveShipmentKey() below
+// for how each of those is handled using only what's actually documented.
 //
-// "In production" email trigger: per spec, `order:updated` carrying
-// `status: "in-production"` is the authoritative signal, not
-// `order:sent-to-production` alone (Printify's own docs are ambiguous about
-// which fires reliably). Both event types are handled and both route to the
-// same 'in_production' email claim, so whichever arrives first wins and the
-// second is a no-op via the email_events unique constraint — never two
-// emails.
+// "In production" email trigger: `order:updated` carrying `status:
+// "in-production"` and `order:sent-to-production` are both handled and both
+// route to the same 'in_production' email claim, so whichever arrives first
+// wins and the second is a no-op via the email_events unique constraint —
+// never two emails.
+//
+// Cancellation: `order:updated` carrying `status: "canceled"` — see
+// markCanceled() for the full rationale (this is a real, documented order
+// status, not an invented event).
 
 import {
   claimWebhookEvent, findOrderByPrintifyOrderId, updateOrder,
   recordStatusEvent, sendOrderEmailOnce, insertShipment, allShipmentsDelivered,
 } from '../_lib/orders-db.js';
-import { inProductionTemplate, shippedTemplate, deliveredTemplate } from '../_lib/email-templates.js';
+import { inProductionTemplate, shippedTemplate, deliveredTemplate, printifyFailureAlertTemplate } from '../_lib/email-templates.js';
 
 const HANDLED_EVENTS = new Set([
   'order:sent-to-production',
@@ -134,15 +142,18 @@ export async function onRequest({ request, env }) {
     const status = extractStatus(event.resource?.data);
     if (status === 'in-production') {
       await markInProduction(env, order);
+    } else if (status === 'canceled') {
+      await markCanceled(env, order, event.resource?.data);
     } else {
       console.log(`[printify-webhook] order:updated for ${order.public_order_number} with status="${status}" — no action mapped`);
     }
   } else if (eventType === 'order:shipment:created') {
     const shipment = extractShipmentInfo(event.resource?.data);
+    const shipmentKey = deriveShipmentKey(event.resource?.data, shipment);
     // One row per shipment — an order can ship in multiple packages.
     await insertShipment(env, {
       orderId: order.id,
-      printifyShipmentId: shipment.shipmentId,
+      printifyShipmentId: shipmentKey,
       carrier: shipment.carrier,
       trackingNumber: shipment.trackingNumber,
       trackingUrl: shipment.trackingUrl,
@@ -154,7 +165,10 @@ export async function onRequest({ request, env }) {
       tracking_number: shipment.trackingNumber,
       tracking_url: shipment.trackingUrl,
     });
-    await emailOnce(env, order, 'shipped', () => shippedTemplate({
+    // Per-shipment claim key — a split shipment's second package must send
+    // its own email, not be silently swallowed by a flat 'shipped' claim
+    // that the first package already used. See deriveShipmentKey().
+    await emailOnce(env, order, `shipped_${shipmentKey}`, () => shippedTemplate({
       orderNumber: order.public_order_number,
       customerName: order.customer_name || undefined,
       carrier: shipment.carrier || 'Carrier not provided',
@@ -163,9 +177,10 @@ export async function onRequest({ request, env }) {
     }));
   } else if (eventType === 'order:shipment:delivered') {
     const shipment = extractShipmentInfo(event.resource?.data);
+    const shipmentKey = deriveShipmentKey(event.resource?.data, shipment);
     await insertShipment(env, {
       orderId: order.id,
-      printifyShipmentId: shipment.shipmentId,
+      printifyShipmentId: shipmentKey,
       carrier: shipment.carrier,
       trackingNumber: shipment.trackingNumber,
       trackingUrl: shipment.trackingUrl,
@@ -197,6 +212,56 @@ async function markInProduction(env, order) {
   }));
 }
 
+// ---------------------------------------------------------------------------
+// Cancellation — confirmed via Printify's official docs (developers.printify.com,
+// Events > Order events > order:updated): there is no separate "canceled"
+// webhook topic, but order:updated's payload carries `data.status`, and
+// "canceled" is a documented, first-class order-level status value (distinct
+// from a canceled *line item*). This is the same order:updated event already
+// handled above for "in-production" — just a different status value, not a
+// new/invented event.
+//
+// Terminal, not auto-retried: sets fulfillment_status to 'printify_canceled'
+// (a clear, greppable state distinct from 'awaiting_manual_review') and
+// leaves it for a human. Never touches shipped/delivered email claims — a
+// cancellation arriving after a shipped/delivered email already sent means
+// the physical item already went out, which is a real-world edge case for a
+// human to sort out, not something this handler should try to paper over.
+// ---------------------------------------------------------------------------
+async function markCanceled(env, order, data) {
+  const reason = extractCancelReason(data);
+  await updateOrder(env, order.id, { fulfillment_status: 'printify_canceled', fulfillment_error: reason });
+
+  if (!env.SUPPORT_EMAIL) {
+    console.error(`[printify-webhook] Order ${order.public_order_number} canceled by Printify but SUPPORT_EMAIL is not configured — no alert sent`);
+    return;
+  }
+  // Sent to SUPPORT_EMAIL, not the customer — reuses sendOrderEmailOnce
+  // directly (not the emailOnce() wrapper below, which always addresses
+  // order.customer_email) so this can never become a misleading customer
+  // "shipped"/"delivered" email.
+  const result = await sendOrderEmailOnce(env, {
+    orderId: order.id,
+    emailType: 'printify_canceled_alert',
+    to: env.SUPPORT_EMAIL,
+    buildTemplate: () => printifyFailureAlertTemplate({
+      orderNumber: order.public_order_number,
+      orderId: order.id,
+      reason: `Printify canceled this order. ${reason}`,
+    }),
+  });
+  if (result.sent) {
+    console.log(`[printify-webhook] Cancellation alert sent for ${order.public_order_number}`);
+  } else if (result.reason !== 'duplicate') {
+    console.error(`[printify-webhook] Cancellation alert not sent for ${order.public_order_number}: ${result.reason}`);
+  }
+}
+
+function extractCancelReason(data) {
+  return data?.reason || data?.message || data?.status_note
+    || 'Printify marked this order canceled; no reason field was present in the webhook payload.';
+}
+
 async function emailOnce(env, order, emailType, buildTemplate) {
   if (!order.customer_email) return;
   const result = await sendOrderEmailOnce(env, { orderId: order.id, emailType, to: order.customer_email, buildTemplate });
@@ -215,18 +280,53 @@ function extractStatus(data) {
   return data?.status ?? data?.order_status ?? null;
 }
 
+// Confirmed against Printify's official docs (Events > Order events >
+// order:shipment:created/delivered, Resource data examples): the payload is
+// `data: { shop_id, shipped_at|delivered_at, carrier: { code, tracking_number,
+// tracking_url }, skus: [...] }`. Notably there is NO shipment-id field
+// anywhere in the documented payload — see deriveShipmentKey() below for how
+// that's handled.
 function extractShipmentInfo(data) {
-  const shipment = Array.isArray(data?.shipments) ? data.shipments[0] : data;
-  const shipmentId = shipment?.id ?? shipment?.shipment_id ?? null;
-  const carrier = shipment?.carrier ?? shipment?.carrier_name ?? null;
-  const trackingNumber = shipment?.tracking_number ?? shipment?.number ?? null;
-  const trackingUrl = shipment?.tracking_url ?? shipment?.url ?? null;
+  const carrier = data?.carrier ?? {};
+  const carrierCode = carrier.code ?? null;
+  const trackingNumber = carrier.tracking_number ?? null;
+  const trackingUrl = carrier.tracking_url ?? null;
+  const skus = Array.isArray(data?.skus) ? data.skus : [];
 
-  if (!carrier && !trackingNumber && !trackingUrl) {
-    console.warn('[printify-webhook] Could not find carrier/tracking fields in shipment payload — storing nulls. Payload shape needs reconfirming against a real Printify delivery:', JSON.stringify(data).slice(0, 500));
+  if (!carrierCode && !trackingNumber && !trackingUrl) {
+    console.warn('[printify-webhook] Could not find carrier/tracking fields in shipment payload — storing nulls:', JSON.stringify(data).slice(0, 500));
   }
 
-  return { shipmentId, carrier, trackingNumber, trackingUrl };
+  return { carrier: carrierCode, trackingNumber, trackingUrl, skus };
+}
+
+// Printify's documented shipment payload has no shipment ID, so this derives
+// a stable per-shipment key used both as the `shipments.printify_shipment_id`
+// upsert key and as the per-shipment email claim suffix
+// (`shipped_${shipmentKey}`) — this is what lets a second physical package
+// send its own "shipped" email instead of colliding with the first.
+//
+// Primary key: the carrier tracking number. Each physical package gets its
+// own tracking number from the carrier, so two distinct shipments on the
+// same order will always have different values here — this is not a guess,
+// it's how shipment identity actually works in the real world.
+//
+// Fallback (only when a payload genuinely omits tracking_number — not seen
+// in any documented or observed example, but not contractually guaranteed
+// either): a deterministic key built from carrier code + sorted SKUs +
+// event timestamp. This is NOT collision-proof in theory (two distinct
+// trackingNumber-less shipments with identical carrier/SKUs/timestamp would
+// collide) — but it is never the only thing standing between a customer and
+// a duplicate email: claimWebhookEvent() already made this specific webhook
+// delivery (by event.id) exactly-once before this code runs at all, so this
+// fallback only matters for genuinely distinct shipment events, and a flat
+// constant (the bug being fixed here) would have collided every single time
+// instead of only in this narrow, undocumented edge case.
+function deriveShipmentKey(data, shipment) {
+  if (shipment.trackingNumber) return shipment.trackingNumber;
+  const timestamp = data?.shipped_at || data?.delivered_at || '';
+  const skuPart = shipment.skus.slice().sort().join('-') || 'no-skus';
+  return `no-tracking:${shipment.carrier || 'unknown-carrier'}:${skuPart}:${timestamp}`;
 }
 
 // ---------------------------------------------------------------------------
