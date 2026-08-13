@@ -131,7 +131,7 @@ async function run() {
 
     // Reconciliation polls Printify and sees the SAME shipment.
     const printifyOrder = { status: 'in-production', shipments: [{ carrier: 'USPS', number: 'TRACK-AAA', url: 'https://example.com/track/TRACK-AAA' }] };
-    const plan = planShipmentReconciliation({
+    const plan = await planShipmentReconciliation({
       order: { fulfillment_status: order.fulfillment_status },
       printifyOrder,
       existingShipments: existingShipmentsFrom(db, order.id),
@@ -151,7 +151,7 @@ async function run() {
     const env = makeEnv(db);
 
     const printifyOrder = { status: 'in-production', shipments: [{ carrier: 'USPS', number: 'TRACK-AAA', url: 'https://example.com/track/TRACK-AAA' }] };
-    const plan = planShipmentReconciliation({
+    const plan = await planShipmentReconciliation({
       order: { fulfillment_status: order.fulfillment_status },
       printifyOrder,
       existingShipments: existingShipmentsFrom(db, order.id),
@@ -185,7 +185,7 @@ async function run() {
         { carrier: 'UPS', number: 'TRACK-BBB', url: 'https://example.com/track/TRACK-BBB' },
       ],
     };
-    const plan = planShipmentReconciliation({
+    const plan = await planShipmentReconciliation({
       order: { fulfillment_status: order.fulfillment_status },
       printifyOrder,
       existingShipments: existingShipmentsFrom(db, order.id),

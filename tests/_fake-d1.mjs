@@ -93,6 +93,10 @@ export function createFakeD1() {
               const [order_id, printify_shipment_id] = args;
               return tables.shipments.find((r) => r.order_id === order_id && r.printify_shipment_id === printify_shipment_id) || null;
             }
+            if (sql.includes('FROM email_events WHERE order_id') && sql.includes('email_type')) {
+              const [order_id, email_type] = args;
+              return tables.email_events.find((r) => r.order_id === order_id && r.email_type === email_type) || null;
+            }
             throw new Error('Unrecognized first() SQL: ' + sql.slice(0, 80));
           },
           async all() {
@@ -101,6 +105,18 @@ export function createFakeD1() {
             }
             if (sql.includes('FROM shipments WHERE order_id')) {
               return { results: tables.shipments.filter((r) => r.order_id === args[0]) };
+            }
+            if (sql.includes('FROM orders') && sql.includes('printify_order_id IS NOT NULL')) {
+              const limit = args[args.length - 1];
+              const results = tables.orders
+                .filter((r) => r.printify_order_id != null && !['delivered', 'printify_canceled'].includes(r.fulfillment_status))
+                .sort((a, b) => (a.created_at < b.created_at ? -1 : a.created_at > b.created_at ? 1 : 0))
+                .slice(0, limit)
+                .map((r) => ({
+                  id: r.id, public_order_number: r.public_order_number, customer_email: r.customer_email,
+                  customer_name: r.customer_name, printify_order_id: r.printify_order_id, fulfillment_status: r.fulfillment_status,
+                }));
+              return { results };
             }
             throw new Error('Unrecognized all() SQL: ' + sql.slice(0, 80));
           },

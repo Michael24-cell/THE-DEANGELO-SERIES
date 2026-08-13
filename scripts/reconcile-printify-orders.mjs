@@ -258,7 +258,7 @@ export async function reconcileShipmentsAndStatus(env, { local = LOCAL, apply = 
       return rows.length > 0;
     };
 
-    const plan = planShipmentReconciliation({ order, printifyOrder, existingShipments, hasEmail });
+    const plan = await planShipmentReconciliation({ order, printifyOrder, existingShipments, hasEmail });
 
     if (plan.cancellation) {
       counts.canceled++;

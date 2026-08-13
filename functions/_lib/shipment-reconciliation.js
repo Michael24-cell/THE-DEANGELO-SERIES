@@ -1,13 +1,14 @@
-// Pure planning logic for the shipment/cancellation reconciliation fallback
-// (scripts/reconcile-printify-orders.mjs). No D1, no fetch, no env — takes
-// already-fetched state and returns a plan describing exactly what should
-// happen. This is what functions/api/printify-webhook.js's inline branching
-// does for the live webhook path; kept here as a separate pure function (a
-// plain Node script can't use the D1-binding-dependent helpers in
-// functions/_lib/orders-db.js) so BOTH paths can be driven through the same
-// deriveShipmentKey()/extractOrderShipments() from functions/_lib/printify.js
-// and the same email-idempotency contract (claim by exact email_type string)
-// without duplicating the decision logic itself. Fully unit-testable — see
+// Pure planning logic for the shipment/cancellation reconciliation fallback —
+// shared by scripts/reconcile-printify-orders.mjs (a plain Node script, D1
+// access via `wrangler d1 execute`) and workers/reconcile-shipments.js (a
+// Cloudflare Worker, D1 access via the real `env.DB` binding). No fetch, no
+// env, no direct D1 access of its own — takes already-fetched state and
+// returns a plan describing exactly what should happen. This is what
+// functions/api/printify-webhook.js's inline branching does for the live
+// webhook path; kept here as a separate function so all THREE call sites
+// share one decision logic instead of three copies. Async only because its
+// `hasEmail` callback might be (workers/reconcile-shipments.js's D1-binding
+// reads are); otherwise fully pure. Thoroughly unit-testable — see
 // tests/shipment-reconciliation.test.mjs.
 
 import { deriveShipmentKey, extractOrderShipments } from './printify.js';
@@ -19,12 +20,16 @@ import { deriveShipmentKey, extractOrderShipments } from './printify.js';
  * @param {object} args.printifyOrder - raw GET /orders/{id}.json response
  * @param {Array<{printify_shipment_id: string, status: string}>} args.existingShipments -
  *   D1 shipments rows already recorded for this order
- * @param {(emailType: string) => boolean} args.hasEmail - returns true if
- *   email_events already has a row for (order, emailType) — i.e. it would be
- *   a duplicate to send again, from EITHER path (webhook or reconciliation),
- *   since both write to the same table under the same UNIQUE constraint.
+ * @param {(emailType: string) => boolean|Promise<boolean>} args.hasEmail -
+ *   returns true if email_events already has a row for (order, emailType) —
+ *   i.e. it would be a duplicate to send again, from EITHER path (webhook or
+ *   reconciliation), since both write to the same table under the same
+ *   UNIQUE constraint. May be sync (scripts/reconcile-printify-orders.mjs's
+ *   CLI-backed D1 reads) or async (workers/reconcile-shipments.js's D1
+ *   binding reads) — every call is awaited internally, so a plain boolean
+ *   return works identically to a Promise<boolean> one.
  *
- * @returns {{
+ * @returns {Promise<{
  *   cancellation: {reason: string, sendAlert: boolean} | null,
  *   shipments: Array<{key: string, carrier: string|null, trackingNumber: string|null,
  *     trackingUrl: string|null, status: 'shipped'|'delivered', isNewRow: boolean,
@@ -32,9 +37,9 @@ import { deriveShipmentKey, extractOrderShipments } from './printify.js';
  *   newFulfillmentStatus: 'shipped' | 'delivered' | null,
  *   markDelivered: boolean,
  *   sendDeliveredEmail: boolean,
- * }}
+ * }>}
  */
-export function planShipmentReconciliation({ order, printifyOrder, existingShipments, hasEmail }) {
+export async function planShipmentReconciliation({ order, printifyOrder, existingShipments, hasEmail }) {
   const plan = {
     cancellation: null,
     shipments: [],
@@ -50,7 +55,7 @@ export function planShipmentReconciliation({ order, printifyOrder, existingShipm
     if (order.fulfillment_status !== 'printify_canceled') {
       plan.cancellation = {
         reason: extractCancelReasonFromOrder(printifyOrder),
-        sendAlert: !hasEmail('printify_canceled_alert'),
+        sendAlert: !(await hasEmail('printify_canceled_alert')),
       };
     }
     return plan;
@@ -81,7 +86,7 @@ export function planShipmentReconciliation({ order, printifyOrder, existingShipm
       // shipment discovered for the first time already fully delivered
       // still deserves its tracking email; see the module note in
       // scripts/reconcile-printify-orders.mjs.
-      sendShippedEmail: !hasEmail(`shipped_${key}`),
+      sendShippedEmail: !(await hasEmail(`shipped_${key}`)),
     });
   }
 
@@ -103,7 +108,7 @@ export function planShipmentReconciliation({ order, printifyOrder, existingShipm
   if (allDelivered && order.fulfillment_status !== 'delivered') {
     plan.markDelivered = true;
     plan.newFulfillmentStatus = 'delivered';
-    plan.sendDeliveredEmail = !hasEmail('delivered');
+    plan.sendDeliveredEmail = !(await hasEmail('delivered'));
   }
 
   return plan;

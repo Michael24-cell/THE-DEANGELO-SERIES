@@ -208,6 +208,61 @@ export async function allShipmentsDelivered(env, orderId) {
   return results.every((r) => r.status === 'delivered');
 }
 
+/**
+ * Existing shipment rows for an order, in the shape
+ * functions/_lib/shipment-reconciliation.js's planShipmentReconciliation()
+ * expects as `existingShipments` — used by both
+ * functions/api/printify-webhook.js's cost-refresh path (indirectly, via
+ * allShipmentsDelivered above) and workers/reconcile-shipments.js, which
+ * needs the full existing-state view the pure planner requires.
+ */
+export async function listShipmentsForOrder(env, orderId) {
+  const { results } = await env.DB.prepare(
+    `SELECT printify_shipment_id, status FROM shipments WHERE order_id = ?`,
+  ).bind(orderId).all();
+  return results;
+}
+
+/**
+ * Whether an (orderId, emailType) row already exists in email_events — used
+ * as the `hasEmail` callback the pure planner takes. This is a read used
+ * only to decide whether it's worth attempting a send at all; the actual
+ * exactly-once guarantee is still the atomic INSERT OR IGNORE inside
+ * sendOrderEmailOnce() above (same table, same UNIQUE constraint), so a
+ * stale/racy read here can never cause a duplicate — only, at worst, one
+ * redundant sendOrderEmailOnce() call that itself resolves to `duplicate`.
+ */
+export async function hasEmailEvent(env, orderId, emailType) {
+  const row = await env.DB.prepare(
+    `SELECT id FROM email_events WHERE order_id = ? AND email_type = ?`,
+  ).bind(orderId, emailType).first();
+  return !!row;
+}
+
+/**
+ * Active, Printify-backed orders eligible for the shipment/delivery/
+ * cancellation reconciliation fallback (workers/reconcile-shipments.js and
+ * scripts/reconcile-printify-orders.mjs's pass 2). "Active" = has a
+ * printify_order_id (nothing to poll otherwise — that's pass 1's job) and
+ * isn't already in one of the two terminal states this reconciliation can
+ * reach, so a fully-settled order is never re-polled forever.
+ * `limit` bounds a single run's Printify API + D1 load as the order volume
+ * grows — callers should pass something sane for current store size (a
+ * scheduled Worker on a 15-minute cadence has no reason to process
+ * thousands of rows in one invocation; see workers/reconcile-shipments.js's
+ * DEFAULT_ORDER_LIMIT for the current default and rationale).
+ */
+export async function listActiveReconciliationCandidates(env, limit) {
+  const { results } = await env.DB.prepare(
+    `SELECT id, public_order_number, customer_email, customer_name, printify_order_id, fulfillment_status
+     FROM orders
+     WHERE printify_order_id IS NOT NULL AND fulfillment_status NOT IN ('delivered', 'printify_canceled')
+     ORDER BY created_at ASC
+     LIMIT ?`,
+  ).bind(limit).all();
+  return results;
+}
+
 // ---------------------------------------------------------------------------
 // Status events — append-only audit trail. Never store raw webhook bodies;
 // safeSummary should be a small, already-redacted plain object.
