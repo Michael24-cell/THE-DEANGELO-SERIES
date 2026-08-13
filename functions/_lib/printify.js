@@ -228,6 +228,65 @@ export function extractPrintifyCosts(order) {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Shared shipment-key derivation — the ONE place this logic lives, imported
+// by both functions/api/printify-webhook.js (the primary, event-driven path)
+// and scripts/reconcile-printify-orders.mjs (the polling fallback), so both
+// paths can never independently drift into computing a different key for
+// the same physical shipment. Callers give it whatever identity fields their
+// data source actually has:
+//   - the order:shipment:created/delivered webhook payload has
+//     carrier/tracking_number/tracking_url + skus[] + shipped_at/delivered_at
+//   - GET /v1/shops/{shop_id}/orders/{order_id}.json's `shipments[]` array
+//     (see extractOrderShipments below) has only carrier/number/url/delivered_at
+// Neither shape includes a real shipment ID (confirmed against Printify's
+// docs — see extractOrderShipments's own comment) — the tracking number is
+// the only genuinely stable per-package identifier either shape provides.
+// ---------------------------------------------------------------------------
+
+/**
+ * Primary key: the carrier tracking number — each physical package gets its
+ * own, so two distinct shipments always differ here. Fallback (only when a
+ * source genuinely omits tracking_number, which no observed/documented
+ * payload has done): a deterministic key from carrier + caller-supplied
+ * `discriminator` (whatever best-effort extra identity the caller's data
+ * shape actually has — e.g. skus+timestamp for the webhook payload, or
+ * delivered_at+array-index for the GET-order shipments array). This is not
+ * collision-proof in theory, but it is never the only protection against a
+ * duplicate email — the `shipments` table's UNIQUE(order_id,
+ * printify_shipment_id) upsert and the `email_events` UNIQUE(order_id,
+ * email_type) claim are what actually guarantee at-most-once, on both paths.
+ */
+export function deriveShipmentKey({ carrier, trackingNumber, discriminator }) {
+  if (trackingNumber) return trackingNumber;
+  return `no-tracking:${carrier || 'unknown-carrier'}:${discriminator || 'unknown'}`;
+}
+
+/**
+ * Parses the `shipments` array off a GET order-detail response (see
+ * getPrintifyOrder above) into normalized entries. Confirmed against
+ * Printify's documented "Shipment properties" (developers.printify.com,
+ * order.shipments[]): `carrier` (courier name), `number` (tracking number),
+ * `url` (tracking link), `delivered_at` (ISO datetime — present once the
+ * carrier has confirmed delivery, absent/null while merely shipped). There
+ * is no shipment-id field and no "shipped_at" at this level (unlike the
+ * webhook payload) — see deriveShipmentKey above for how identity is still
+ * derived. Deliberately does NOT read printify_connect.url — that field
+ * points to Printify's own hosted tracking page on a third-party domain,
+ * not a carrier tracking link, and was explicitly excluded from this
+ * feature's scope.
+ */
+export function extractOrderShipments(order) {
+  const raw = Array.isArray(order?.shipments) ? order.shipments : [];
+  return raw.map((s, index) => ({
+    carrier: s?.carrier ?? null,
+    trackingNumber: s?.number ?? null,
+    trackingUrl: s?.url ?? null,
+    deliveredAt: s?.delivered_at ?? null,
+    index,
+  }));
+}
+
 /**
  * Sends an already-created Printify order into production. NOT called from
  * anywhere in this codebase yet — "Printify approval manual" is a hard

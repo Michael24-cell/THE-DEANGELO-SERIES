@@ -56,7 +56,7 @@ import {
   recordStatusEvent, sendOrderEmailOnce, insertShipment, allShipmentsDelivered,
 } from '../_lib/orders-db.js';
 import { inProductionTemplate, shippedTemplate, deliveredTemplate, printifyFailureAlertTemplate } from '../_lib/email-templates.js';
-import { getPrintifyOrder, extractPrintifyCosts } from '../_lib/printify.js';
+import { getPrintifyOrder, extractPrintifyCosts, deriveShipmentKey } from '../_lib/printify.js';
 
 const HANDLED_EVENTS = new Set([
   'order:sent-to-production',
@@ -164,7 +164,7 @@ export async function onRequest({ request, env }) {
     await refreshPrintifyCosts(env, order);
   } else if (eventType === 'order:shipment:created') {
     const shipment = extractShipmentInfo(event.resource?.data);
-    const shipmentKey = deriveShipmentKey(event.resource?.data, shipment);
+    const shipmentKey = deriveShipmentKeyFromWebhookPayload(event.resource?.data, shipment);
     // One row per shipment — an order can ship in multiple packages.
     await insertShipment(env, {
       orderId: order.id,
@@ -192,7 +192,7 @@ export async function onRequest({ request, env }) {
     }));
   } else if (eventType === 'order:shipment:delivered') {
     const shipment = extractShipmentInfo(event.resource?.data);
-    const shipmentKey = deriveShipmentKey(event.resource?.data, shipment);
+    const shipmentKey = deriveShipmentKeyFromWebhookPayload(event.resource?.data, shipment);
     await insertShipment(env, {
       orderId: order.id,
       printifyShipmentId: shipmentKey,
@@ -349,33 +349,24 @@ function extractShipmentInfo(data) {
   return { carrier: carrierCode, trackingNumber, trackingUrl, skus };
 }
 
-// Printify's documented shipment payload has no shipment ID, so this derives
-// a stable per-shipment key used both as the `shipments.printify_shipment_id`
-// upsert key and as the per-shipment email claim suffix
-// (`shipped_${shipmentKey}`) — this is what lets a second physical package
-// send its own "shipped" email instead of colliding with the first.
-//
-// Primary key: the carrier tracking number. Each physical package gets its
-// own tracking number from the carrier, so two distinct shipments on the
-// same order will always have different values here — this is not a guess,
-// it's how shipment identity actually works in the real world.
-//
-// Fallback (only when a payload genuinely omits tracking_number — not seen
-// in any documented or observed example, but not contractually guaranteed
-// either): a deterministic key built from carrier code + sorted SKUs +
-// event timestamp. This is NOT collision-proof in theory (two distinct
-// trackingNumber-less shipments with identical carrier/SKUs/timestamp would
-// collide) — but it is never the only thing standing between a customer and
-// a duplicate email: claimWebhookEvent() already made this specific webhook
-// delivery (by event.id) exactly-once before this code runs at all, so this
-// fallback only matters for genuinely distinct shipment events, and a flat
-// constant (the bug being fixed here) would have collided every single time
-// instead of only in this narrow, undocumented edge case.
-function deriveShipmentKey(data, shipment) {
-  if (shipment.trackingNumber) return shipment.trackingNumber;
+// Thin adapter over the shared deriveShipmentKey() (functions/_lib/printify.js)
+// — builds the webhook-payload-specific `discriminator` (sorted SKUs +
+// event timestamp) used only when trackingNumber is absent. Kept as a
+// one-line wrapper (rather than inlining discriminator-building at both call
+// sites) so the two call sites above stay identical to how
+// scripts/reconcile-printify-orders.mjs calls the same shared function with
+// its own, differently-shaped discriminator. See deriveShipmentKey's own doc
+// comment for why a shared function exists at all: this is what guarantees
+// the primary (webhook) and fallback (reconciliation) paths can never
+// independently compute two different keys for the same physical shipment.
+function deriveShipmentKeyFromWebhookPayload(data, shipment) {
   const timestamp = data?.shipped_at || data?.delivered_at || '';
   const skuPart = shipment.skus.slice().sort().join('-') || 'no-skus';
-  return `no-tracking:${shipment.carrier || 'unknown-carrier'}:${skuPart}:${timestamp}`;
+  return deriveShipmentKey({
+    carrier: shipment.carrier,
+    trackingNumber: shipment.trackingNumber,
+    discriminator: `${skuPart}:${timestamp}`,
+  });
 }
 
 // ---------------------------------------------------------------------------
