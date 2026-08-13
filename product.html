@@ -549,7 +549,7 @@
     </div>
 
     <div class="cta-row">
-      <button class="cta-primary" id="ctaBtn" data-add-to-cart data-kind="model" data-price="64" data-name="Venezia Tee">Add to Collection — $64</button>
+      <button class="cta-primary" id="ctaBtn" data-add-to-cart data-kind="model" data-price="64" data-name="Venezia Tee" data-slug="tee">Add to Collection — $64</button>
       <button class="cta-secondary">Save to Archive</button>
     </div>
 
@@ -600,7 +600,7 @@
           <dl>
             <div class="meta-pair">
               <dt>Edition</dt>
-              <dd>Series 01 &mdash; Venezia. Three wearable pieces from a single artwork.</dd>
+              <dd id="editionDesc">Series 01 &mdash; Venezia. Three wearable pieces from a single artwork.</dd>
             </div>
             <div class="meta-pair">
               <dt>Authenticity</dt>
@@ -663,22 +663,22 @@
 <section class="source-section" id="sourceSection" data-screen-label="The Source">
   <div class="source-inner">
     <div>
-      <div class="source-art"><img src="Venezia-Original.png" alt="Venezia — Original Artwork, Tony DeAngelo, 1979"></div>
+      <div class="source-art"><img id="sourceArtImg" src="Venezia-Original.png" alt="Venezia — Original Artwork, Tony DeAngelo, 1979"></div>
       <div class="source-art-caption">
-        <span>Venezia · Watercolour</span>
-        <span>1979</span>
+        <span id="sourceCaptionMedium">Venezia · Watercolour</span>
+        <span id="sourceCaptionYear">1979</span>
       </div>
     </div>
 
     <div class="source-copy">
-      <span class="eyebrow">The Source &nbsp;/&nbsp; Artwork 01</span>
-      <h2 class="source-title">Watercolour, <em>1979</em></h2>
-      <p class="source-medium">Venezia — Artwork No. 01</p>
-      <p class="source-pull">"The source image becomes the garment."</p>
-      <div class="source-body">
+      <span class="eyebrow" id="sourceEyebrow">The Source &nbsp;/&nbsp; Artwork 01</span>
+      <h2 class="source-title" id="sourceTitle">Watercolour, <em>1979</em></h2>
+      <p class="source-medium" id="sourceMedium">Venezia — Artwork No. 01</p>
+      <p class="source-pull" id="sourcePull">"The source image becomes the garment."</p>
+      <div class="source-body" id="sourceBody">
         <p>Isola di San Giorgio Maggiore, Venice. Artwork 01 is translated onto heavyweight cotton, documented, and archived.</p>
       </div>
-      <div class="source-sign">
+      <div class="source-sign" id="sourceSign">
         <span>By</span>
         <span class="name">Tony DeAngelo</span>
         <span>· Watercolour · 1979</span>
@@ -692,18 +692,18 @@
   <div class="provenance-inner">
     <div class="prov-item">
       <div class="prov-label">Artwork</div>
-      <div class="prov-value">No. <em>01</em></div>
-      <div class="prov-aside">Venezia — watercolour, 1979.</div>
+      <div class="prov-value" id="provArtworkValue">No. <em>01</em></div>
+      <div class="prov-aside" id="provArtworkAside">Venezia — watercolour, 1979.</div>
     </div>
     <div class="prov-item">
       <div class="prov-label">Printed</div>
       <div class="prov-value">U.S. Production</div>
-      <div class="prov-aside">Small-batch screen print. Water-based inks.</div>
+      <div class="prov-aside" id="provPrintedAside">Small-batch screen print. Water-based inks.</div>
     </div>
     <div class="prov-item">
       <div class="prov-label">Series</div>
       <div class="prov-value">01 <em>/</em> MMXXVI</div>
-      <div class="prov-aside">Three pieces. Upcoming.</div>
+      <div class="prov-aside">Four pieces. Upcoming.</div>
     </div>
     <div class="prov-item">
       <div class="prov-label">The Archive</div>
@@ -860,32 +860,114 @@
     }
 
     var PRODS = {
-      tee:    { plate:'01', garment:'Tee',      price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'Venezia-tee-m.png',    flat:'Venezia-tee.png',    sizes:['S','M','L','XL','2XL'] },
-      hoodie: { plate:'02', garment:'Hoodie',   price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png', sizes:['S','M','L','XL','2XL'] },
-      crew:   { plate:'03', garment:'Crewneck', price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'Venezia-crew-m.png',   flat:'Venezia-crew.png',   sizes:['S','M','L','XL','2XL','3XL'] }
+      tee:    { title:'Venezia', artwork:'Artwork 01', plate:'01', garment:'Tee',      price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'Venezia-tee-m.png',    flat:'Venezia-tee.png',    sizes:['S','M','L','XL','2XL'] },
+      hoodie: { title:'Venezia', artwork:'Artwork 01', plate:'02', garment:'Hoodie',   price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png', sizes:['S','M','L','XL','2XL'] },
+      crew:   { title:'Venezia', artwork:'Artwork 01', plate:'03', garment:'Crewneck', price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'Venezia-crew-m.png',   flat:'Venezia-crew.png',   sizes:['S','M','L','XL','2XL','3XL'] },
+      'arhus-old-town-tee': { title:'Arhus, The Old Town', artwork:'Artwork 02', plate:'04', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'Arhus, The Old Town.png', flat:'The Old Town flat.png', sizes:['S','M','L','XL','2XL'] }
     };
     var p = PRODS[key] || PRODS.tee;
 
-    document.title = 'Venezia ' + p.garment + ' — The DeAngelo Series';
-    document.getElementById('productTitle').innerHTML = 'Venezia<br><em>' + p.garment + '</em>';
+    var EDITION_DESC = {
+      tee: 'Series 01 — Venezia. Three wearable pieces from a single artwork.',
+      hoodie: 'Series 01 — Venezia. Three wearable pieces from a single artwork.',
+      crew: 'Series 01 — Venezia. Three wearable pieces from a single artwork.',
+      'arhus-old-town-tee': 'Series 01 — Arhus, The Old Town. A standalone artwork, distinct from the Venezia pieces.'
+    };
+    var editionEl = document.getElementById('editionDesc');
+    if (editionEl) editionEl.textContent = EDITION_DESC[key] || EDITION_DESC.tee;
+
+    // The Source — per-artwork story. Venezia products (tee/hoodie/crew)
+    // keep their existing, unchanged copy. Arhus gets its own confirmed
+    // artwork description and garment description — never Venezia's.
+    var VENEZIA_SOURCE = {
+      artImg: 'Venezia-Original.png',
+      artAlt: 'Venezia — Original Artwork, Tony DeAngelo, 1979',
+      captionMedium: 'Venezia · Watercolour',
+      captionYear: '1979',
+      eyebrow: 'The Source · Artwork 01',
+      titleHtml: 'Watercolour, <em>1979</em>',
+      medium: 'Venezia — Artwork No. 01',
+      pull: '"The source image becomes the garment."',
+      bodyHtml: '<p>Isola di San Giorgio Maggiore, Venice. Artwork 01 is translated onto heavyweight cotton, documented, and archived.</p>',
+      signName: 'Tony DeAngelo',
+      signMeta: '· Watercolour · 1979',
+      provArtworkValueHtml: 'No. <em>01</em>',
+      provArtworkAside: 'Venezia — watercolour, 1979.',
+      provPrintedAside: 'Small-batch screen print. Water-based inks.'
+    };
+    var SOURCE = {
+      tee: VENEZIA_SOURCE, hoodie: VENEZIA_SOURCE, crew: VENEZIA_SOURCE,
+      'arhus-old-town-tee': {
+        artImg: 'Arhus, The Old Town.png',
+        artAlt: 'Arhus, The Old Town — Original Artwork',
+        captionMedium: 'Arhus, The Old Town',
+        captionYear: '',
+        eyebrow: 'The Source · Artwork 02',
+        titleHtml: 'Arhus, <em>The Old Town</em>',
+        medium: 'Arhus, The Old Town — Artwork No. 02',
+        pull: '"A quiet moment at the edge of shadow and light."',
+        bodyHtml: '<p>Arhus, The Old Town captures a quiet moment at the edge of shadow and light. A dark, narrow passage opens onto sunlit tiled rooftops and timbered buildings, while a lone seated figure rests at the threshold. Softened detail, layered texture, and painterly light give the scene the feeling of a half-remembered place.</p>' +
+          '<p>Printed vertically across the back of a garment-dyed drop-shoulder tee, the artwork is paired with a relaxed silhouette and vintage-washed cotton that suit its atmospheric, timeworn character.</p>',
+        signName: '',
+        signMeta: '',
+        provArtworkValueHtml: 'No. <em>02</em>',
+        provArtworkAside: 'Arhus, The Old Town.',
+        provPrintedAside: 'Produced via the Printify network.'
+      }
+    };
+    var src = SOURCE[key] || VENEZIA_SOURCE;
+
+    var sourceArtImg = document.getElementById('sourceArtImg');
+    if (sourceArtImg) { sourceArtImg.src = src.artImg; sourceArtImg.alt = src.artAlt; }
+    var sourceCaptionMedium = document.getElementById('sourceCaptionMedium');
+    if (sourceCaptionMedium) sourceCaptionMedium.textContent = src.captionMedium;
+    var sourceCaptionYear = document.getElementById('sourceCaptionYear');
+    if (sourceCaptionYear) sourceCaptionYear.textContent = src.captionYear;
+    var sourceEyebrow = document.getElementById('sourceEyebrow');
+    if (sourceEyebrow) sourceEyebrow.textContent = src.eyebrow;
+    var sourceTitle = document.getElementById('sourceTitle');
+    if (sourceTitle) sourceTitle.innerHTML = src.titleHtml;
+    var sourceMedium = document.getElementById('sourceMedium');
+    if (sourceMedium) sourceMedium.textContent = src.medium;
+    var sourcePull = document.getElementById('sourcePull');
+    if (sourcePull) sourcePull.textContent = src.pull;
+    var sourceBody = document.getElementById('sourceBody');
+    if (sourceBody) sourceBody.innerHTML = src.bodyHtml;
+    var sourceSign = document.getElementById('sourceSign');
+    if (sourceSign) {
+      sourceSign.style.display = src.signName ? '' : 'none';
+      if (src.signName) {
+        sourceSign.innerHTML = '<span>By</span><span class="name">' + src.signName + '</span><span>' + src.signMeta + '</span>';
+      }
+    }
+    var provArtworkValue = document.getElementById('provArtworkValue');
+    if (provArtworkValue) provArtworkValue.innerHTML = src.provArtworkValueHtml;
+    var provArtworkAside = document.getElementById('provArtworkAside');
+    if (provArtworkAside) provArtworkAside.textContent = src.provArtworkAside;
+    var provPrintedAside = document.getElementById('provPrintedAside');
+    if (provPrintedAside) provPrintedAside.textContent = src.provPrintedAside;
+
+    document.title = p.title + ' ' + p.garment + ' — The DeAngelo Series';
+    document.getElementById('productTitle').innerHTML = p.title + '<br><em>' + p.garment + '</em>';
     document.getElementById('productPrice').textContent = p.price + ' USD';
     document.getElementById('crumbPlate').textContent = 'Piece ' + p.plate;
-    document.getElementById('eyebrowPlate').textContent = 'Artwork 01 · Piece ' + p.plate;
+    document.getElementById('eyebrowPlate').textContent = p.artwork + ' · Piece ' + p.plate;
 
     var cta = document.getElementById('ctaBtn');
     cta.textContent = 'Add to Collection — ' + p.price;
     cta.setAttribute('data-price', p.priceNum);
-    cta.setAttribute('data-name', 'Venezia ' + p.garment);
+    cta.setAttribute('data-name', p.title + ' ' + p.garment);
     cta.setAttribute('data-img', p.model);
     cta.setAttribute('data-plate', 'Piece ' + p.plate);
+    cta.setAttribute('data-slug', key);
 
     var mImg = document.getElementById('frameModel');
     mImg.src = p.model;
-    mImg.alt = 'Venezia ' + p.garment + ' — Model';
+    mImg.alt = p.title + ' ' + p.garment + ' — Model';
 
     var fImg = document.getElementById('frameFlat');
     fImg.src = p.flat;
-    fImg.alt = 'Venezia ' + p.garment + ' — Flat';
+    fImg.alt = p.title + ' ' + p.garment + ' — Flat';
 
     var tModel = document.getElementById('thumbModel');
     tModel.style.backgroundImage = "url('" + p.model + "')";
@@ -907,33 +989,42 @@
       var el = document.getElementById(id);
       if (el) el.style.display = 'none';
     });
-    var chartEl = document.getElementById({ tee:'sgTee', hoodie:'sgHoodie', crew:'sgCrew' }[key]);
+    var chartEl = document.getElementById({ tee:'sgTee', hoodie:'sgHoodie', crew:'sgCrew', 'arhus-old-town-tee':'sgTee' }[key]);
     if (chartEl) chartEl.style.display = '';
 
     // Per-product details
     var DETAILS = {
       tee:    { material:'10.5oz organic heavyweight cotton. Soft-hand, garment-dyed in small lots.', fit:'Oversized editorial. Boxy crew, dropped shoulder, slightly cropped hem.', print:'Six-colour water-based screen print, hand-pulled. Front placement.' },
       hoodie: { material:'18oz heavyweight fleece. Brushed cotton interior, structured hood, kangaroo pocket.', fit:'Relaxed pullover silhouette. Extended body, ribbed cuffs and hem, dropped shoulder.', print:'Six-colour water-based screen print, hand-pulled. Chest placement.' },
-      crew:   { material:'18oz heavyweight fleece. Brushed cotton interior, reinforced ribbed collar.', fit:'Boxy crew silhouette. Dropped shoulder, ribbed cuffs and waistband, slightly cropped.', print:'Six-colour water-based screen print, hand-pulled. Chest placement.' }
+      crew:   { material:'18oz heavyweight fleece. Brushed cotton interior, reinforced ribbed collar.', fit:'Boxy crew silhouette. Dropped shoulder, ribbed cuffs and waistband, slightly cropped.', print:'Six-colour water-based screen print, hand-pulled. Chest placement.' },
+      'arhus-old-town-tee': { material:'Garment-dyed, vintage-washed cotton.', fit:'Relaxed drop-shoulder silhouette.', print:'Printed vertically across the back.' }
     };
     var d = DETAILS[key] || DETAILS.tee;
     document.getElementById('detailMaterial').textContent = d.material;
     document.getElementById('detailFit').textContent = d.fit;
     document.getElementById('detailPrint').textContent = d.print;
 
-    // Also on the wall — other Venezia garments
+    // Also on the wall — other pieces in the Series 01 collection
     var ALSO = {
       tee:    [
-        { plate:'02', garment:'Hoodie',   price:'$84', slug:'hoodie', model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png' },
-        { plate:'03', garment:'Crewneck', price:'$84', slug:'crew',   model:'Venezia-crew-m.png',   flat:'Venezia-crew.png' }
+        { title:'Venezia', plate:'02', garment:'Hoodie',   price:'$84', slug:'hoodie', model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png' },
+        { title:'Venezia', plate:'03', garment:'Crewneck', price:'$84', slug:'crew',   model:'Venezia-crew-m.png',   flat:'Venezia-crew.png' },
+        { title:'Arhus, The Old Town', plate:'04', garment:'Tee', price:'$64', slug:'arhus-old-town-tee', model:'Arhus, The Old Town.png', flat:'The Old Town flat.png' }
       ],
       hoodie: [
-        { plate:'01', garment:'Tee',      price:'$64', slug:'tee',    model:'Venezia-tee-m.png',    flat:'Venezia-tee.png' },
-        { plate:'03', garment:'Crewneck', price:'$84', slug:'crew',   model:'Venezia-crew-m.png',   flat:'Venezia-crew.png' }
+        { title:'Venezia', plate:'01', garment:'Tee',      price:'$64', slug:'tee',    model:'Venezia-tee-m.png',    flat:'Venezia-tee.png' },
+        { title:'Venezia', plate:'03', garment:'Crewneck', price:'$84', slug:'crew',   model:'Venezia-crew-m.png',   flat:'Venezia-crew.png' },
+        { title:'Arhus, The Old Town', plate:'04', garment:'Tee', price:'$64', slug:'arhus-old-town-tee', model:'Arhus, The Old Town.png', flat:'The Old Town flat.png' }
       ],
       crew:   [
-        { plate:'01', garment:'Tee',      price:'$64', slug:'tee',    model:'Venezia-tee-m.png',    flat:'Venezia-tee.png' },
-        { plate:'02', garment:'Hoodie',   price:'$84', slug:'hoodie', model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png' }
+        { title:'Venezia', plate:'01', garment:'Tee',      price:'$64', slug:'tee',    model:'Venezia-tee-m.png',    flat:'Venezia-tee.png' },
+        { title:'Venezia', plate:'02', garment:'Hoodie',   price:'$84', slug:'hoodie', model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png' },
+        { title:'Arhus, The Old Town', plate:'04', garment:'Tee', price:'$64', slug:'arhus-old-town-tee', model:'Arhus, The Old Town.png', flat:'The Old Town flat.png' }
+      ],
+      'arhus-old-town-tee': [
+        { title:'Venezia', plate:'01', garment:'Tee',      price:'$64', slug:'tee',    model:'Venezia-tee-m.png',    flat:'Venezia-tee.png' },
+        { title:'Venezia', plate:'02', garment:'Hoodie',   price:'$84', slug:'hoodie', model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png' },
+        { title:'Venezia', plate:'03', garment:'Crewneck', price:'$84', slug:'crew',   model:'Venezia-crew-m.png',   flat:'Venezia-crew.png' }
       ]
     };
     var alsoGrid = document.getElementById('alsoGrid');
@@ -942,12 +1033,12 @@
         return '<article class="plate">' +
           '<a class="plate-link" href="product.html?p=' + a.slug + '">' +
             '<div class="plate-image-wrap">' +
-              '<div class="plate-image plate-image--model"><img src="' + a.model + '" alt="Venezia ' + a.garment + '"></div>' +
-              '<div class="plate-image plate-image--flat"><img src="' + a.flat + '" alt="Venezia ' + a.garment + ' — flat"></div>' +
+              '<div class="plate-image plate-image--model"><img src="' + a.model + '" alt="' + a.title + ' ' + a.garment + '"></div>' +
+              '<div class="plate-image plate-image--flat"><img src="' + a.flat + '" alt="' + a.title + ' ' + a.garment + ' — flat"></div>' +
             '</div>' +
           '</a>' +
           '<div>' +
-            '<div class="plate-line"><span>' + a.plate + '</span><span class="plate-sep">//</span><span>Venezia — ' + a.garment + '</span></div>' +
+            '<div class="plate-line"><span>' + a.plate + '</span><span class="plate-sep">//</span><span>' + a.title + ' — ' + a.garment + '</span></div>' +
             '<p class="plate-price">' + a.price + '</p>' +
           '</div>' +
         '</article>';
@@ -1074,8 +1165,8 @@
     { title:'Venezia', garment:'Tee', price:'$64', slug:'tee', model:'Venezia-tee-m.png' },
     { title:'Venezia', garment:'Hoodie', price:'$84', slug:'hoodie', model:'Venezia-Hoodie-m.png' },
     { title:'Venezia', garment:'Crewneck', price:'$84', slug:'crew', model:'Venezia-crew-m.png' },
+    { title:'Arhus, The Old Town', garment:'Tee', price:'$64', slug:'arhus-old-town-tee', model:'Arhus, The Old Town.png' },
     { title:'Japan', price:'—', soon:true, model:'bella-hoodie.png' },
-    { title:'Arhus, The Old Town', price:'—', soon:true, model:'Arhus, The Old Town.png' },
     { title:'New York Chrysler', price:'—', soon:true, model:'New york chystler hoodie.png' }
   ];
   var drop  = document.getElementById('searchDrop');

@@ -274,7 +274,7 @@
   function cartSubtotal() {
     return cart.reduce(function (n, it) { return n + it.price * it.qty; }, 0);
   }
-  function keyOf(it) { return it.plate + "|" + it.size; }
+  function keyOf(it) { return (it.slug || it.plate) + "|" + it.size; }
 
   function addToCart(item) {
     var hit = null;
@@ -283,7 +283,7 @@
     }
     if (hit) hit.qty += item.qty || 1;
     else cart.push({
-      plate: item.plate, name: item.name, size: item.size,
+      slug: item.slug || "", plate: item.plate, name: item.name, size: item.size,
       price: item.price, kind: item.kind || "model", img: item.img || "", qty: item.qty || 1
     });
     saveCart(cart);
@@ -565,6 +565,7 @@
     var name = trigger.getAttribute("data-name");
     var plate = trigger.getAttribute("data-plate");
     var price = trigger.getAttribute("data-price");
+    var slug = trigger.getAttribute("data-slug") || "";
     var kind = trigger.getAttribute("data-kind") || "model";
     var size;
 
@@ -589,7 +590,7 @@
       if (activeFrame) img = activeFrame.getAttribute("src");
     }
     return {
-      name: name, plate: plate, size: size,
+      name: name, plate: plate, size: size, slug: slug,
       price: Math.round(parseFloat(price) || 0), kind: kind, img: img || "", qty: 1
     };
   }
@@ -668,6 +669,168 @@
     ".vote-section.has-voted .vote-btn{display:block !important}"
   ].join("");
 
+  /* ---- footer wordmark: scroll-scrubbed shimmer -------------------------
+     The ".watermark" DEANGELO wordmark at the bottom of every page's footer
+     is rendered as a thin, subtle white OUTLINE (not a filled word) — like
+     langchain.com's footer wordmark, our direct reference. A brighter
+     outline copy sits on top, revealed only along a soft vertical band —
+     bright dead-center, fading continuously left/right with no flat
+     plateau, full letter-height (not a circular spot) — that sweeps
+     left-to-right as the footer scrolls into view. Driven by scroll
+     position each frame (rAF loop, no CSS transition, no setTimeout), but
+     speed-capped: small scroll movements track the scroll 1:1 (feels
+     directly connected), while a fast/large scroll jump doesn't snap the
+     light straight to its new position — it advances at a fixed max speed
+     and keeps animating for a few more frames after the scroll stops,
+     until it catches up. Scrolling back up reverses the same way. The
+     sweep only starts once the wordmark's top edge has actually entered
+     the viewport, completes over a short fixed scroll distance (not
+     stretched across all remaining scroll room), and comes to REST with
+     the light on the last letters once the page is fully scrolled — it
+     does not sweep past and leave the word dark.
+
+     Technique: CSS can't gradient a text-stroke directly, so — matching
+     how langchain.com actually does it (directly inspected: a dim base
+     logo plus a brighter "strokes" copy revealed through a CSS
+     mask-image) — this layers a second, absolutely-positioned copy of the
+     wordmark text on top of the original, both stroked-outline/
+     transparent-fill, and reveals the top copy through an animated
+     mask-image rather than gradienting a fill. Respects
+     prefers-reduced-motion. */
+  var WATERMARK_STROKE_DIM = "rgba(255,255,255,.42)";
+  var WATERMARK_STROKE_BRIGHT = "rgba(255,255,255,.95)";
+  var WATERMARK_STROKE_WIDTH = "0.35px";
+  var WATERMARK_LETTER_SPACING = "0.02em";
+  var WATERMARK_SHIMMER_CSS = [
+    ".du-watermark-shimmer{position:relative;color:transparent;letter-spacing:" + WATERMARK_LETTER_SPACING + ";",
+    "-webkit-text-stroke:" + WATERMARK_STROKE_WIDTH + " " + WATERMARK_STROKE_DIM + ";",
+    "text-stroke:" + WATERMARK_STROKE_WIDTH + " " + WATERMARK_STROKE_DIM + ";}",
+    ".du-watermark-glow{position:absolute;inset:0;color:transparent;pointer-events:none;",
+    "-webkit-text-stroke:" + WATERMARK_STROKE_WIDTH + " " + WATERMARK_STROKE_BRIGHT + ";",
+    "text-stroke:" + WATERMARK_STROKE_WIDTH + " " + WATERMARK_STROKE_BRIGHT + ";",
+    "-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;}"
+  ].join("");
+
+  function initWatermarkShimmer() {
+    var els = document.querySelectorAll(".watermark");
+    if (!els.length) return;
+
+    var style = document.createElement("style");
+    style.id = "du-watermark-shimmer-css";
+    style.textContent = WATERMARK_SHIMMER_CSS;
+    document.head.appendChild(style);
+
+    // Word is ~8 letters ("DEANGELO"). BAND_IN_LETTERS: how many
+    // letter-widths wide the bright vertical band's falloff is — tighter
+    // = a narrower, more precise beam. REST_LETTER_INDEX: which letter
+    // (0-based) the light comes to rest centered on once fully scrolled —
+    // 7 is the last letter ("O"), so the beam's trailing falloff still
+    // reaches back into the second-to-last letter ("L").
+    var LETTERS = 8;
+    var BAND_IN_LETTERS = 0.9;
+    var REST_LETTER_INDEX = 7;
+    var restCenterPct = ((REST_LETTER_INDEX + 0.5) / LETTERS) * 100;
+    // Percentage-of-word-width the band's falloff spans each side of its
+    // center — a fraction of letters expressed directly as a percentage of
+    // the whole word, so it's independent of actual rendered pixel size.
+    var bandPct = (BAND_IN_LETTERS / LETTERS) * 100;
+
+    var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    var glows = [].map.call(els, function (el) {
+      var glow = document.createElement("span");
+      glow.className = "du-watermark-glow";
+      glow.setAttribute("aria-hidden", "true");
+      glow.textContent = el.textContent;
+      el.classList.add("du-watermark-shimmer");
+      el.appendChild(glow);
+      return { el: el, glow: glow };
+    });
+
+    function maskFor(centerPct) {
+      var lo = centerPct - bandPct;
+      var hi = centerPct + bandPct;
+      return "linear-gradient(90deg,transparent " + lo.toFixed(2) + "%,white " +
+        centerPct.toFixed(2) + "%,transparent " + hi.toFixed(2) + "%)";
+    }
+
+    if (reduceMotion) {
+      // No sweep — the light simply rests in its final position, static.
+      var restMask = maskFor(restCenterPct);
+      glows.forEach(function (g) {
+        g.glow.style.webkitMaskImage = restMask;
+        g.glow.style.maskImage = restMask;
+      });
+      return;
+    }
+
+    // START: the wordmark's top edge is exactly at the bottom edge of the
+    // viewport — 0% visible, the very first instant any part of it could
+    // be seen. Sweep never starts before this.
+    // SWEEP_DISTANCE_IN_HEIGHTS: how much scroll distance (in multiples of
+    // the wordmark's own height) the whole sweep takes to complete, once
+    // started — kept short and fixed so it reads as one quick pass, not a
+    // reveal stretched across all remaining scroll room.
+    // MAX_PROGRESS_PER_FRAME: caps how fast the visible sweep can move each
+    // frame. Small scroll movements change the target by less than this
+    // cap, so the light still tracks the scroll 1:1 (feels directly
+    // connected). A fast/large scroll jump changes the target by more than
+    // the cap in one frame — instead of snapping straight there, the light
+    // advances at this fixed max speed and keeps animating over the next
+    // few frames until it catches up, like langchain.com's eased
+    // ScrollTrigger scrub rather than an instant jump.
+    var SWEEP_DISTANCE_IN_HEIGHTS = 1.0;
+    var MAX_PROGRESS_PER_FRAME = 0.035;
+    glows.forEach(function (g) { g.progress = 0; });
+    var rafHandle = null;
+
+    function targetProgress(rect, vh) {
+      var start = vh;
+      var end = start - rect.height * SWEEP_DISTANCE_IN_HEIGHTS;
+      var t = (start - rect.top) / (start - end);
+      if (t < 0) t = 0;
+      if (t > 1) t = 1;
+      return t;
+    }
+
+    function tick() {
+      var vh = window.innerHeight;
+      var settled = true;
+
+      glows.forEach(function (g) {
+        var rect = g.el.getBoundingClientRect();
+        var target = targetProgress(rect, vh);
+        var diff = target - g.progress;
+
+        if (Math.abs(diff) > MAX_PROGRESS_PER_FRAME) {
+          g.progress += diff > 0 ? MAX_PROGRESS_PER_FRAME : -MAX_PROGRESS_PER_FRAME;
+          settled = false;
+        } else {
+          g.progress = target;
+        }
+
+        // Center travels from fully past the left edge (progress 0, beam
+        // entirely off the word) to resting ON the last letters (progress
+        // 1). Reversing scroll direction just changes the target — the
+        // same speed-capped catch-up logic handles it automatically.
+        var centerX = -bandPct + g.progress * (restCenterPct + bandPct);
+        var mask = maskFor(centerX);
+        g.glow.style.webkitMaskImage = mask;
+        g.glow.style.maskImage = mask;
+      });
+
+      rafHandle = settled ? null : requestAnimationFrame(tick);
+    }
+
+    function kick() {
+      if (rafHandle == null) rafHandle = requestAnimationFrame(tick);
+    }
+
+    window.addEventListener("scroll", kick, { passive: true });
+    window.addEventListener("resize", kick, { passive: true });
+    tick();
+  }
+
   function readVote() {
     try { return localStorage.getItem(VOTE_KEY); } catch (e) { return null; }
   }
@@ -739,6 +902,7 @@
     syncCount();
     initAccordions(document);
     initVote();
+    initWatermarkShimmer();
     // open the first menu group by default
     [].forEach.call(els.menu.querySelectorAll(".du-mgroup.is-open .du-msub-panel"), function (p) {
       p.style.height = "auto";

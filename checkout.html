@@ -311,6 +311,24 @@
     margin-top:4px;
   }
   .summ-caption .price{font-weight:300;font-size:1.2rem;font-variant-numeric:tabular-nums}
+  .summ-caption .right-col{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+  .summ-qty{
+    display:flex;align-items:center;gap:2px;
+    border:1px solid var(--ink-hair-soft);
+  }
+  .summ-qty button{
+    width:26px;height:26px;background:none;border:0;color:inherit;font:inherit;font-size:13px;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:.7;
+  }
+  .summ-qty button:hover{opacity:1}
+  .summ-qty .summ-qty-val{
+    min-width:22px;text-align:center;font-size:11px;letter-spacing:.1em;font-variant-numeric:tabular-nums;
+  }
+  .summ-remove{
+    background:none;border:0;color:inherit;font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+    cursor:pointer;opacity:.45;text-decoration:underline;padding:0;
+  }
+  .summ-remove:hover{opacity:.8}
 
   /* Placard description */
   .placard{
@@ -466,8 +484,8 @@
 
         <div class="field-group">
           <div class="field">
-            <label>Email address</label>
-            <input type="email" placeholder="you@email.com">
+            <label>Email address <span class="opt">Optional — you can enter it on Stripe instead</span></label>
+            <input type="email" id="checkoutEmail" placeholder="you@email.com">
           </div>
           <label class="check">
             <input type="checkbox" checked>
@@ -485,33 +503,49 @@
 
         <div class="field-group">
           <div class="field-row two">
-            <div class="field"><label>First name</label><input></div>
-            <div class="field"><label>Last name</label><input></div>
-          </div>
-          <div class="field"><label>Address</label><input></div>
-          <div class="field"><label>Apartment, suite <span class="opt">Optional</span></label><input></div>
-          <div class="field-row three">
-            <div class="field"><label>City</label><input></div>
-            <div class="field"><label>State</label><input></div>
-            <div class="field"><label>ZIP</label><input></div>
-          </div>
-          <div class="field-row two">
             <div class="field">
-              <label>Country</label>
-              <select><option>United States</option><option>Canada</option><option>United Kingdom</option><option>Italy</option><option>France</option><option>Japan</option></select>
+              <label>First name</label>
+              <input type="text" id="shipFirstName" placeholder="First name" autocomplete="given-name">
             </div>
-            <div class="field"><label>Phone <span class="opt">For delivery only</span></label><input></div>
+            <div class="field">
+              <label>Last name</label>
+              <input type="text" id="shipLastName" placeholder="Last name" autocomplete="family-name">
+            </div>
+          </div>
+          <div class="field">
+            <label>Address</label>
+            <input type="text" id="shipAddress1" placeholder="Street address" autocomplete="address-line1">
+          </div>
+          <div class="field">
+            <label>Apartment, suite <span class="opt">Optional</span></label>
+            <input type="text" id="shipAddress2" placeholder="Apt, suite, etc." autocomplete="address-line2">
+          </div>
+          <div class="field-row three">
+            <div class="field">
+              <label>City</label>
+              <input type="text" id="shipCity" placeholder="City" autocomplete="address-level2">
+            </div>
+            <div class="field">
+              <label>State</label>
+              <select id="shipRegion" autocomplete="address-level1">
+                <option value="" selected disabled>Select a state</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>ZIP</label>
+              <input type="text" id="shipZip" placeholder="94105" autocomplete="postal-code" inputmode="numeric">
+            </div>
+          </div>
+          <div class="field">
+            <label>Country</label>
+            <select id="shipCountry" autocomplete="country" disabled>
+              <option value="US" selected>United States</option>
+            </select>
           </div>
 
-          <div class="ship-methods">
-            <button class="ship-method is-active" type="button" data-ship="standard">
-              <span class="ship-radio"></span>
-              <span class="ship-name">
-                <span class="name">Shipping</span>
-                <span class="note">Production and delivery estimates will be shown during checkout when available.</span>
-              </span>
-              <span class="ship-price">Calculated at checkout</span>
-            </button>
+          <p class="submit-fine" id="shipQuoteError" role="alert" style="display:none;color:#a33"></p>
+          <div class="ship-methods" id="shipMethods">
+            <p style="font-size:.85rem;font-weight:300;color:var(--ink-dim)">Enter your full shipping address above to see rates.</p>
           </div>
         </div>
       </div>
@@ -523,51 +557,25 @@
           <span class="step-aside">All transactions in USD</span>
         </div>
 
-        <div class="pay-card" aria-label="Payment placeholder">
-          <div class="pay-row">
-            <div class="pay-field">
-              <label>Card number</label>
-              <div class="input">1234  1234  1234  1234</div>
-            </div>
-          </div>
-          <div class="pay-row split">
-            <div class="pay-field">
-              <label>Expiry</label>
-              <div class="input">MM / YY</div>
-            </div>
-            <div class="pay-field">
-              <label>CVC</label>
-              <div class="input">CVC</div>
-            </div>
-          </div>
-          <div class="pay-row">
-            <div class="pay-field">
-              <label>Cardholder name</label>
-              <div class="input">Name as it appears on the card</div>
-            </div>
-          </div>
-        </div>
-
-        <label class="check">
-          <input type="checkbox" checked>
-          <span>Billing address is the same as shipping address.</span>
-        </label>
-
-        <div class="pay-note">
+        <div class="pay-note" style="margin-top:0">
           <span class="lock"></span>
-          <span>Stripe payment integration — coming at launch</span>
+          <span>Card details are entered securely on Stripe. This page never collects card data.</span>
         </div>
       </div>
 
       <!-- Submit -->
       <div class="submit-row">
-        <p class="submit-policy">All sales are final. Checkout payment processing is not yet live — no order will be placed.</p>
-        <button class="submit" type="button" disabled aria-disabled="true">
-          <span>Checkout coming soon</span>
-          <span class="total">Not yet live</span>
+        <p class="submit-policy" id="checkoutPolicyNote">Test mode — no real payment will be charged.</p>
+        <button class="submit" type="button" id="checkoutSubmit">
+          <span id="checkoutSubmitLabel">Continue to Payment</span>
+          <span class="total" id="checkoutSubmitTotal">Calculated at checkout</span>
         </button>
+        <p class="submit-fine" id="checkoutError" role="alert" style="display:none;color:#a33"></p>
         <p class="submit-fine">
           By completing this order you accept the <a href="terms.html">Terms</a> &amp; <a href="privacy-policy.html">Privacy</a>.
+        </p>
+        <p class="submit-fine">
+          All sales are final. Damage, manufacturing-defect, or incorrect-item claims must be submitted within 7 days of delivery and are subject to review. <a href="refund-policy.html">View policy</a>
         </p>
       </div>
 
@@ -579,72 +587,54 @@
     <div class="summary">
 
       <div class="summary-eyebrow">
-        <span>Your Piece</span>
-        <span class="right">01 item</span>
+        <span>Your Collection</span>
+        <span class="right" id="summItemCount">0 items</span>
       </div>
 
-      <div class="summ-stage" id="summStage">
-        <div class="frame is-active" data-kind="front">
-          <img src="Venezia-tee-m.png" alt="Venezia Tee — Model">
-        </div>
-        <div class="frame" data-kind="back">
-          <img src="Venezia-tee.png" alt="Venezia Tee — Flat">
-        </div>
-        <div class="frame" data-kind="detail">
-          <img src="Venezia-Hoodie-m.png" alt="Venezia — Hoodie">
-        </div>
-        <div class="frame" data-kind="artwork">
-          <img src="Venezia-Original.png" alt="Venezia — Original Artwork, Tony DeAngelo, 1979" style="object-fit:contain;background:#F5F5F1;">
-        </div>
-
-        <button class="summ-arrow prev" id="summPrev" aria-label="Previous image">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M15 5 L7 12 L15 19"/></svg>
-        </button>
-        <button class="summ-arrow next" id="summNext" aria-label="Next image">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M9 5 L17 12 L9 19"/></svg>
-        </button>
-        <div class="summ-counter" id="summCounter">01 / 04</div>
+      <div id="checkoutEmpty" style="display:none;padding:48px 0;text-align:center">
+        <p style="font-family:var(--font-serif);font-style:italic;font-size:1.3rem;color:var(--ink-dim);margin-bottom:16px">Your collection is empty.</p>
+        <a href="collection.html" style="font-size:11px;letter-spacing:.3em;text-transform:uppercase;text-decoration:underline">Browse the series &rarr;</a>
       </div>
 
-      <div class="summ-caption">
-        <div class="left">
-          <div class="plate-line"><span>01</span><span class="sep">//</span><span>Venezia — Tee</span></div>
-          <div class="plate-meta">Size M · Qty 01 · Series 01</div>
+      <div id="checkoutFilled">
+        <div class="summ-stage" id="summStage">
+          <img id="summStageImg" src="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
         </div>
-        <div class="price">$64.00</div>
-      </div>
 
-      <div class="placard">
-        <div class="eyebrow-mini">The Piece</div>
-        <p class="pull">The painting, translated to cotton.</p>
-        <p>Heavyweight 10.5oz organic cotton, oversized boxy tee. Gallery-grade water-based screen print.</p>
-      </div>
+        <div id="summItems"></div>
 
-      <div class="source-mini">
-        <div class="source-mini-art">
-          <img src="Venezia-Original.png" alt="Venezia — Original Artwork" style="width:100%;height:100%;object-fit:contain;padding:6px;">
+        <div class="placard">
+          <div class="eyebrow-mini">The Piece</div>
+          <p class="pull">The painting, translated to cotton.</p>
+          <p>Heavyweight 10.5oz organic cotton, oversized boxy tee. Gallery-grade water-based screen print.</p>
         </div>
-        <div class="source-mini-text">
-          <div class="eyebrow-mini">The Source</div>
-          <div class="title">Venezia</div>
-          <div class="meta">Watercolour · 1979 · Tony DeAngelo</div>
-        </div>
-      </div>
 
-      <div class="totals">
-        <div class="totals-row"><span class="label">Subtotal</span><span>$64.00</span></div>
-        <div class="totals-row"><span class="label">Shipping</span><span>Calculated at checkout</span></div>
-        <div class="totals-row"><span class="label">Tax <span class="est">Est.</span></span><span>Calculated at checkout</span></div>
-        <div class="totals-total">
-          <span class="label">Total <em style="font-style:normal;font-size:9px;letter-spacing:.3em;opacity:.6;">USD</em></span>
-          <span class="amount" style="font-family:var(--font-sans);font-size:1rem;letter-spacing:.12em;text-transform:uppercase">Calculated at checkout</span>
+        <div class="source-mini">
+          <div class="source-mini-art">
+            <img src="Venezia-Original.png" alt="Venezia — Original Artwork" style="width:100%;height:100%;object-fit:contain;padding:6px;">
+          </div>
+          <div class="source-mini-text">
+            <div class="eyebrow-mini">The Source</div>
+            <div class="title">Venezia</div>
+            <div class="meta">Watercolour · 1979 · Tony DeAngelo</div>
+          </div>
         </div>
-      </div>
 
-      <div class="reassure">
-        <span>Damage &amp; defect claims within 14 days</span>
-        <span>Made to order in the U.S.</span>
-        <span>Tracked shipping</span>
+        <div class="totals">
+          <div class="totals-row"><span class="label">Subtotal</span><span id="summSubtotal">$0.00</span></div>
+          <div class="totals-row"><span class="label">Shipping</span><span>Calculated at checkout</span></div>
+          <div class="totals-row"><span class="label">Tax <span class="est">Est.</span></span><span>Calculated at checkout</span></div>
+          <div class="totals-total">
+            <span class="label">Total <em style="font-style:normal;font-size:9px;letter-spacing:.3em;opacity:.6;">USD</em></span>
+            <span class="amount" style="font-family:var(--font-sans);font-size:1rem;letter-spacing:.12em;text-transform:uppercase">Calculated at checkout</span>
+          </div>
+        </div>
+
+        <div class="reassure">
+          <span>All sales final &mdash; claims reviewed within 7 days</span>
+          <span>Made to order in the U.S.</span>
+          <span>Tracked shipping</span>
+        </div>
       </div>
     </div>
   </aside>
@@ -694,29 +684,304 @@
 </section>
 
 <script>
-  // Carousel
-  const stage = document.getElementById('summStage');
-  const counter = document.getElementById('summCounter');
-  const frames = [...stage.querySelectorAll('.frame')];
-  let idx = 0;
-  function show(i){
-    idx = (i + frames.length) % frames.length;
-    frames.forEach((f, k) => f.classList.toggle('is-active', k === idx));
-    counter.textContent = String(idx+1).padStart(2,'0') + ' / 0' + frames.length;
-  }
-  document.getElementById('summPrev').addEventListener('click', () => show(idx-1));
-  document.getElementById('summNext').addEventListener('click', () => show(idx+1));
+  // ── Cart summary + Stripe Checkout submission ─────────────────────────────
+  // Reads the same 'deangelo_cart' localStorage key site-ui.js writes to.
+  // Price shown here is a display estimate only — the server (create-checkout-
+  // session) looks up the trusted price itself and ignores anything the
+  // browser sends, so this value is never what the customer is actually charged.
+  (function () {
+    var CART_KEY = 'deangelo_cart';
+    function money(n) { return '$' + n.toFixed(2); }
 
-  // Shipping toggle (UI only)
-  document.querySelectorAll('.ship-method').forEach(m => {
-    m.addEventListener('click', () => {
-      document.querySelectorAll('.ship-method').forEach(x => x.classList.remove('is-active'));
-      m.classList.add('is-active');
+    function loadCart() {
+      try { return JSON.parse(localStorage.getItem(CART_KEY)) || []; }
+      catch (e) { return []; }
+    }
+    function saveCart(c) {
+      try { localStorage.setItem(CART_KEY, JSON.stringify(c)); } catch (e) {}
+    }
+
+    var cart = loadCart();
+    var emptyEl  = document.getElementById('checkoutEmpty');
+    var filledEl = document.getElementById('checkoutFilled');
+    var submitBtn = document.getElementById('checkoutSubmit');
+    var itemsEl = document.getElementById('summItems');
+
+    function renderSummary() {
+      if (!cart.length) {
+        emptyEl.style.display = '';
+        filledEl.style.display = 'none';
+        submitBtn.disabled = true;
+        submitBtn.setAttribute('aria-disabled', 'true');
+        return;
+      }
+      emptyEl.style.display = 'none';
+      filledEl.style.display = '';
+      submitBtn.disabled = false;
+      submitBtn.removeAttribute('aria-disabled');
+
+      document.getElementById('summItemCount').textContent =
+        cart.length + (cart.length === 1 ? ' item' : ' items');
+
+      var firstImg = document.getElementById('summStageImg');
+      if (cart[0].img) { firstImg.src = cart[0].img; firstImg.alt = cart[0].name || ''; }
+
+      itemsEl.innerHTML = cart.map(function (it, i) {
+        var num = String(i + 1).padStart(2, '0');
+        return '<div class="summ-caption">' +
+          '<div class="left">' +
+            '<div class="plate-line"><span>' + num + '</span><span class="sep">//</span><span>' + (it.name || '') + '</span></div>' +
+            '<div class="plate-meta">Size ' + (it.size || '') + ' &middot; Series 01</div>' +
+          '</div>' +
+          '<div class="right-col">' +
+            '<div class="price">' + money((it.price || 0) * (it.qty || 1)) + '</div>' +
+            '<div class="summ-qty">' +
+              '<button type="button" data-dec="' + i + '" aria-label="Decrease quantity">&minus;</button>' +
+              '<span class="summ-qty-val">' + String(it.qty).padStart(2, '0') + '</span>' +
+              '<button type="button" data-inc="' + i + '" aria-label="Increase quantity">+</button>' +
+            '</div>' +
+            '<button type="button" class="summ-remove" data-remove="' + i + '">Remove</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      var subtotal = cart.reduce(function (sum, it) { return sum + (it.price || 0) * (it.qty || 1); }, 0);
+      document.getElementById('summSubtotal').textContent = money(subtotal);
+      document.getElementById('checkoutSubmitTotal').textContent = money(subtotal) + ' + shipping/tax';
+    }
+
+    itemsEl.addEventListener('click', function (e) {
+      var inc = e.target.closest('[data-inc]');
+      var dec = e.target.closest('[data-dec]');
+      var rem = e.target.closest('[data-remove]');
+      if (inc) {
+        var ii = +inc.getAttribute('data-inc');
+        if (cart[ii]) cart[ii].qty = (cart[ii].qty || 1) + 1;
+      } else if (dec) {
+        var di = +dec.getAttribute('data-dec');
+        if (cart[di]) {
+          cart[di].qty = (cart[di].qty || 1) - 1;
+          if (cart[di].qty <= 0) cart.splice(di, 1);
+        }
+      } else if (rem) {
+        cart.splice(+rem.getAttribute('data-remove'), 1);
+      } else {
+        return;
+      }
+      saveCart(cart);
+      clearError();
+      renderSummary();
     });
-  });
 
-  // Pre-launch: payment is not live. The disabled button must not submit or
-  // navigate to checkout-success.html until a real Stripe Session exists.
+    renderSummary();
+
+    function showError(msg) {
+      var el = document.getElementById('checkoutError');
+      el.textContent = msg;
+      el.style.display = '';
+    }
+    function clearError() {
+      var el = document.getElementById('checkoutError');
+      el.style.display = 'none';
+      el.textContent = '';
+    }
+
+    // ── Shipping address + live rate quoting ─────────────────────────────────
+    // The full destination is collected here, before Stripe is ever involved,
+    // and sent to /api/printify-shipping-quote for a real rate. The exact
+    // same address is sent again with the order at submit time — the server
+    // (create-checkout-session.js) re-validates it and re-quotes Printify
+    // itself; this page never computes or sends a shipping price.
+    var shipFieldIds = ['shipFirstName', 'shipLastName', 'shipAddress1', 'shipAddress2', 'shipCity', 'shipRegion', 'shipZip', 'shipCountry'];
+    var shipMethodsEl = document.getElementById('shipMethods');
+    var shipQuoteErrorEl = document.getElementById('shipQuoteError');
+    var selectedShippingOptionId = null;
+    var quoteDebounce = null;
+    var quoteRequestId = 0;
+
+    // Standard USPS 2-letter state/territory codes — the dropdown's value
+    // (what's submitted) is always the 2-letter code, never the full name,
+    // matching what functions/_lib/address.js normalizes everything to
+    // server-side. Keeps checkout.html's collected region in the same format
+    // Stripe's own hosted address form uses, so stripe-webhook.js's
+    // destination-match check compares like-for-like.
+    var US_STATES = {
+      AL: 'Alabama', AK: 'Alaska', AZ: 'Arizona', AR: 'Arkansas', CA: 'California',
+      CO: 'Colorado', CT: 'Connecticut', DE: 'Delaware', DC: 'District of Columbia',
+      FL: 'Florida', GA: 'Georgia', HI: 'Hawaii', ID: 'Idaho', IL: 'Illinois',
+      IN: 'Indiana', IA: 'Iowa', KS: 'Kansas', KY: 'Kentucky', LA: 'Louisiana',
+      ME: 'Maine', MD: 'Maryland', MA: 'Massachusetts', MI: 'Michigan',
+      MN: 'Minnesota', MS: 'Mississippi', MO: 'Missouri', MT: 'Montana',
+      NE: 'Nebraska', NV: 'Nevada', NH: 'New Hampshire', NJ: 'New Jersey',
+      NM: 'New Mexico', NY: 'New York', NC: 'North Carolina', ND: 'North Dakota',
+      OH: 'Ohio', OK: 'Oklahoma', OR: 'Oregon', PA: 'Pennsylvania',
+      RI: 'Rhode Island', SC: 'South Carolina', SD: 'South Dakota',
+      TN: 'Tennessee', TX: 'Texas', UT: 'Utah', VT: 'Vermont', VA: 'Virginia',
+      WA: 'Washington', WV: 'West Virginia', WI: 'Wisconsin', WY: 'Wyoming',
+      AS: 'American Samoa', GU: 'Guam', MP: 'Northern Mariana Islands',
+      PR: 'Puerto Rico', VI: 'U.S. Virgin Islands'
+    };
+    (function populateStateDropdown() {
+      var select = document.getElementById('shipRegion');
+      Object.keys(US_STATES).forEach(function (code) {
+        var opt = document.createElement('option');
+        opt.value = code;
+        opt.textContent = US_STATES[code];
+        select.appendChild(opt);
+      });
+    })();
+
+    function getShippingAddress() {
+      return {
+        firstName: (document.getElementById('shipFirstName').value || '').trim(),
+        lastName: (document.getElementById('shipLastName').value || '').trim(),
+        address1: (document.getElementById('shipAddress1').value || '').trim(),
+        address2: (document.getElementById('shipAddress2').value || '').trim(),
+        city: (document.getElementById('shipCity').value || '').trim(),
+        region: (document.getElementById('shipRegion').value || '').trim(),
+        zip: (document.getElementById('shipZip').value || '').trim(),
+        country: (document.getElementById('shipCountry').value || '').trim(),
+      };
+    }
+
+    function shippingAddressComplete(a) {
+      return !!(a.firstName && a.lastName && a.address1 && a.city && a.region && a.zip && a.country);
+    }
+
+    function renderShipMethods(options) {
+      selectedShippingOptionId = null;
+      if (!options || !options.length) {
+        shipMethodsEl.innerHTML = '<p style="font-size:.85rem;font-weight:300;color:var(--ink-dim)">No shipping methods available for this address.</p>';
+        return;
+      }
+      shipMethodsEl.innerHTML = options.map(function (o, i) {
+        return '<button class="ship-method' + (i === 0 ? ' is-active' : '') + '" type="button" data-ship="' + o.id + '">' +
+          '<span class="ship-radio"></span>' +
+          '<span class="ship-name"><span class="name">' + (o.label || o.id) + '</span></span>' +
+          '<span class="ship-price">' + money((o.amountCents || 0) / 100) + '</span>' +
+        '</button>';
+      }).join('');
+      selectedShippingOptionId = options[0].id;
+      [].forEach.call(shipMethodsEl.querySelectorAll('.ship-method'), function (btn) {
+        btn.addEventListener('click', function () {
+          [].forEach.call(shipMethodsEl.querySelectorAll('.ship-method'), function (x) { x.classList.remove('is-active'); });
+          btn.classList.add('is-active');
+          selectedShippingOptionId = btn.getAttribute('data-ship');
+        });
+      });
+    }
+
+    function fetchShippingQuote() {
+      shipQuoteErrorEl.style.display = 'none';
+      var address = getShippingAddress();
+
+      if (!cart.length) return;
+      if (!shippingAddressComplete(address)) {
+        selectedShippingOptionId = null;
+        shipMethodsEl.innerHTML = '<p style="font-size:.85rem;font-weight:300;color:var(--ink-dim)">Enter your full shipping address above to see rates.</p>';
+        return;
+      }
+
+      var thisRequestId = ++quoteRequestId;
+      shipMethodsEl.innerHTML = '<p style="font-size:.85rem;font-weight:300;color:var(--ink-dim)">Getting shipping rates…</p>';
+
+      var items = loadCart().map(function (it) {
+        return { slug: it.slug, size: it.size, quantity: it.qty || 1 };
+      });
+
+      fetch('/api/printify-shipping-quote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: items, address: address }),
+      })
+        .then(function (res) {
+          return res.json().then(function (data) { return { ok: res.ok, data: data }; });
+        })
+        .then(function (result) {
+          if (thisRequestId !== quoteRequestId) return; // a newer request has since started — ignore this stale response
+          if (!result.ok) {
+            shipMethodsEl.innerHTML = '';
+            shipQuoteErrorEl.textContent = result.data.error || 'Could not get shipping rates for that address.';
+            shipQuoteErrorEl.style.display = '';
+            return;
+          }
+          renderShipMethods(result.data.options);
+        })
+        .catch(function () {
+          if (thisRequestId !== quoteRequestId) return;
+          shipMethodsEl.innerHTML = '';
+          shipQuoteErrorEl.textContent = 'Could not reach the server for shipping rates. Please try again.';
+          shipQuoteErrorEl.style.display = '';
+        });
+    }
+
+    shipFieldIds.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('input', function () {
+        clearTimeout(quoteDebounce);
+        quoteDebounce = setTimeout(fetchShippingQuote, 600);
+      });
+    });
+
+    submitBtn.addEventListener('click', function () {
+      clearError();
+
+      var freshCart = loadCart();
+      if (!freshCart.length) {
+        showError('Your collection is empty.');
+        return;
+      }
+      if (freshCart.some(function (it) { return !it.slug; })) {
+        showError('One of the items in your collection is out of date — please remove and re-add it, then try again.');
+        return;
+      }
+
+      var items = freshCart.map(function (it) {
+        return { slug: it.slug, size: it.size, quantity: it.qty || 1 };
+      });
+      var email = (document.getElementById('checkoutEmail').value || '').trim();
+
+      var shippingAddress = getShippingAddress();
+      if (!shippingAddressComplete(shippingAddress)) {
+        showError('Please fill in your full shipping address.');
+        return;
+      }
+
+      // The selected shipping method's ID only — never a price. The server
+      // re-validates the address and re-quotes Printify itself, rejecting
+      // anything that doesn't match a fresh quote for that exact address;
+      // this page never computes or sends a shipping amount.
+      if (!selectedShippingOptionId) {
+        showError('Please select a shipping method.');
+        return;
+      }
+      var shippingOptionId = selectedShippingOptionId;
+
+      submitBtn.disabled = true;
+      document.getElementById('checkoutSubmitLabel').textContent = 'Redirecting to Stripe…';
+
+      fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: items, email: email || undefined, shippingOptionId: shippingOptionId, shippingAddress: shippingAddress }),
+      })
+        .then(function (res) {
+          return res.json().then(function (data) { return { ok: res.ok, data: data }; });
+        })
+        .then(function (result) {
+          if (!result.ok || !result.data.url) {
+            throw new Error(result.data.error || 'Could not start checkout. Please try again.');
+          }
+          window.location.href = result.data.url;
+        })
+        .catch(function (err) {
+          showError(err.message || 'Something went wrong. Please try again.');
+          submitBtn.disabled = false;
+          document.getElementById('checkoutSubmitLabel').textContent = 'Continue to Payment';
+        });
+    });
+  })();
 
   // Series 02 vote — presentation-only local selection (same key as site-ui.js).
   // No aggregate counts, no backend. Persisted per device, changeable.

@@ -60,14 +60,19 @@ function lineItemsHtml(items = []) {
 }
 
 /**
- * Order confirmed — sent once payment succeeds (checkout.session.completed).
+ * Order received — sent as soon as payment is verified and the order is
+ * safely stored in D1. Deliberately NOT gated on Printify order creation —
+ * a customer whose card was charged must always get this, whether or not
+ * fulfillment can start immediately. "Received," not "confirmed"/"in
+ * production" — production is a separate email (inProductionTemplate) sent
+ * only once Printify actually reports it.
  * @param {{orderNumber:string, customerName?:string, items:Array<{name:string,size:string,quantity:number,amount:string}>, total:string}} order
  */
 export function orderConfirmedTemplate(order) {
   const greeting = order.customerName ? `Hi ${escapeHtml(order.customerName)},` : 'Hi,';
   const bodyHtml = `
     <p style="margin:0 0 16px;">${greeting}</p>
-    <p style="margin:0 0 20px;">Your order <strong>${escapeHtml(order.orderNumber)}</strong> is confirmed.</p>
+    <p style="margin:0 0 20px;">We've received your order <strong>${escapeHtml(order.orderNumber)}</strong>.</p>
     <table role="presentation" width="100%" style="margin:0 0 20px;font-size:14px;">
       ${lineItemsHtml(order.items)}
       <tr><td style="padding-top:12px;font-weight:600;">Total</td><td style="padding-top:12px;font-weight:600;text-align:right;">${escapeHtml(order.total)}</td></tr>
@@ -75,9 +80,31 @@ export function orderConfirmedTemplate(order) {
     <p style="margin:0;color:${BRAND.muted};">We'll email you again once your piece enters production.</p>
   `;
   return {
-    subject: `Order confirmed — ${order.orderNumber}`,
-    html: layout({ preheader: `Order ${order.orderNumber} confirmed`, bodyHtml }),
-    text: `${greeting}\n\nYour order ${order.orderNumber} is confirmed.\n\nTotal: ${order.total}\n\nWe'll email you again once your piece enters production.`,
+    subject: `Order received — ${order.orderNumber}`,
+    html: layout({ preheader: `Order ${order.orderNumber} received`, bodyHtml }),
+    text: `${greeting}\n\nWe've received your order ${order.orderNumber}.\n\nTotal: ${order.total}\n\nWe'll email you again once your piece enters production.`,
+  };
+}
+
+/**
+ * Internal support alert — sent to SUPPORT_EMAIL (not the customer) when
+ * Printify order creation fails after a payment has already succeeded. The
+ * customer still gets their "order received" email regardless; this is
+ * purely so a human notices the order needs manual attention.
+ * @param {{orderNumber:string, reason:string, orderId:string}} info
+ */
+export function printifyFailureAlertTemplate(info) {
+  const bodyHtml = `
+    <p style="margin:0 0 16px;">Printify order creation failed for a paid order.</p>
+    <p style="margin:0 0 8px;"><strong>Order:</strong> ${escapeHtml(info.orderNumber)}</p>
+    <p style="margin:0 0 8px;"><strong>Order ID:</strong> ${escapeHtml(info.orderId)}</p>
+    <p style="margin:0 0 20px;"><strong>Reason:</strong> ${escapeHtml(info.reason)}</p>
+    <p style="margin:0;color:${BRAND.muted};">The customer has already received their order-received email. This order needs manual Printify fulfillment, or a fix to the product/variant mapping followed by the reconciliation script.</p>
+  `;
+  return {
+    subject: `[Action needed] Printify order creation failed — ${info.orderNumber}`,
+    html: layout({ preheader: `Printify failed for ${info.orderNumber}`, bodyHtml }),
+    text: `Printify order creation failed for a paid order.\n\nOrder: ${info.orderNumber}\nOrder ID: ${info.orderId}\nReason: ${info.reason}\n\nThe customer has already received their order-received email. This order needs manual Printify fulfillment, or a fix to the product/variant mapping followed by the reconciliation script.`,
   };
 }
 

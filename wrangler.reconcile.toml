@@ -1,0 +1,45 @@
+# Separate Worker config for the standalone shipment-reconciliation Worker
+# (workers/reconcile-shipments.js) — kept independent from the Pages project's
+# wrangler.toml on purpose:
+#   - This is a Worker (scheduled() only, no fetch() handler, never HTTP
+#     reachable), not a Pages Function — different deploy target entirely.
+#   - Keeping it separate means an accidental `wrangler deploy` here can never
+#     touch the Pages project, and vice versa.
+#
+# Deploy with: npx wrangler deploy --config wrangler.reconcile.toml
+# (NOT deployed yet, and the Cron Trigger below is NOT active until deployed
+# — see the module header of workers/reconcile-shipments.js and this
+# session's report for the exact remaining steps.)
+
+name = "the-deangelo-series-reconcile-shipments"
+main = "workers/reconcile-shipments.js"
+compatibility_date = "2024-12-18"
+compatibility_flags = ["nodejs_compat"]
+
+# Same D1 database the Pages project uses (wrangler.toml), same binding name
+# (DB) so functions/_lib/orders-db.js's env.DB.prepare() calls work
+# unchanged — this Worker reads/writes the exact same orders/shipments/
+# email_events/status_events tables the webhook does.
+[[d1_databases]]
+binding = "DB"
+database_name = "deangelo-series-orders"
+database_id = "89676fb8-49c5-4824-9b1c-3dacc59c0455"
+
+# Every 15 minutes. NOT ACTIVE until this Worker is deployed — a Cron
+# Trigger only starts firing once `wrangler deploy` has run at least once.
+[triggers]
+crons = ["*/15 * * * *"]
+
+[vars]
+PRINTIFY_SHOP_ID = "26931439"
+FROM_EMAIL = "The DeAngelo Series <orders@thedeangeloseries.com>"
+SUPPORT_EMAIL = "support@thedeangeloseries.com"
+REPLY_TO_EMAIL = "support@thedeangeloseries.com"
+# Optional — see DEFAULT_ORDER_LIMIT in workers/reconcile-shipments.js for
+# the default (200) and rationale if this is left unset.
+# RECONCILE_ORDER_LIMIT = "200"
+
+# Secrets (never committed — set via `wrangler secret put <NAME> --config
+# wrangler.reconcile.toml` before first deploy):
+#   PRINTIFY_API_TOKEN
+#   RESEND_API_KEY

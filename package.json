@@ -6,6 +6,7 @@
     "node": "20.x"
   },
   "scripts": {
-    "check:json": "node -e \"JSON.parse(require('fs').readFileSync('package.json','utf8')); console.log('package.json valid')\""
+    "check:json": "node -e \"JSON.parse(require('fs').readFileSync('package.json','utf8')); console.log('package.json valid')\"",
+    "test": "node tests/run-all.mjs"
   }
 }
