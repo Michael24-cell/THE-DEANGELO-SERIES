@@ -5,8 +5,18 @@
 // matching the existing dependency-free style of stripe-webhook.js.
 //
 // Required secrets (Cloudflare Pages Dashboard > Settings > Environment Variables):
-//   STRIPE_SECRET_KEY   — sk_test_... (test mode only — this endpoint refuses sk_live_)
+//   STRIPE_SECRET_KEY   — sk_test_... in Preview, sk_live_... in Production —
+//                         see checkStripeEnvironmentGuard() below for the
+//                         environment-aware enforcement of that pairing.
 //   SITE_URL            — e.g. https://thedeangeloseries.com (success/cancel redirect base)
+//
+// Required plain var:
+//   APP_ENV — must be exactly "production" or "preview", set per Cloudflare
+//   Pages environment (wrangler.toml [env.production.vars] / [env.preview.vars]).
+//   This is the ONLY source of truth for which environment this deployment
+//   is — never inferred from the Stripe key's own prefix, which is instead
+//   cross-checked AGAINST this explicit signal. Missing/unrecognized value
+//   fails closed (500) rather than guessing. See checkStripeEnvironmentGuard().
 //
 // Optional:
 //   STRIPE_TAX_ENABLED  — set to "true" once Stripe Tax is registered/configured in the
@@ -57,16 +67,11 @@ export async function onRequest({ request, env }) {
     return json({ error: 'Method not allowed' }, 405, { Allow: 'POST' });
   }
 
-  // ── Config guard — never proceed without a secret key, never proceed in live mode ──
-  if (!env.STRIPE_SECRET_KEY) {
-    console.error('[create-checkout-session] Missing env var: STRIPE_SECRET_KEY');
+  // ── Config guard — environment-aware, fails closed on any ambiguity ────────────
+  const guard = checkStripeEnvironmentGuard(env);
+  if (!guard.ok) {
+    console.error(`[create-checkout-session] ${guard.logMessage}`);
     return json({ error: 'Server misconfiguration — contact site owner' }, 500);
-  }
-  if (!env.STRIPE_SECRET_KEY.startsWith('sk_test_')) {
-    // Hard guard: this pass is test-mode only. Refuse to run against a live key
-    // even if one is accidentally configured.
-    console.error('[create-checkout-session] STRIPE_SECRET_KEY is not a test-mode key');
-    return json({ error: 'Checkout is running in test mode only right now.' }, 500);
   }
 
   const siteUrl = (env.SITE_URL || 'https://thedeangeloseries.com').replace(/\/+$/, '');
@@ -215,6 +220,50 @@ async function resolveShippingOption(env, shippingOptionId, lineItems, shippingA
   const match = (quote.options || []).find((o) => o.id === shippingOptionId);
   if (!match) throw new ValidationError('That shipping option is no longer available. Please try again.');
   return match;
+}
+
+// ---------------------------------------------------------------------------
+// Environment-aware Stripe key guard.
+//
+// APP_ENV is the ONLY signal used to decide what's allowed — never the
+// Stripe key's own sk_test_/sk_live_ prefix (that prefix is only checked
+// FOR CONSISTENCY against APP_ENV, not used to infer it). This matters
+// because inferring environment from the key itself means a misconfigured
+// live key dropped into Preview would just... work, live, in Preview — the
+// opposite of a safety guard. Requiring an explicit, separately-configured
+// signal means a live key can only ever run where APP_ENV=production was
+// deliberately set.
+//
+// Fails closed: APP_ENV missing, or anything other than exactly
+// "production"/"preview", is rejected outright — never falls back to
+// treating an unrecognized environment as safe.
+//
+// Never includes the actual key value in any returned/logged message —
+// only which check failed.
+// ---------------------------------------------------------------------------
+export function checkStripeEnvironmentGuard(env) {
+  const appEnv = env.APP_ENV;
+  if (appEnv !== 'production' && appEnv !== 'preview') {
+    return { ok: false, logMessage: `APP_ENV is missing or unrecognized ("${appEnv ?? ''}") — refusing to run (fail closed)` };
+  }
+
+  if (!env.STRIPE_SECRET_KEY) {
+    return { ok: false, logMessage: 'Missing env var: STRIPE_SECRET_KEY' };
+  }
+  const isLiveKey = env.STRIPE_SECRET_KEY.startsWith('sk_live_');
+  const isTestKey = env.STRIPE_SECRET_KEY.startsWith('sk_test_');
+  if (!isLiveKey && !isTestKey) {
+    return { ok: false, logMessage: 'STRIPE_SECRET_KEY does not have a recognized sk_test_/sk_live_ prefix' };
+  }
+
+  if (appEnv === 'production' && !isLiveKey) {
+    return { ok: false, logMessage: 'APP_ENV=production but STRIPE_SECRET_KEY is not a live-mode key — refusing' };
+  }
+  if (appEnv === 'preview' && !isTestKey) {
+    return { ok: false, logMessage: 'APP_ENV=preview but STRIPE_SECRET_KEY is a live-mode key — refusing' };
+  }
+
+  return { ok: true };
 }
 
 function validateEmail(value) {
