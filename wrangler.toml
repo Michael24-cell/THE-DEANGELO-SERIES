@@ -19,10 +19,14 @@ binding = "DB"
 database_name = "deangelo-series-orders"
 database_id = "89676fb8-49c5-4824-9b1c-3dacc59c0455"
 
+# Preview uses its own separate D1 database so test-mode checkout activity
+# cannot commingle with real Production orders or trigger real support emails.
+# The reconciliation Worker remains intentionally bound only to the Production
+# database via wrangler.reconcile.toml.
 [[env.preview.d1_databases]]
 binding = "DB"
-database_name = "deangelo-series-orders"
-database_id = "89676fb8-49c5-4824-9b1c-3dacc59c0455"
+database_name = "deangelo-series-orders-preview"
+database_id = "8703fb27-4d58-40dc-a684-9fa74209c3ff"
 
 [vars]
 PRINTIFY_SHOP_ID = "26931439"
