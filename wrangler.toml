@@ -18,11 +18,26 @@ REPLY_TO_EMAIL = "support@thedeangeloseries.com"
 # APP_ENV — explicit environment signal for functions/api/create-checkout-session.js's
 # checkStripeEnvironmentGuard(). Never inferred from the Stripe key itself;
 # this is the one thing that says "this deployment is allowed to use a live
-# key" or "this deployment must only ever use a test key." Requires a deploy
-# of each respective Pages environment to take effect — not yet deployed as
-# of this pass (see launch-checklist.md).
+# key" or "this deployment must only ever use a test key."
+#
+# IMPORTANT: Wrangler's per-environment [env.X.vars] tables REPLACE the
+# top-level [vars] block for that environment — they do not merge. Every var
+# needed in each environment must be repeated here explicitly, or it silently
+# disappears for that environment only (this bit us once already: adding
+# [env.production.vars] with only APP_ENV wiped out PRINTIFY_SHOP_ID etc. for
+# both Production and Preview until this fix).
 [env.production.vars]
 APP_ENV = "production"
+PRINTIFY_SHOP_ID = "26931439"
+PRINTIFY_AUTO_SEND_TO_PRODUCTION = "false"
+FROM_EMAIL = "The DeAngelo Series <orders@thedeangeloseries.com>"
+SUPPORT_EMAIL = "support@thedeangeloseries.com"
+REPLY_TO_EMAIL = "support@thedeangeloseries.com"
 
 [env.preview.vars]
 APP_ENV = "preview"
+PRINTIFY_SHOP_ID = "26931439"
+PRINTIFY_AUTO_SEND_TO_PRODUCTION = "false"
+FROM_EMAIL = "The DeAngelo Series <orders@thedeangeloseries.com>"
+SUPPORT_EMAIL = "support@thedeangeloseries.com"
+REPLY_TO_EMAIL = "support@thedeangeloseries.com"
