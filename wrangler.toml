@@ -8,6 +8,22 @@ binding = "DB"
 database_name = "deangelo-series-orders"
 database_id = "89676fb8-49c5-4824-9b1c-3dacc59c0455"
 
+# Same non-inheritance problem as [env.X.vars] below, but for bindings: once
+# an [env.production]/[env.preview] section exists at all, the top-level
+# [[d1_databases]] stops applying to those environments too — not just vars.
+# Confirmed live on 2026-08-14: a real Stripe checkout.session.completed
+# webhook failed with "Missing D1 binding: DB" in Production because of
+# this exact gap. Must be redeclared per environment explicitly.
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "deangelo-series-orders"
+database_id = "89676fb8-49c5-4824-9b1c-3dacc59c0455"
+
+[[env.preview.d1_databases]]
+binding = "DB"
+database_name = "deangelo-series-orders"
+database_id = "89676fb8-49c5-4824-9b1c-3dacc59c0455"
+
 [vars]
 PRINTIFY_SHOP_ID = "26931439"
 PRINTIFY_AUTO_SEND_TO_PRODUCTION = "false"
