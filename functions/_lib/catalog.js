@@ -76,6 +76,62 @@ export const CATALOG = {
       },
     },
   },
+  'wind-sea-tee': {
+    name: 'Wind & Sea — Tee',
+    image: 'https://thedeangeloseries.com/wind%20%26%20sea%20tee%20model.png',
+    currency: 'usd',
+    sizes: ['S', 'M', 'L', 'XL', '2XL'],
+    colors: ['Black'],
+    basePrice: 6400,      // $64.00, in cents — same price point as the other tees.
+    upchargePrice: 6800,  // $68.00, in cents
+    upchargeSizes: ['2XL'],
+    stripeTaxCode: 'txcd_30011000',
+    // Printify mapping confirmed live via GET /v1/shops/26931439/products/6a7f8354a978846d7c006ce4.json
+    // on 2026-08-14 — "Wind & Sea - Tee", blueprint 1723 / print provider 74 (same combo as Arhus),
+    // 5 enabled variants, all color Black.
+    printify: {
+      productId: '6a7f8354a978846d7c006ce4',
+      printProviderId: 74,
+      variantIdBySize: {
+        S: 118085, M: 118086, L: 118087, XL: 118101, '2XL': 118088,
+      },
+      skuBySize: {
+        S: '20895972675934738799',
+        M: '25208313305980061996',
+        L: '21576473407719983403',
+        XL: '48674827964003061184',
+        '2XL': '10585811960067414411',
+      },
+    },
+  },
+  'waves-of-life-tee': {
+    name: 'Waves of Life — Tee',
+    image: 'https://thedeangeloseries.com/waves%20of%20life%20tee%20model.png',
+    currency: 'usd',
+    sizes: ['S', 'M', 'L', 'XL', '2XL'],
+    colors: ['White'],
+    basePrice: 6400,      // $64.00, in cents — same price point as the other tees.
+    upchargePrice: 6800,  // $68.00, in cents
+    upchargeSizes: ['2XL'],
+    stripeTaxCode: 'txcd_30011000',
+    // Printify mapping confirmed live via GET /v1/shops/26931439/products/6a7f88d72355b5d08f0a9e38.json
+    // on 2026-08-14 — "Waves of Life - Tee", blueprint 1723 / print provider 74 (same combo as Arhus/
+    // Wind & Sea), 5 enabled variants, all color White.
+    printify: {
+      productId: '6a7f88d72355b5d08f0a9e38',
+      printProviderId: 74,
+      variantIdBySize: {
+        S: 118089, M: 118090, L: 118091, XL: 118107, '2XL': 118092,
+      },
+      skuBySize: {
+        S: '23603245496908456030',
+        M: '41975995912485104856',
+        L: '15084851229969697539',
+        XL: '16455006015073468463',
+        '2XL': '33276854566387499697',
+      },
+    },
+  },
   hoodie: {
     name: 'Venezia — Hoodie',
     image: 'https://thedeangeloseries.com/Venezia-Hoodie-m.png',
