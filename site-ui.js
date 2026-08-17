@@ -50,15 +50,37 @@
   ];
   var MENU_DIRECT = [];
 
-  /* ---- size guide data (oversized heavyweight tee, flat measures / in) --- */
-  var SIZE_ROWS = [
-    ["XS", "20", "26", "8"],
-    ["S", "21", "27", "8\u00BC"],
-    ["M", "22", "28", "8\u00BD"],
-    ["L", "23\u00BD", "29", "8\u00BE"],
-    ["XL", "25", "30", "9"],
-    ["XXL", "26\u00BD", "31", "9\u00BC"]
-  ];
+  /* ---- size guide data (flat measures / in), per garment ----------------
+     Mirrors the real per-product tables on product.html (#sgTee/#sgCrew) \u2014
+     same source numbers, not a separate/placeholder set. Hoodie has no
+     confirmed measurements yet, matching product.html's "coming soon". */
+  var SIZE_GUIDES = {
+    tee: {
+      label: "Tee",
+      sizes: ["S", "M", "L", "XL", "2XL"],
+      rows: [
+        ["Length", ["22.75", "24.75", "26.50", "28.00", "30.00"]],
+        ["Width", ["26.75", "27.25", "29.25", "31.25", "31.25"]],
+        ["Sleeve length", ["10.25", "10.50", "11.50", "11.50", "11.75"]]
+      ],
+      tolerance: "1\""
+    },
+    crew: {
+      label: "Crewneck",
+      sizes: ["S", "M", "L", "XL", "2XL", "3XL"],
+      rows: [
+        ["Width", ["21.00", "23.00", "25.00", "26.50", "28.00", "29.50"]],
+        ["Length", ["27.50", "28.50", "29.50", "30.50", "31.50", "32.50"]],
+        ["Sleeve from center back", ["31.50", "33.50", "35.25", "36.75", "38.25", "39.25"]]
+      ],
+      tolerance: "1.5\""
+    },
+    hoodie: {
+      label: "Hoodie",
+      comingSoon: true
+    }
+  };
+  var SIZE_GUIDE_ORDER = ["tee", "crew", "hoodie"];
 
   /* ---- swatch backgrounds (reuse the site's hatch placeholder look) ------ */
   function swatchBg(kind) {
@@ -208,7 +230,17 @@
     ".du-modal-eyebrow{font-family:" + T.sans + ";font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:" + T.inkMute + "}",
     ".du-modal h2{font-family:" + T.serif + ";font-weight:500;font-size:2.2rem;letter-spacing:-.01em;margin:10px 0 6px}",
     ".du-modal-intro{font-family:" + T.sans + ";font-weight:300;font-size:.92rem;line-height:1.6;color:" + T.inkDim + ";",
-    "max-width:46ch;margin-bottom:30px}",
+    "max-width:46ch;margin-bottom:22px}",
+    ".du-sg-tabs{display:flex;gap:22px;border-bottom:1px solid " + T.hlDark + ";margin-bottom:24px}",
+    ".du-sg-tab{background:none;border:0;color:inherit;font:inherit;cursor:pointer;padding:0 0 12px;",
+    "font-family:" + T.sans + ";font-size:11px;font-weight:500;letter-spacing:.25em;text-transform:uppercase;",
+    "color:" + T.inkMute + ";position:relative}",
+    ".du-sg-tab:hover{color:" + T.black + "}",
+    ".du-sg-tab.is-active{color:" + T.black + "}",
+    ".du-sg-tab.is-active::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:1px;background:" + T.black + "}",
+    ".du-sg-panel{display:none}",
+    ".du-sg-panel.is-active{display:block}",
+    ".du-sg-soon{font-family:" + T.sans + ";font-weight:300;font-size:.9rem;color:" + T.inkDim + ";margin-bottom:28px}",
     ".du-table{width:100%;border-collapse:collapse;margin-bottom:28px}",
     ".du-table th{font-family:" + T.sans + ";font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;",
     "color:" + T.inkMute + ";text-align:right;padding:0 0 14px;border-bottom:1px solid " + T.hlDark + "}",
@@ -380,11 +412,34 @@
     return cartEl;
   }
 
+  function sizeGuidePanelHtml(key) {
+    var g = SIZE_GUIDES[key];
+    if (g.comingSoon) {
+      return '<div class="du-sg-panel" data-sg-panel="' + key + '">' +
+        '<p class="du-sg-soon">' + g.label + ' size chart coming soon.</p>' +
+      "</div>";
+    }
+    var head = "<tr><th></th>" + g.sizes.map(function (s) { return "<th>" + s + "</th>"; }).join("") + "</tr>";
+    var body = g.rows.map(function (row) {
+      var cells = row[1].map(function (v) { return "<td>" + v + '"</td>'; }).join("");
+      return "<tr><td>" + row[0] + "</td>" + cells + "</tr>";
+    }).join("");
+    return '<div class="du-sg-panel" data-sg-panel="' + key + '">' +
+      '<table class="du-table"><thead>' + head + "</thead><tbody>" + body + "</tbody></table>" +
+      '<p class="du-sg-soon">All measurements in inches &nbsp;&middot;&nbsp; Tolerance &plusmn;' + g.tolerance + "</p>" +
+    "</div>";
+  }
+
   function buildModal() {
-    var head =
-      "<tr><th>Size</th><th>Chest</th><th>Length</th><th>Sleeve</th></tr>";
-    var body = SIZE_ROWS.map(function (r) {
-      return "<tr><td>" + r[0] + "</td><td>" + r[1] + '"</td><td>' + r[2] + '"</td><td>' + r[3] + '"</td></tr>';
+    var tabs = SIZE_GUIDE_ORDER.map(function (key, i) {
+      return '<button class="du-sg-tab' + (i === 0 ? " is-active" : "") + '" data-sg-tab="' + key + '">' +
+        SIZE_GUIDES[key].label + "</button>";
+    }).join("");
+    var panels = SIZE_GUIDE_ORDER.map(function (key, i) {
+      return sizeGuidePanelHtml(key).replace(
+        'class="du-sg-panel"',
+        'class="du-sg-panel' + (i === 0 ? " is-active" : "") + '"'
+      );
     }).join("");
 
     var modal = document.createElement("div");
@@ -393,20 +448,33 @@
     modal.innerHTML =
       '<div class="du-modal-card" role="dialog" aria-modal="true" aria-label="Size guide">' +
         '<div class="du-modal-head">' +
-          "<div><span class=\"du-modal-eyebrow\">Fit \u00B7 Series 01</span>" +
+          "<div><span class=\"du-modal-eyebrow\" data-sg-eyebrow>Fit \u00B7 " + SIZE_GUIDES[SIZE_GUIDE_ORDER[0]].label + "</span>" +
           "<h2>Size Guide</h2></div>" +
           '<button class="du-x" data-modal-close><span class="gl">\u2715</span>Close</button>' +
         "</div>" +
-        '<p class="du-modal-intro">Pieces are cut oversized and boxy. Measurements are garment-flat in inches \u2014 lay a tee you own flat and compare. Between sizes, size down for a cleaner crew, up for fuller drape.</p>' +
-        '<table class="du-table"><thead>' + head + "</thead><tbody>" + body + "</tbody></table>" +
+        '<p class="du-modal-intro">Pieces are cut oversized and boxy. Measurements are garment-flat in inches \u2014 lay a garment you own flat and compare. Between sizes, size down for a cleaner fit, up for fuller drape.</p>' +
+        '<div class="du-sg-tabs" role="tablist">' + tabs + "</div>" +
+        panels +
         '<div class="du-measure">How to measure</div>' +
         '<ul class="du-measure-list">' +
-          "<li><strong>Chest</strong> \u2014 measured pit to pit, laid flat, then doubled for full circumference.</li>" +
+          "<li><strong>Width</strong> \u2014 measured pit to pit, laid flat, then doubled for full circumference.</li>" +
           "<li><strong>Length</strong> \u2014 from the highest point of the shoulder straight to the hem.</li>" +
-          "<li><strong>Sleeve</strong> \u2014 from the shoulder seam to the cuff edge.</li>" +
+          "<li><strong>Sleeve</strong> \u2014 from the shoulder seam (or center back) to the cuff edge.</li>" +
         "</ul>" +
       "</div>";
     return modal;
+  }
+
+  function setSizeGuideTab(key) {
+    if (!SIZE_GUIDES[key]) return;
+    [].forEach.call(els.modal.querySelectorAll("[data-sg-tab]"), function (btn) {
+      btn.classList.toggle("is-active", btn.getAttribute("data-sg-tab") === key);
+    });
+    [].forEach.call(els.modal.querySelectorAll("[data-sg-panel]"), function (panel) {
+      panel.classList.toggle("is-active", panel.getAttribute("data-sg-panel") === key);
+    });
+    var eyebrow = els.modal.querySelector("[data-sg-eyebrow]");
+    if (eyebrow) eyebrow.textContent = "Fit \u00B7 " + SIZE_GUIDES[key].label;
   }
 
   /* ======================================================================
@@ -510,7 +578,8 @@
     els.cart.setAttribute("aria-hidden", "true");
     if (!silent) { maybeHideScrim(); if (!anyOpen()) unlock(); openPanel = null; }
   }
-  function openModal() {
+  function openModal(garment) {
+    if (garment && SIZE_GUIDES[garment]) setSizeGuideTab(garment);
     els.modal.classList.add("is-open");
     els.modal.setAttribute("aria-hidden", "false");
     lock();
@@ -606,7 +675,14 @@
       if (cartOpen) { e.preventDefault(); openCart(); return; }
 
       var sizeG = t.closest("[data-size-guide]");
-      if (sizeG) { e.preventDefault(); closeMenu(true); els.scrim.classList.remove("is-open"); openModal(); return; }
+      if (sizeG) {
+        e.preventDefault(); closeMenu(true); els.scrim.classList.remove("is-open");
+        openModal(sizeG.getAttribute("data-size-guide-garment"));
+        return;
+      }
+
+      var sgTab = t.closest("[data-sg-tab]");
+      if (sgTab) { e.preventDefault(); setSizeGuideTab(sgTab.getAttribute("data-sg-tab")); return; }
 
       var mGroup = t.closest(".du-mgroup-head");
       if (mGroup) { e.preventDefault(); toggleMenuGroup(mGroup.closest(".du-mgroup")); return; }
@@ -920,7 +996,7 @@
   window.DeangeloUI = {
     openMenu: function () { openMenu(); },
     openCart: function () { openCart(); },
-    openSizeGuide: function () { openModal(); },
+    openSizeGuide: function (garment) { openModal(garment); },
     addToCart: addToCart,
     initAccordions: initAccordions
   };
