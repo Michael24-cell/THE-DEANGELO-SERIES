@@ -341,122 +341,138 @@
             padding: 68px 60px;
         }
 
-        /* ── AVAILABLE PIECES ───────────────────────────────────── */
-        .pieces-section {
+        /* ── FEATURED PIECES ────────────────────────────────────── */
+        .featured-section {
             background: var(--bone);
             color: var(--black);
-            display: grid;
-            grid-template-columns: 2fr 3fr;
-            min-height: 80vh;
+            padding: 120px 64px;
             border-top: 1px solid rgba(0,0,0,0.06);
         }
 
-        .pieces-preview {
-            position: relative;
-            overflow: hidden;
-            background: #e0dfd8;
-            border-right: 1px solid rgba(0,0,0,0.06);
-        }
-
-        .pieces-preview-img {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center 10%;
-            transition: opacity 300ms ease;
-        }
-
-        .pieces-right {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .pieces-header {
+        .featured-header {
             display: flex;
             justify-content: space-between;
-            align-items: baseline;
-            padding: 80px 64px 24px;
-            border-bottom: 1px solid rgba(0,0,0,0.08);
+            align-items: flex-end;
+            gap: 24px;
+            max-width: 1400px;
+            margin: 0 auto 64px;
         }
 
-        .pieces-label {
+        .featured-eyebrow {
             font-size: 11px;
             letter-spacing: 0.45em;
             text-transform: uppercase;
             opacity: 0.55;
+            margin-bottom: 20px;
         }
 
-        .pieces-edition {
+        .featured-title {
+            font-family: var(--font-serif);
+            font-weight: 300;
+            font-style: italic;
+            font-size: clamp(2.6rem, 4.5vw, 4.2rem);
+            line-height: 0.95;
+            letter-spacing: -0.02em;
+        }
+
+        .featured-view-all {
+            font-size: 11px;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--black);
+            text-decoration: none;
+            opacity: 0.5;
+            white-space: nowrap;
+            padding-bottom: 6px;
+            transition: opacity 200ms ease;
+        }
+
+        .featured-view-all:hover { opacity: 0.8; }
+
+        .featured-grid {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.7fr 1fr;
+            gap: 64px 48px;
+        }
+
+        .featured-piece {
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .featured-piece--main { grid-row: 1 / 3; }
+
+        .featured-image-wrap {
+            position: relative;
+            overflow: hidden;
+            background: #e0dfd8;
+            aspect-ratio: 4 / 5;
+        }
+
+        .featured-piece:not(.featured-piece--main) .featured-image-wrap {
+            aspect-ratio: 5 / 4;
+        }
+
+        .featured-image {
+            position: absolute;
+            inset: 0;
+            transition: opacity 700ms ease;
+        }
+
+        .featured-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 15%;
+            display: block;
+            transform: scale(1);
+            transition: transform 900ms cubic-bezier(0.22, 0.61, 0.36, 1);
+        }
+
+        .featured-image--flat { opacity: 0; }
+
+        /* Model → flat crossfade + subtle drift, pointer devices only —
+           identical technique to the collection grid's hover swap. */
+        @media (hover: hover) {
+            .featured-piece:hover .featured-image--model { opacity: 0; }
+            .featured-piece:hover .featured-image--flat { opacity: 1; }
+            .featured-piece:hover .featured-image img { transform: scale(1.045); }
+        }
+
+        .featured-caption {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            padding-top: 24px;
+        }
+
+        .featured-name {
+            font-family: var(--font-serif);
+            font-weight: 300;
+            font-style: italic;
+            line-height: 1.05;
+            font-size: clamp(1.5rem, 2vw, 2rem);
+        }
+
+        .featured-piece--main .featured-name {
+            font-size: clamp(2.2rem, 3.2vw, 3.4rem);
+        }
+
+        .featured-type {
             font-size: 11px;
             letter-spacing: 0.3em;
             text-transform: uppercase;
             opacity: 0.55;
+            margin-top: 8px;
         }
 
-        .pieces-list { list-style: none; flex: 1; }
-
-        .piece-row {
-            display: flex;
-            align-items: center;
-            gap: 24px;
-            padding: 44px 64px;
-            border-bottom: 1px solid rgba(0,0,0,0.07);
-            text-decoration: none;
-            color: var(--black);
-            opacity: 1;
-            background: transparent;
-            transition: background 250ms ease;
-            position: relative;
-        }
-
-        .piece-row::before {
-            content: '';
-            position: absolute;
-            left: 0; top: 0; bottom: 0;
-            width: 2px;
-            background: var(--black);
-            transform: scaleY(0);
-            transform-origin: bottom;
-            transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .piece-row:hover { opacity: 1; background: rgba(0,0,0,0.025); }
-        .piece-row:hover::before { transform: scaleY(1); }
-
-        .piece-row-num {
-            font-family: var(--font-serif);
-            font-weight: 300;
-            font-style: italic;
-            font-size: clamp(3rem, 5vw, 5.5rem);
-            line-height: 1;
-            opacity: 0.12;
-            min-width: 80px;
-            transition: opacity 300ms ease;
-        }
-
-        .piece-row:hover .piece-row-num { opacity: 0.25; }
-
-        .piece-row-info { flex: 1; }
-
-        .piece-row-name {
-            font-family: var(--font-serif);
-            font-weight: 300;
-            font-style: italic;
-            font-size: clamp(1.8rem, 2.6vw, 2.8rem);
-            line-height: 1;
-            margin-bottom: 8px;
-        }
-
-        .piece-row-type {
-            font-size: 11px;
-            letter-spacing: 0.35em;
-            text-transform: uppercase;
-            opacity: 0.55;
-        }
-
-        .piece-row-right {
+        .featured-right {
+            flex: none;
             text-align: right;
             display: flex;
             flex-direction: column;
@@ -464,41 +480,44 @@
             gap: 8px;
         }
 
-        .piece-row-price {
+        .featured-price {
             font-size: 13px;
             font-weight: 300;
             letter-spacing: 0.08em;
-            opacity: 0.65;
+            opacity: 0.7;
         }
 
-        .piece-row-cta {
+        .featured-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             font-size: 10px;
-            letter-spacing: 0.35em;
+            letter-spacing: 0.32em;
             text-transform: uppercase;
-            opacity: 0;
-            transition: opacity 250ms ease;
+            opacity: 0.55;
             white-space: nowrap;
-        }
-
-        .piece-row:hover .piece-row-cta { opacity: 0.45; }
-
-        .pieces-view-all {
-            padding: 24px 64px 64px;
-            text-align: right;
-            border-top: 1px solid rgba(0,0,0,0.07);
-        }
-
-        .pieces-view-all a {
-            font-size: 11px;
-            letter-spacing: 0.38em;
-            text-transform: uppercase;
-            color: var(--black);
-            text-decoration: none;
-            opacity: 0.42;
             transition: opacity 200ms ease;
         }
 
-        .pieces-view-all a:hover { opacity: 0.7; }
+        .featured-piece:hover .featured-cta { opacity: 0.9; }
+
+        .fp-arrow {
+            display: inline-block;
+            transition: transform 250ms cubic-bezier(0.22, 0.61, 0.36, 1);
+        }
+
+        .featured-piece:hover .fp-arrow { transform: translateX(4px); }
+
+        .featured-piece:focus-visible .featured-image-wrap {
+            outline: 1px solid var(--black);
+            outline-offset: 3px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .featured-image { transition: opacity 200ms ease; }
+            .featured-image img { transition: none; }
+            .featured-piece:hover .featured-image img { transform: scale(1); }
+        }
 
         /* ── THE SOURCE ─────────────────────────────────────────── */
         .source-section {
@@ -912,8 +931,9 @@
             .release-image { min-height: 80vw; position: relative; }
             .release-image img { padding: 32px 24px; }
             .release-copy { padding: 80px 48px; }
-            .pieces-section { grid-template-columns: 1fr; }
-            .pieces-preview { min-height: 56vw; border-right: none; border-bottom: 1px solid rgba(0,0,0,0.06); }
+            .featured-section { padding: 96px 24px; }
+            .featured-grid { grid-template-columns: 1fr; gap: 48px; }
+            .featured-piece--main { grid-row: auto; }
             .source-section { grid-template-columns: 1fr; padding: 48px 0; }
             .source-image { min-height: 65vw; position: relative; padding: 40px 32px 56px; }
             .source-frame img { max-height: 56vh; }
@@ -927,10 +947,7 @@
             nav { padding: 20px 24px; }
             .release-copy { padding: 64px 24px; }
             .release-title { font-size: clamp(4rem, 14vw, 6rem); }
-            .pieces-header { padding: 40px 24px 18px; }
-            .piece-row { padding: 28px 24px; gap: 16px; }
-            .piece-row-num { font-size: 2.6rem; min-width: 52px; }
-            .pieces-view-all { padding: 20px 24px; }
+            .featured-header { flex-direction: column; align-items: flex-start; gap: 16px; margin-bottom: 40px; }
             .source-copy { padding: 64px 24px; }
             .system-strip { padding: 72px 24px; }
             .system-grid { grid-template-columns: 1fr; }
@@ -1000,98 +1017,65 @@
     </section>
 
     <!-- AVAILABLE PIECES -->
-    <section class="pieces-section">
-        <div class="pieces-preview" aria-hidden="true">
-            <img id="piecesPreviewImg" class="pieces-preview-img" src="Venezia-tee-m.png" alt="">
+    <section class="featured-section">
+        <div class="featured-header">
+            <div>
+                <p class="featured-eyebrow">Series 01 &nbsp;/&nbsp; Featured Pieces</p>
+                <h2 class="featured-title">Featured Pieces</h2>
+            </div>
+            <a href="collection.html" class="featured-view-all">View the Collection &rarr;</a>
         </div>
-        <div class="pieces-right">
-            <div class="pieces-header">
-                <span class="pieces-label">Series 01 &nbsp;/&nbsp; Available Pieces</span>
-                <span class="pieces-edition">Six Pieces</span>
-            </div>
-            <ul class="pieces-list">
-                <li>
-                    <a href="product.html?p=tee" class="piece-row" data-img="Venezia-tee-m.png">
-                        <span class="piece-row-num">01</span>
-                        <div class="piece-row-info">
-                            <div class="piece-row-name">Venezia &mdash; Tee</div>
-                            <div class="piece-row-type">Heavyweight Cotton &nbsp;&middot;&nbsp; Artwork 01</div>
-                        </div>
-                        <div class="piece-row-right">
-                            <span class="piece-row-price">$64</span>
-                            <span class="piece-row-cta">View Piece &rarr;</span>
-                        </div>
-                    </a>
-                </li>
-                <li>
-                    <a href="product.html?p=hoodie" class="piece-row" data-img="Venezia-Hoodie-m.png">
-                        <span class="piece-row-num">02</span>
-                        <div class="piece-row-info">
-                            <div class="piece-row-name">Venezia &mdash; Hoodie</div>
-                            <div class="piece-row-type">Heavyweight Fleece &nbsp;&middot;&nbsp; Artwork 01</div>
-                        </div>
-                        <div class="piece-row-right">
-                            <span class="piece-row-price">$84</span>
-                            <span class="piece-row-cta">View Piece &rarr;</span>
-                        </div>
-                    </a>
-                </li>
-                <li>
-                    <a href="product.html?p=crew" class="piece-row" data-img="Venezia-crew-m.png">
-                        <span class="piece-row-num">03</span>
-                        <div class="piece-row-info">
-                            <div class="piece-row-name">Venezia &mdash; Crewneck</div>
-                            <div class="piece-row-type">Heavyweight Fleece &nbsp;&middot;&nbsp; Artwork 01</div>
-                        </div>
-                        <div class="piece-row-right">
-                            <span class="piece-row-price">$84</span>
-                            <span class="piece-row-cta">View Piece &rarr;</span>
-                        </div>
-                    </a>
-                </li>
-                <li>
-                    <a href="product.html?p=arhus-old-town-tee" class="piece-row" data-img="arhus the old town tee model.png">
-                        <span class="piece-row-num">04</span>
-                        <div class="piece-row-info">
-                            <div class="piece-row-name">Arhus, The Old Town &mdash; Tee</div>
-                            <div class="piece-row-type">Heavyweight Cotton &nbsp;&middot;&nbsp; Artwork 02</div>
-                        </div>
-                        <div class="piece-row-right">
-                            <span class="piece-row-price">$64</span>
-                            <span class="piece-row-cta">View Piece &rarr;</span>
-                        </div>
-                    </a>
-                </li>
-                <li>
-                    <a href="product.html?p=wind-sea-tee" class="piece-row" data-img="wind & sea tee model.png">
-                        <span class="piece-row-num">05</span>
-                        <div class="piece-row-info">
-                            <div class="piece-row-name">Wind &amp; Sea &mdash; Tee</div>
-                            <div class="piece-row-type">Heavyweight Cotton &nbsp;&middot;&nbsp; Artwork 03</div>
-                        </div>
-                        <div class="piece-row-right">
-                            <span class="piece-row-price">$64</span>
-                            <span class="piece-row-cta">View Piece &rarr;</span>
-                        </div>
-                    </a>
-                </li>
-                <li>
-                    <a href="product.html?p=waves-of-life-tee" class="piece-row" data-img="waves of life tee model.png">
-                        <span class="piece-row-num">06</span>
-                        <div class="piece-row-info">
-                            <div class="piece-row-name">Waves of Life &mdash; Tee</div>
-                            <div class="piece-row-type">Heavyweight Cotton &nbsp;&middot;&nbsp; Artwork 04</div>
-                        </div>
-                        <div class="piece-row-right">
-                            <span class="piece-row-price">$64</span>
-                            <span class="piece-row-cta">View Piece &rarr;</span>
-                        </div>
-                    </a>
-                </li>
-            </ul>
-            <div class="pieces-view-all">
-                <a href="collection.html">View the Collection &rarr;</a>
-            </div>
+        <div class="featured-grid">
+            <a href="product.html?p=arhus-old-town-tee" class="featured-piece featured-piece--main">
+                <div class="featured-image-wrap">
+                    <div class="featured-image featured-image--model"><img src="arhus the old town tee model.png" alt="Arhus, The Old Town — Tee" loading="lazy"></div>
+                    <div class="featured-image featured-image--flat"><img src="arhus the old town tee.png" alt="Arhus, The Old Town — Tee, flat" loading="lazy"></div>
+                </div>
+                <div class="featured-caption">
+                    <div class="featured-info">
+                        <div class="featured-name">Arhus, The Old Town &mdash; Tee</div>
+                        <div class="featured-type">Heavyweight Cotton &nbsp;&middot;&nbsp; Artwork 02</div>
+                    </div>
+                    <div class="featured-right">
+                        <span class="featured-price">$64</span>
+                        <span class="featured-cta">View Piece <span class="fp-arrow">&rarr;</span></span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="product.html?p=hoodie" class="featured-piece">
+                <div class="featured-image-wrap">
+                    <div class="featured-image featured-image--model"><img src="Venezia-Hoodie-m.png" alt="Venezia — Hoodie" loading="lazy"></div>
+                    <div class="featured-image featured-image--flat"><img src="Venezia-hoodie.png" alt="Venezia — Hoodie, flat" loading="lazy"></div>
+                </div>
+                <div class="featured-caption">
+                    <div class="featured-info">
+                        <div class="featured-name">Venezia &mdash; Hoodie</div>
+                        <div class="featured-type">Heavyweight Fleece &nbsp;&middot;&nbsp; Artwork 01</div>
+                    </div>
+                    <div class="featured-right">
+                        <span class="featured-price">$84</span>
+                        <span class="featured-cta">View Piece <span class="fp-arrow">&rarr;</span></span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="product.html?p=wind-sea-tee" class="featured-piece">
+                <div class="featured-image-wrap">
+                    <div class="featured-image featured-image--model"><img src="wind & sea tee model.png" alt="Wind & Sea — Tee" loading="lazy"></div>
+                    <div class="featured-image featured-image--flat"><img src="wind & sea tee.png" alt="Wind & Sea — Tee, flat" loading="lazy"></div>
+                </div>
+                <div class="featured-caption">
+                    <div class="featured-info">
+                        <div class="featured-name">Wind &amp; Sea &mdash; Tee</div>
+                        <div class="featured-type">Heavyweight Cotton &nbsp;&middot;&nbsp; Artwork 03</div>
+                    </div>
+                    <div class="featured-right">
+                        <span class="featured-price">$64</span>
+                        <span class="featured-cta">View Piece <span class="fp-arrow">&rarr;</span></span>
+                    </div>
+                </div>
+            </a>
         </div>
     </section>
 
@@ -1398,28 +1382,6 @@
             });
         })();
 
-        // Pieces preview image swap on hover — images preloaded so the
-        // crossfade never reveals a blank frame.
-        (function() {
-            var img = document.getElementById('piecesPreviewImg');
-            if (!img) return;
-            var rows = document.querySelectorAll('.piece-row');
-
-            rows.forEach(function(row) {
-                var src = row.getAttribute('data-img');
-                if (src) { var pre = new Image(); pre.src = src; }
-            });
-
-            rows.forEach(function(row) {
-                row.addEventListener('mouseenter', function() {
-                    var src = row.getAttribute('data-img');
-                    if (src && img.src.indexOf(src) === -1) {
-                        img.style.opacity = '0';
-                        setTimeout(function() { img.src = src; img.style.opacity = '1'; }, 180);
-                    }
-                });
-            });
-        })();
 
     </script>
     <script src="site-ui.js"></script>
