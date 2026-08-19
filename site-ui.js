@@ -536,7 +536,14 @@
     var n = cartCount();
     var label = "Cart (" + n + ")";
     [].forEach.call(document.querySelectorAll("[data-cart-toggle]"), function (a) {
-      a.textContent = label;
+      // Some pages pair the text label with an icon (shown on mobile via
+      // CSS) inside a .nav-label-text span — update that span in place
+      // instead of a.textContent, which would delete the icon markup.
+      // aria-label is kept in sync too so the accessible name is correct
+      // even when the icon, not the text, is what's visually shown.
+      var textEl = a.querySelector(".nav-label-text");
+      if (textEl) { textEl.textContent = label; a.setAttribute("aria-label", label); }
+      else { a.textContent = label; }
     });
   }
 

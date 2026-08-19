@@ -103,7 +103,7 @@
         .hero h1 {
             font-family: var(--font-serif);
             font-size: clamp(5rem, 12vw, 10rem);
-            line-height: 0.8;
+            line-height: 0.95;
             font-weight: 600;
             margin-bottom: 48px;
             letter-spacing: -0.02em;
@@ -126,16 +126,18 @@
             position: relative;
             overflow: hidden;
             background: #0f0f0f;
-            /* Archival reveal — the print pulled from its sleeve (the black panel) */
-            clip-path: inset(0 100% 0 0);
+            /* First image should be visible as fast as possible — a quick
+               fade, not a directional wipe/slide, and no built-in delay
+               before the image itself is allowed to show. */
+            opacity: 0;
         }
 
         .hero-visual.is-revealed {
-            animation: heroReveal 1000ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            animation: heroReveal 350ms ease-out forwards;
         }
 
         @keyframes heroReveal {
-            to { clip-path: inset(0 0 0 0); }
+            to { opacity: 1; }
         }
 
         /* Editorial crossfade stack — frames sit on top of each other and
@@ -180,68 +182,12 @@
         /* Subtle Ken Burns — only the active frame breathes */
         .hero-slide.is-active img { transform: scale(1.045); }
 
-        /* Minimal nav — a hairline segment per image, filling as it plays.
-           No arrows, no numbers. Doubles as a click-to-jump control. */
-        .hero-progress {
-            position: absolute;
-            left: 32px;
-            right: 32px;
-            bottom: 28px;
-            z-index: 3;
-            display: flex;
-            gap: 8px;
-        }
-
-        .hero-progress-seg {
-            flex: 1;
-            height: 2px;
-            padding: 10px 0;
-            background: none;
-            border: 0;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .hero-progress-seg::before {
-            content: "";
-            position: absolute;
-            left: 0; right: 0; top: 10px;
-            height: 2px;
-            background: rgba(255,255,255,0.25);
-        }
-
-        .hero-progress-seg-fill {
-            position: absolute;
-            left: 0; right: 0; top: 10px;
-            height: 2px;
-            background: var(--white);
-            transform: scaleX(0);
-            transform-origin: left;
-        }
-
-        .hero-progress-seg.is-done .hero-progress-seg-fill { transform: scaleX(1); }
-        .hero-progress-seg.is-active .hero-progress-seg-fill {
-            animation: heroProgressFill var(--hero-interval, 5200ms) linear forwards;
-        }
-        .hero-visual.is-paused .hero-progress-seg.is-active .hero-progress-seg-fill {
-            animation-play-state: paused;
-        }
-
-        @keyframes heroProgressFill {
-            from { transform: scaleX(0); }
-            to   { transform: scaleX(1); }
-        }
-
-        .hero-progress-seg:focus-visible { outline: 1px solid var(--white); outline-offset: 4px; }
-
         @media (prefers-reduced-motion: reduce) {
-            .hero-visual { clip-path: none; }
+            .hero-visual { opacity: 1; }
             .hero-visual.is-revealed { animation: none; }
             .hero-slide { transition: opacity 300ms ease; }
             .hero-slide img { transition: none; }
             .hero-slide.is-active img { transform: scale(1); }
-            .hero-progress-seg-fill { animation: none !important; transition: none; }
-            .hero-progress-seg.is-active .hero-progress-seg-fill { transform: scaleX(1); }
         }
 
         /* Scroll reveals — below hero only, subtle */
@@ -350,10 +296,6 @@
         }
 
         .featured-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            gap: 24px;
             max-width: 1400px;
             margin: 0 auto 64px;
         }
@@ -374,20 +316,6 @@
             line-height: 0.95;
             letter-spacing: -0.02em;
         }
-
-        .featured-view-all {
-            font-size: 11px;
-            letter-spacing: 0.35em;
-            text-transform: uppercase;
-            color: var(--black);
-            text-decoration: none;
-            opacity: 0.5;
-            white-space: nowrap;
-            padding-bottom: 6px;
-            transition: opacity 200ms ease;
-        }
-
-        .featured-view-all:hover { opacity: 0.8; }
 
         .featured-grid {
             max-width: 1400px;
@@ -512,6 +440,40 @@
             outline: 1px solid var(--black);
             outline-offset: 3px;
         }
+
+        /* The one CTA in this section that should command attention —
+           bordered, full-opacity color-invert on hover (overriding the
+           site-wide a:hover dim), not a quiet text link like piece CTAs. */
+        .featured-cta-row {
+            max-width: 1400px;
+            margin: 80px auto 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .featured-cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 20px 64px;
+            border: 1px solid var(--black);
+            color: var(--black);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            transition: background 200ms ease, color 200ms ease, opacity 200ms ease;
+        }
+
+        .featured-cta-button:hover {
+            opacity: 1;
+            background: var(--black);
+            color: var(--bone);
+        }
+
+        .featured-cta-button:hover .fp-arrow { transform: translateX(4px); }
+
+        .featured-cta-button:focus-visible { outline: 1px solid var(--black); outline-offset: 4px; }
 
         @media (prefers-reduced-motion: reduce) {
             .featured-image { transition: opacity 200ms ease; }
@@ -870,8 +832,10 @@
         .vote-section.has-voted .vote-back { opacity: 0.45; pointer-events: auto; }
 
         /* ── SEARCH ─────────────────────────────────────────────── */
-        .nav-search-btn{background:none;border:0;color:inherit;font:inherit;font-size:11px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;padding:0;transition:opacity 220ms ease}
+        .nav-search-btn{background:none;border:0;color:inherit;font:inherit;font-size:11px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;padding:0;transition:opacity 220ms ease;display:inline-flex;align-items:center}
         .nav-search-btn:hover{opacity:.5}
+        .nav-cart a{display:inline-flex;align-items:center}
+        .nav-label-icon{display:none}
         .search-drop{position:fixed;top:73px;left:0;right:0;z-index:1400;background:var(--bone);color:var(--black);border-bottom:1px solid rgba(0,0,0,.12);box-shadow:0 20px 60px rgba(10,10,10,.12);opacity:0;visibility:hidden;transform:translateY(-8px);transition:opacity .25s ease,visibility .25s ease,transform .25s ease}
         .search-drop.is-open{opacity:1;visibility:visible;transform:none}
         .search-drop-inner{max-width:1400px;margin:0 auto;padding:30px 48px 32px}
@@ -924,9 +888,18 @@
             /* Stacked hero must never clip the CTA: release the fixed height
                and let content size the section. */
             .hero { flex-direction: column; height: auto; min-height: 100vh; overflow: visible; }
-            .hero-text { padding: 72px 48px 88px; order: 2; flex: none; }
-            .hero-visual { order: 1; height: 52vh; min-height: 320px; flex: none; }
+            .hero-text { padding: 72px 48px 88px; order: 1; flex: none; }
+            .hero-visual { order: 2; height: 38vh; min-height: 220px; flex: none; }
             .hero h1 { font-size: clamp(3.6rem, 13vw, 6rem); margin-bottom: 36px; }
+            /* Banner-height crop on mobile hides most of each portrait shot —
+               shift focus down to the garment print instead of the default
+               top-anchored crop, per-slide since each photo is framed
+               differently. Desktop keeps the default (near full-height
+               panel, little cropping, no need to override). */
+            .hero-visual .hero-slide:nth-child(1) img { object-position: center 68%; }
+            .hero-visual .hero-slide:nth-child(2) img { object-position: center 58%; }
+            .hero-visual .hero-slide:nth-child(3) img { object-position: center 75%; }
+            .hero-visual .hero-slide:nth-child(4) img { object-position: center 48%; }
             .release-section { grid-template-columns: 1fr; }
             .release-image { min-height: 80vw; position: relative; }
             .release-image img { padding: 32px 24px; }
@@ -945,9 +918,14 @@
         @media (max-width: 768px) {
             .footer-grid { grid-template-columns: 1fr; gap: 40px; }
             nav { padding: 20px 24px; }
+            .nav-cart { gap: 20px; }
+            .nav-label-text { display: none; }
+            .nav-label-icon { display: inline-block; }
             .release-copy { padding: 64px 24px; }
             .release-title { font-size: clamp(4rem, 14vw, 6rem); }
-            .featured-header { flex-direction: column; align-items: flex-start; gap: 16px; margin-bottom: 40px; }
+            .featured-header { margin-bottom: 40px; }
+            .featured-cta-row { margin-top: 48px; }
+            .featured-cta-button { width: 100%; justify-content: center; padding: 20px 32px; }
             .source-copy { padding: 64px 24px; }
             .system-strip { padding: 72px 24px; }
             .system-grid { grid-template-columns: 1fr; }
@@ -956,7 +934,6 @@
             .system-artist { flex-direction: column; gap: 8px; }
             .vote-grid { grid-template-columns: 1fr; gap: 32px; }
             .vote-section { padding: 64px 24px 80px; }
-            .hero-progress { left: 20px; right: 20px; bottom: 18px; gap: 6px; }
             .source-frame-caption { font-size: 8px; letter-spacing: 0.3em; }
         }
     </style>
@@ -971,8 +948,14 @@
         </div>
         <div class="nav-brand">THE DEANGELO SERIES</div>
         <div class="nav-cart">
-            <button class="nav-search-btn" data-search-toggle>Search</button>
-            <a href="#" data-cart-toggle>Cart (0)</a>
+            <button class="nav-search-btn" data-search-toggle aria-label="Search">
+                <span class="nav-label-text" aria-hidden="true">Search</span>
+                <svg class="nav-label-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><line x1="20" y1="20" x2="15.4" y2="15.4"></line></svg>
+            </button>
+            <a href="#" data-cart-toggle aria-label="Cart (0)">
+                <span class="nav-label-text" aria-hidden="true">Cart (0)</span>
+                <svg class="nav-label-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8z"></path><path d="M9 8V6a3 3 0 0 1 6 0v2"></path></svg>
+            </a>
         </div>
     </nav>
 
@@ -994,11 +977,10 @@
             <a href="collection.html" class="btn">Shop Series 01</a>
         </div>
         <div class="hero-visual" id="heroGallery" role="region" aria-roledescription="carousel" aria-label="Series 01 campaign gallery">
-            <div class="hero-slide"><img src="Hero-desert-model.png" alt="Venezia — Series 01 Campaign" draggable="false"></div>
-            <div class="hero-slide"><img src="Venezia-tee-m.png" alt="Venezia Tee — Piece 01" loading="lazy" draggable="false"></div>
-            <div class="hero-slide"><img src="Venezia-Hoodie-m.png" alt="Venezia Hoodie — Piece 02" loading="lazy" draggable="false"></div>
-            <div class="hero-slide"><img src="Venezia-crew-m.png" alt="Venezia Crewneck — Piece 03" loading="lazy" draggable="false"></div>
-            <div class="hero-progress" id="heroProgress" aria-label="Choose campaign image"></div>
+            <div class="hero-slide"><img src="Hero-desert-model.png" alt="Venezia — Series 01 Campaign" fetchpriority="high" draggable="false"></div>
+            <div class="hero-slide"><img src="waves of life hero.png" alt="Waves of Life — Series 01 Campaign" loading="lazy" draggable="false"></div>
+            <div class="hero-slide"><img src="anhor hero pic beach.png" alt="Arhus, The Old Town — Series 01 Campaign" loading="lazy" draggable="false"></div>
+            <div class="hero-slide"><img src="wind n sea beach hero.png" alt="Wind & Sea — Series 01 Campaign" loading="lazy" draggable="false"></div>
         </div>
     </section>
 
@@ -1019,11 +1001,8 @@
     <!-- AVAILABLE PIECES -->
     <section class="featured-section">
         <div class="featured-header">
-            <div>
-                <p class="featured-eyebrow">Series 01 &nbsp;/&nbsp; Featured Pieces</p>
-                <h2 class="featured-title">Featured Pieces</h2>
-            </div>
-            <a href="collection.html" class="featured-view-all">View the Collection &rarr;</a>
+            <p class="featured-eyebrow">Series 01 &nbsp;/&nbsp; Featured Pieces</p>
+            <h2 class="featured-title">Featured Pieces</h2>
         </div>
         <div class="featured-grid">
             <a href="product.html?p=arhus-old-town-tee" class="featured-piece featured-piece--main">
@@ -1076,6 +1055,9 @@
                     </div>
                 </div>
             </a>
+        </div>
+        <div class="featured-cta-row">
+            <a href="collection.html" class="featured-cta-button">View the Collection <span class="fp-arrow">&rarr;</span></a>
         </div>
     </section>
 
@@ -1222,8 +1204,7 @@
         // already correct via CSS alone before any of this runs.
         (function() {
             var gallery = document.getElementById('heroGallery');
-            var progress = document.getElementById('heroProgress');
-            if (!gallery || !progress) return;
+            if (!gallery) return;
             var slides = Array.prototype.slice.call(gallery.querySelectorAll('.hero-slide'));
             if (!slides.length) return;
 
@@ -1237,28 +1218,8 @@
             var timer = null;
             var paused = false;
 
-            gallery.style.setProperty('--hero-interval', INTERVAL + 'ms');
-
-            var segs = slides.map(function(_, i) {
-                var b = document.createElement('button');
-                b.type = 'button';
-                b.className = 'hero-progress-seg';
-                b.setAttribute('aria-label', 'Show image ' + (i + 1) + ' of ' + slides.length);
-                var fillEl = document.createElement('span');
-                fillEl.className = 'hero-progress-seg-fill';
-                b.appendChild(fillEl);
-                b.addEventListener('click', function() { goTo(i, true); });
-                progress.appendChild(b);
-                return b;
-            });
-
             function render() {
                 slides.forEach(function(s, i) { s.classList.toggle('is-active', i === idx); });
-                segs.forEach(function(seg, i) {
-                    seg.classList.toggle('is-active', i === idx);
-                    seg.classList.toggle('is-done', i < idx);
-                    seg.setAttribute('aria-pressed', i === idx ? 'true' : 'false');
-                });
             }
 
             function goTo(i, manual) {
@@ -1304,7 +1265,7 @@
             // One-time archival reveal on load, then let it settle before
             // the first crossfade begins.
             requestAnimationFrame(function() { gallery.classList.add('is-revealed'); });
-            setTimeout(restart, reduceMotion ? 0 : 1200);
+            setTimeout(restart, reduceMotion ? 0 : 500);
         })();
 
         // Scroll reveals — subtle, below the hero only
