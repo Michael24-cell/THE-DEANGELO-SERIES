@@ -92,6 +92,14 @@
             z-index: 2;
         }
 
+        .hero-eyebrow {
+            font-size: 11px;
+            letter-spacing: 0.45em;
+            text-transform: uppercase;
+            opacity: 0.55;
+            margin-bottom: 24px;
+        }
+
         .hero h1 {
             font-family: var(--font-serif);
             font-size: clamp(5rem, 12vw, 10rem);
@@ -118,8 +126,6 @@
             position: relative;
             overflow: hidden;
             background: #0f0f0f;
-            touch-action: pan-y;
-            cursor: grab;
             /* Archival reveal — the print pulled from its sleeve (the black panel) */
             clip-path: inset(0 100% 0 0);
         }
@@ -132,19 +138,29 @@
             to { clip-path: inset(0 0 0 0); }
         }
 
-        .hero-track {
-            display: flex;
-            height: 100%;
-            transition: transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
-            will-change: transform;
+        /* Editorial crossfade stack — frames sit on top of each other and
+           dissolve via opacity. :first-child defaults to visible in pure
+           CSS, so the first image is correct even if JS never runs. */
+        .hero-slide {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 1600ms cubic-bezier(0.22, 0.61, 0.36, 1);
         }
 
-        .hero-track.is-dragging { transition: none; }
+        /* Fallback only: if JS never runs, the first slide must still show.
+           Once JS is ready it adds .hero-js-ready and takes over via
+           .is-active alone — this rule stops applying, so slide 1 fades
+           out normally like every other slide instead of staying stuck
+           underneath the crossfade forever. */
+        .hero-visual:not(.hero-js-ready) .hero-slide:first-child {
+            opacity: 1;
+            z-index: 1;
+        }
 
-        .hero-slide {
-            flex: 0 0 100%;
-            height: 100%;
-            position: relative;
+        .hero-slide.is-active {
+            opacity: 1;
+            z-index: 1;
         }
 
         .hero-slide img {
@@ -155,84 +171,77 @@
             display: block;
             user-select: none;
             -webkit-user-drag: none;
+            transform-origin: center;
+            transform: scale(1);
+            transition: transform 6800ms linear;
+            will-change: transform;
         }
 
-        .hero-visual.is-revealed .hero-slide:first-child img {
-            animation: heroSlideIn 1000ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        }
+        /* Subtle Ken Burns — only the active frame breathes */
+        .hero-slide.is-active img { transform: scale(1.045); }
 
-        @keyframes heroSlideIn {
-            from { transform: translateX(-5%); }
-            to   { transform: translateX(0); }
-        }
-
-        /* Gallery chrome — counter, arrows, progress */
-        .hero-gallery-ui {
-            position: absolute;
-            bottom: 28px;
-            right: 32px;
-            z-index: 3;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            color: var(--white);
-        }
-
-        .hero-arrow {
-            background: rgba(10,10,10,0.55);
-            border: 1px solid rgba(255,255,255,0.25);
-            color: var(--white);
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: var(--font-sans);
-            font-size: 13px;
-            cursor: pointer;
-            transition: background 200ms ease, border-color 200ms ease;
-            -webkit-backdrop-filter: blur(4px);
-            backdrop-filter: blur(4px);
-        }
-
-        .hero-arrow:hover { background: rgba(10,10,10,0.8); border-color: rgba(255,255,255,0.6); }
-        .hero-arrow:focus-visible { outline: 1px solid var(--white); outline-offset: 2px; }
-
-        .hero-counter {
-            font-size: 10px;
-            letter-spacing: 0.35em;
-            font-weight: 400;
-            text-shadow: 0 1px 8px rgba(10,10,10,0.7);
-            min-width: 58px;
-            text-align: center;
-        }
-
+        /* Minimal nav — a hairline segment per image, filling as it plays.
+           No arrows, no numbers. Doubles as a click-to-jump control. */
         .hero-progress {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: rgba(255,255,255,0.12);
+            left: 32px;
+            right: 32px;
+            bottom: 28px;
             z-index: 3;
+            display: flex;
+            gap: 8px;
         }
 
-        .hero-progress-fill {
-            height: 100%;
-            width: 33.4%;
+        .hero-progress-seg {
+            flex: 1;
+            height: 2px;
+            padding: 10px 0;
+            background: none;
+            border: 0;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .hero-progress-seg::before {
+            content: "";
+            position: absolute;
+            left: 0; right: 0; top: 10px;
+            height: 2px;
+            background: rgba(255,255,255,0.25);
+        }
+
+        .hero-progress-seg-fill {
+            position: absolute;
+            left: 0; right: 0; top: 10px;
+            height: 2px;
             background: var(--white);
-            transition: width 620ms cubic-bezier(0.22, 1, 0.36, 1);
+            transform: scaleX(0);
+            transform-origin: left;
         }
 
-        .hero-visual:focus-visible { outline: none; }
-        .hero-visual:focus-visible .hero-gallery-ui .hero-counter { text-decoration: underline; text-underline-offset: 4px; }
+        .hero-progress-seg.is-done .hero-progress-seg-fill { transform: scaleX(1); }
+        .hero-progress-seg.is-active .hero-progress-seg-fill {
+            animation: heroProgressFill var(--hero-interval, 5200ms) linear forwards;
+        }
+        .hero-visual.is-paused .hero-progress-seg.is-active .hero-progress-seg-fill {
+            animation-play-state: paused;
+        }
+
+        @keyframes heroProgressFill {
+            from { transform: scaleX(0); }
+            to   { transform: scaleX(1); }
+        }
+
+        .hero-progress-seg:focus-visible { outline: 1px solid var(--white); outline-offset: 4px; }
 
         @media (prefers-reduced-motion: reduce) {
             .hero-visual { clip-path: none; }
             .hero-visual.is-revealed { animation: none; }
-            .hero-visual.is-revealed .hero-slide:first-child img { animation: none; }
-            .hero-track { transition: none; }
-            .hero-progress-fill { transition: none; }
+            .hero-slide { transition: opacity 300ms ease; }
+            .hero-slide img { transition: none; }
+            .hero-slide.is-active img { transform: scale(1); }
+            .hero-progress-seg-fill { animation: none !important; transition: none; }
+            .hero-progress-seg.is-active .hero-progress-seg-fill { transform: scaleX(1); }
         }
 
         /* Scroll reveals — below hero only, subtle */
@@ -930,8 +939,7 @@
             .system-artist { flex-direction: column; gap: 8px; }
             .vote-grid { grid-template-columns: 1fr; gap: 32px; }
             .vote-section { padding: 64px 24px 80px; }
-            .hero-gallery-ui { bottom: 20px; right: 20px; gap: 14px; }
-            .hero-arrow { width: 44px; height: 44px; }
+            .hero-progress { left: 20px; right: 20px; bottom: 18px; gap: 6px; }
             .source-frame-caption { font-size: 8px; letter-spacing: 0.3em; }
         }
     </style>
@@ -964,21 +972,16 @@
 
     <section class="hero">
         <div class="hero-text">
+            <p class="hero-eyebrow">The DeAngelo Series &nbsp;/&nbsp; Series 01</p>
             <h1>WEAR<br>THE<br>CANVAS</h1>
             <a href="collection.html" class="btn">Shop Series 01</a>
         </div>
-        <div class="hero-visual" id="heroGallery" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Series 01 campaign gallery — use arrow keys to browse">
-            <div class="hero-track" id="heroTrack">
-                <div class="hero-slide"><img src="Hero-desert-model.png" alt="Venezia — Series 01 Campaign" draggable="false"></div>
-                <div class="hero-slide"><img src="Venezia-Hoodie-m.png" alt="Venezia Hoodie — Piece 02" loading="lazy" draggable="false"></div>
-                <div class="hero-slide"><img src="Venezia-crew-m.png" alt="Venezia Crewneck — Piece 03" loading="lazy" draggable="false"></div>
-            </div>
-            <div class="hero-gallery-ui">
-                <button class="hero-arrow" data-hero-dir="-1" aria-label="Previous image">&larr;</button>
-                <span class="hero-counter" aria-live="polite"><span id="heroIdx">01</span>&nbsp;/&nbsp;03</span>
-                <button class="hero-arrow" data-hero-dir="1" aria-label="Next image">&rarr;</button>
-            </div>
-            <div class="hero-progress" aria-hidden="true"><div class="hero-progress-fill" id="heroProgressFill"></div></div>
+        <div class="hero-visual" id="heroGallery" role="region" aria-roledescription="carousel" aria-label="Series 01 campaign gallery">
+            <div class="hero-slide"><img src="Hero-desert-model.png" alt="Venezia — Series 01 Campaign" draggable="false"></div>
+            <div class="hero-slide"><img src="Venezia-tee-m.png" alt="Venezia Tee — Piece 01" loading="lazy" draggable="false"></div>
+            <div class="hero-slide"><img src="Venezia-Hoodie-m.png" alt="Venezia Hoodie — Piece 02" loading="lazy" draggable="false"></div>
+            <div class="hero-slide"><img src="Venezia-crew-m.png" alt="Venezia Crewneck — Piece 03" loading="lazy" draggable="false"></div>
+            <div class="hero-progress" id="heroProgress" aria-label="Choose campaign image"></div>
         </div>
     </section>
 
@@ -1228,73 +1231,96 @@
             document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
         });
 
-        // Hero gallery — manual control only: drag, swipe, keys, arrows
+        // Hero gallery — auto-rotating editorial crossfade with a subtle
+        // Ken Burns drift. Pauses on hover/focus/hidden tab (WCAG 2.2.2,
+        // done invisibly instead of a visible pause button) and never
+        // autoplays under prefers-reduced-motion. The first slide is
+        // already correct via CSS alone before any of this runs.
         (function() {
             var gallery = document.getElementById('heroGallery');
-            var track = document.getElementById('heroTrack');
-            if (!gallery || !track) return;
+            var progress = document.getElementById('heroProgress');
+            if (!gallery || !progress) return;
+            var slides = Array.prototype.slice.call(gallery.querySelectorAll('.hero-slide'));
+            if (!slides.length) return;
 
-            var slides = track.children.length;
+            // Hand opacity control fully to .is-active — see the CSS note
+            // by .hero-js-ready for why this must happen before render().
+            gallery.classList.add('hero-js-ready');
+
+            var INTERVAL = 5200; // ms per image — within the 4–6s brief
+            var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             var idx = 0;
-            var idxEl = document.getElementById('heroIdx');
-            var fill = document.getElementById('heroProgressFill');
+            var timer = null;
+            var paused = false;
 
-            // One-time archival reveal on load
-            requestAnimationFrame(function() { gallery.classList.add('is-revealed'); });
+            gallery.style.setProperty('--hero-interval', INTERVAL + 'ms');
+
+            var segs = slides.map(function(_, i) {
+                var b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'hero-progress-seg';
+                b.setAttribute('aria-label', 'Show image ' + (i + 1) + ' of ' + slides.length);
+                var fillEl = document.createElement('span');
+                fillEl.className = 'hero-progress-seg-fill';
+                b.appendChild(fillEl);
+                b.addEventListener('click', function() { goTo(i, true); });
+                progress.appendChild(b);
+                return b;
+            });
 
             function render() {
-                track.style.transform = 'translateX(-' + (idx * 100) + '%)';
-                idxEl.textContent = String(idx + 1).padStart(2, '0');
-                fill.style.width = ((idx + 1) / slides * 100) + '%';
+                slides.forEach(function(s, i) { s.classList.toggle('is-active', i === idx); });
+                segs.forEach(function(seg, i) {
+                    seg.classList.toggle('is-active', i === idx);
+                    seg.classList.toggle('is-done', i < idx);
+                    seg.setAttribute('aria-pressed', i === idx ? 'true' : 'false');
+                });
             }
 
-            function go(dir) {
-                idx = Math.min(slides - 1, Math.max(0, idx + dir));
+            function goTo(i, manual) {
+                idx = (i + slides.length) % slides.length;
                 render();
+                if (manual) restart();
             }
 
-            document.querySelectorAll('[data-hero-dir]').forEach(function(btn) {
-                btn.addEventListener('click', function() { go(parseInt(btn.dataset.heroDir, 10)); });
-            });
+            function restart() {
+                clearInterval(timer);
+                if (reduceMotion || slides.length < 2) return;
+                timer = setInterval(function() { if (!paused) goTo(idx + 1); }, INTERVAL);
+            }
 
+            function setPaused(p) {
+                paused = p;
+                gallery.classList.toggle('is-paused', p);
+            }
+
+            gallery.addEventListener('mouseenter', function() { setPaused(true); });
+            gallery.addEventListener('mouseleave', function() { setPaused(false); });
+            gallery.addEventListener('focusin', function() { setPaused(true); });
+            gallery.addEventListener('focusout', function() { setPaused(false); });
+            document.addEventListener('visibilitychange', function() { setPaused(document.hidden); });
+
+            gallery.setAttribute('tabindex', '0');
             gallery.addEventListener('keydown', function(e) {
-                if (e.key === 'ArrowLeft'  || e.key === 'Left')  { e.preventDefault(); go(-1); }
-                if (e.key === 'ArrowRight' || e.key === 'Right') { e.preventDefault(); go(1); }
+                if (e.key === 'ArrowLeft'  || e.key === 'Left')  { e.preventDefault(); goTo(idx - 1, true); }
+                if (e.key === 'ArrowRight' || e.key === 'Right') { e.preventDefault(); goTo(idx + 1, true); }
             });
 
-            // Pointer drag / touch swipe
-            var startX = null, currentX = null, dragging = false;
-
-            gallery.addEventListener('pointerdown', function(e) {
-                if (e.target.closest('.hero-arrow')) return;
-                startX = e.clientX; currentX = e.clientX; dragging = true;
-                track.classList.add('is-dragging');
-                gallery.setPointerCapture(e.pointerId);
-            });
-
-            gallery.addEventListener('pointermove', function(e) {
-                if (!dragging) return;
-                currentX = e.clientX;
-                var dx = currentX - startX;
-                // Rubber-band at ends
-                if ((idx === 0 && dx > 0) || (idx === slides - 1 && dx < 0)) dx *= 0.3;
-                track.style.transform = 'translateX(calc(-' + (idx * 100) + '% + ' + dx + 'px))';
-            });
-
-            function endDrag() {
-                if (!dragging) return;
-                dragging = false;
-                track.classList.remove('is-dragging');
-                var dx = currentX - startX;
-                if (Math.abs(dx) > 60) go(dx < 0 ? 1 : -1);
-                else render();
-                startX = currentX = null;
-            }
-
-            gallery.addEventListener('pointerup', endDrag);
-            gallery.addEventListener('pointercancel', endDrag);
+            // Light swipe threshold (mobile) — a flick, not a drag-follow.
+            var touchStartX = null;
+            gallery.addEventListener('touchstart', function(e) { touchStartX = e.touches[0].clientX; }, { passive: true });
+            gallery.addEventListener('touchend', function(e) {
+                if (touchStartX === null) return;
+                var dx = e.changedTouches[0].clientX - touchStartX;
+                if (Math.abs(dx) > 40) goTo(idx + (dx < 0 ? 1 : -1), true);
+                touchStartX = null;
+            }, { passive: true });
 
             render();
+            // One-time archival reveal on load, then let it settle before
+            // the first crossfade begins.
+            requestAnimationFrame(function() { gallery.classList.add('is-revealed'); });
+            setTimeout(restart, reduceMotion ? 0 : 1200);
         })();
 
         // Scroll reveals — subtle, below the hero only
