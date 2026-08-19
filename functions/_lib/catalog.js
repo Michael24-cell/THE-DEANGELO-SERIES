@@ -132,6 +132,34 @@ export const CATALOG = {
       },
     },
   },
+  'villa-d-este-tee': {
+    name: 'Villa d\'Este — Tee',
+    image: 'https://thedeangeloseries.com/villa-d-este%20model.png',
+    currency: 'usd',
+    sizes: ['S', 'M', 'L', 'XL', '2XL'],
+    colors: ['Black'],
+    basePrice: 6400,      // $64.00, in cents — same price point as the other tees.
+    upchargePrice: 6800,  // $68.00, in cents
+    upchargeSizes: ['2XL'],
+    stripeTaxCode: 'txcd_30011000',
+    // Printify mapping confirmed live via GET /v1/shops/26931439/products/6a84ed5884a138c30d0b62d9.json
+    // on 2026-08-19 — "Villa d'Este - Tee", blueprint 1723 / print provider 74 (same combo as Arhus/
+    // Wind & Sea/Waves of Life), 5 enabled variants, all color Black.
+    printify: {
+      productId: '6a84ed5884a138c30d0b62d9',
+      printProviderId: 74,
+      variantIdBySize: {
+        S: 118085, M: 118086, L: 118087, XL: 118101, '2XL': 118088,
+      },
+      skuBySize: {
+        S: '70289775690599812972',
+        M: '15936825846157070580',
+        L: '46005705100070495334',
+        XL: '28508995031255357778',
+        '2XL': '30608025617507758941',
+      },
+    },
+  },
   hoodie: {
     name: 'Venezia — Hoodie',
     image: 'https://thedeangeloseries.com/Venezia-Hoodie-m.png',

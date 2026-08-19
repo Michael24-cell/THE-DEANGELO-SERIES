@@ -705,7 +705,7 @@
     <div class="prov-item">
       <div class="prov-label">Series</div>
       <div class="prov-value">01 <em>/</em> MMXXVI</div>
-      <div class="prov-aside">Six pieces. Upcoming.</div>
+      <div class="prov-aside">Upcoming.</div>
     </div>
     <div class="prov-item">
       <div class="prov-label">The Archive</div>
@@ -844,7 +844,6 @@
     var PREVIEWS = {
       leaningtowerofpizza: { title:'Leaning Tower of Pizza', img:'Leaningtowerofpizza-mock.png' },
       palatinehill:        { title:'Palatine Hill',          img:'palatine-hill.png' },
-      villadeste:          { title:'Villa d\'Este',           img:'villa-d-este.png' },
       spiaggiasanmarco:    { title:'Spiaggia San Marco',      img:'spaggia-sanmarco.png' },
       thewedge:            { title:'The Wedge', sub:'1990',  img:'thewedge.png' },
       ostiaantica:         { title:'Ostia Antica',            img:'ostia-antica.png' },
@@ -865,7 +864,8 @@
       crew:   { title:'Venezia', artwork:'Artwork 01', plate:'03', garment:'Crewneck', price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'Venezia-crew-m.png',   flat:'Venezia-crew.png',   sizes:['S','M','L','XL','2XL','3XL'] },
       'arhus-old-town-tee': { title:'Arhus, The Old Town', artwork:'Artwork 02', plate:'04', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'arhus the old town tee model.png', flat:'arhus the old town tee.png', sizes:['S','M','L','XL','2XL'] },
       'wind-sea-tee': { title:'Wind & Sea', artwork:'Artwork 03', plate:'05', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'wind & sea tee model.png', flat:'wind & sea tee.png', sizes:['S','M','L','XL','2XL'] },
-      'waves-of-life-tee': { title:'Waves of Life', artwork:'Artwork 04', plate:'06', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'waves of life tee model.png', flat:'waves of life tee.png', sizes:['S','M','L','XL','2XL'] }
+      'waves-of-life-tee': { title:'Waves of Life', artwork:'Artwork 04', plate:'06', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'waves of life tee model.png', flat:'waves of life tee.png', sizes:['S','M','L','XL','2XL'] },
+      'villa-d-este-tee': { title:'Villa d\'Este', artwork:'Artwork 05', plate:'07', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'villa-d-este model.png', flat:'villa-d-este tee.png', sizes:['S','M','L','XL','2XL'] }
     };
     var p = PRODS[key] || PRODS.tee;
 
@@ -875,7 +875,8 @@
       crew: 'Series 01 — Venezia. Three wearable pieces from a single artwork.',
       'arhus-old-town-tee': 'Series 01 — Arhus, The Old Town. A standalone artwork, distinct from the Venezia pieces.',
       'wind-sea-tee': 'Series 01 — Wind & Sea. A standalone artwork, distinct from the Venezia pieces.',
-      'waves-of-life-tee': 'Series 01 — Waves of Life. A standalone artwork, distinct from the Venezia pieces.'
+      'waves-of-life-tee': 'Series 01 — Waves of Life. A standalone artwork, distinct from the Venezia pieces.',
+      'villa-d-este-tee': 'Series 01 — Villa d\'Este. A standalone artwork, distinct from the Venezia pieces.'
     };
     var editionEl = document.getElementById('editionDesc');
     if (editionEl) editionEl.textContent = EDITION_DESC[key] || EDITION_DESC.tee;
@@ -916,7 +917,7 @@
         signMeta: '',
         provArtworkValueHtml: 'No. <em>02</em>',
         provArtworkAside: 'Arhus, The Old Town.',
-        provPrintedAside: 'Produced via the Printify network.'
+        provPrintedAside: 'Small-batch screen print. Water-based inks.'
       },
       'wind-sea-tee': {
         artImg: 'wind-sea.png',
@@ -933,7 +934,7 @@
         signMeta: '',
         provArtworkValueHtml: 'No. <em>03</em>',
         provArtworkAside: 'Wind & Sea, 1999.',
-        provPrintedAside: 'Produced via the Printify network.'
+        provPrintedAside: 'Small-batch screen print. Water-based inks.'
       },
       'waves-of-life-tee': {
         artImg: 'wavesoflife-mock.png',
@@ -950,7 +951,24 @@
         signMeta: '',
         provArtworkValueHtml: 'No. <em>04</em>',
         provArtworkAside: 'Waves of Life, 1990.',
-        provPrintedAside: 'Produced via the Printify network.'
+        provPrintedAside: 'Small-batch screen print. Water-based inks.'
+      },
+      'villa-d-este-tee': {
+        artImg: 'villa-d-este tee.png',
+        artAlt: 'Villa d\'Este — Original Artwork',
+        captionMedium: 'Villa d\'Este',
+        captionYear: '1980',
+        eyebrow: 'The Source · Artwork 05',
+        titleHtml: 'Villa d\'<em>Este</em>',
+        medium: 'Villa d\'Este — Artwork No. 05',
+        pull: '"A thousand fountains, caught mid-fall."',
+        bodyHtml: '<p>Villa d\'Este holds the terraced fountains of Tivoli, Italy, in motion — water caught mid-cascade down a dim stone stairway, framed by dense garden shadow. Rendered almost monochrome, the scene reads more like a held breath than a photograph.</p>' +
+          '<p>Printed vertically across the back of a garment-dyed drop-shoulder tee, the artwork is paired with a relaxed silhouette and vintage-washed cotton that suit its still, atmospheric character.</p>',
+        signName: '',
+        signMeta: '',
+        provArtworkValueHtml: 'No. <em>05</em>',
+        provArtworkAside: 'Villa d\'Este, 1980.',
+        provPrintedAside: 'Small-batch screen print. Water-based inks.'
       }
     };
     var src = SOURCE[key] || VENEZIA_SOURCE;
@@ -1027,7 +1045,7 @@
       var el = document.getElementById(id);
       if (el) el.style.display = 'none';
     });
-    var SIZE_CHART_ID = { tee:'sgTee', hoodie:'sgHoodie', crew:'sgCrew', 'arhus-old-town-tee':'sgTee', 'wind-sea-tee':'sgTee', 'waves-of-life-tee':'sgTee' };
+    var SIZE_CHART_ID = { tee:'sgTee', hoodie:'sgHoodie', crew:'sgCrew', 'arhus-old-town-tee':'sgTee', 'wind-sea-tee':'sgTee', 'waves-of-life-tee':'sgTee', 'villa-d-este-tee':'sgTee' };
     var chartEl = document.getElementById(SIZE_CHART_ID[key]);
     if (chartEl) chartEl.style.display = '';
 
@@ -1045,7 +1063,8 @@
       crew:   { material:'18oz heavyweight fleece. Brushed cotton interior, reinforced ribbed collar.', fit:'Boxy crew silhouette. Dropped shoulder, ribbed cuffs and waistband, slightly cropped.', print:'Six-colour water-based screen print, hand-pulled. Chest placement.' },
       'arhus-old-town-tee': { material:'Garment-dyed, vintage-washed cotton.', fit:'Relaxed drop-shoulder silhouette.', print:'Printed vertically across the back.' },
       'wind-sea-tee': { material:'Garment-dyed, vintage-washed cotton.', fit:'Relaxed drop-shoulder silhouette.', print:'Printed vertically across the back.' },
-      'waves-of-life-tee': { material:'Garment-dyed, vintage-washed cotton.', fit:'Relaxed drop-shoulder silhouette.', print:'Printed vertically across the back.' }
+      'waves-of-life-tee': { material:'Garment-dyed, vintage-washed cotton.', fit:'Relaxed drop-shoulder silhouette.', print:'Printed vertically across the back.' },
+      'villa-d-este-tee': { material:'Garment-dyed, vintage-washed cotton.', fit:'Relaxed drop-shoulder silhouette.', print:'Printed vertically across the back.' }
     };
     var d = DETAILS[key] || DETAILS.tee;
     document.getElementById('detailMaterial').textContent = d.material;
@@ -1059,42 +1078,56 @@
         { title:'Venezia', plate:'03', garment:'Crewneck', price:'$84', slug:'crew',   model:'Venezia-crew-m.png',   flat:'Venezia-crew.png' },
         { title:'Arhus, The Old Town', plate:'04', garment:'Tee', price:'$64', slug:'arhus-old-town-tee', model:'arhus the old town tee model.png', flat:'arhus the old town tee.png' },
         { title:'Wind & Sea', plate:'05', garment:'Tee', price:'$64', slug:'wind-sea-tee', model:'wind & sea tee model.png', flat:'wind & sea tee.png' },
-        { title:'Waves of Life', plate:'06', garment:'Tee', price:'$64', slug:'waves-of-life-tee', model:'waves of life tee model.png', flat:'waves of life tee.png' }
+        { title:'Waves of Life', plate:'06', garment:'Tee', price:'$64', slug:'waves-of-life-tee', model:'waves of life tee model.png', flat:'waves of life tee.png' },
+        { title:'Villa d\'Este', plate:'07', garment:'Tee', price:'$64', slug:'villa-d-este-tee', model:'villa-d-este model.png', flat:'villa-d-este tee.png' }
       ],
       hoodie: [
         { title:'Venezia', plate:'01', garment:'Tee',      price:'$64', slug:'tee',    model:'Venezia-tee-m.png',    flat:'Venezia-tee.png' },
         { title:'Venezia', plate:'03', garment:'Crewneck', price:'$84', slug:'crew',   model:'Venezia-crew-m.png',   flat:'Venezia-crew.png' },
         { title:'Arhus, The Old Town', plate:'04', garment:'Tee', price:'$64', slug:'arhus-old-town-tee', model:'arhus the old town tee model.png', flat:'arhus the old town tee.png' },
         { title:'Wind & Sea', plate:'05', garment:'Tee', price:'$64', slug:'wind-sea-tee', model:'wind & sea tee model.png', flat:'wind & sea tee.png' },
-        { title:'Waves of Life', plate:'06', garment:'Tee', price:'$64', slug:'waves-of-life-tee', model:'waves of life tee model.png', flat:'waves of life tee.png' }
+        { title:'Waves of Life', plate:'06', garment:'Tee', price:'$64', slug:'waves-of-life-tee', model:'waves of life tee model.png', flat:'waves of life tee.png' },
+        { title:'Villa d\'Este', plate:'07', garment:'Tee', price:'$64', slug:'villa-d-este-tee', model:'villa-d-este model.png', flat:'villa-d-este tee.png' }
       ],
       crew:   [
         { title:'Venezia', plate:'01', garment:'Tee',      price:'$64', slug:'tee',    model:'Venezia-tee-m.png',    flat:'Venezia-tee.png' },
         { title:'Venezia', plate:'02', garment:'Hoodie',   price:'$84', slug:'hoodie', model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png' },
         { title:'Arhus, The Old Town', plate:'04', garment:'Tee', price:'$64', slug:'arhus-old-town-tee', model:'arhus the old town tee model.png', flat:'arhus the old town tee.png' },
         { title:'Wind & Sea', plate:'05', garment:'Tee', price:'$64', slug:'wind-sea-tee', model:'wind & sea tee model.png', flat:'wind & sea tee.png' },
-        { title:'Waves of Life', plate:'06', garment:'Tee', price:'$64', slug:'waves-of-life-tee', model:'waves of life tee model.png', flat:'waves of life tee.png' }
+        { title:'Waves of Life', plate:'06', garment:'Tee', price:'$64', slug:'waves-of-life-tee', model:'waves of life tee model.png', flat:'waves of life tee.png' },
+        { title:'Villa d\'Este', plate:'07', garment:'Tee', price:'$64', slug:'villa-d-este-tee', model:'villa-d-este model.png', flat:'villa-d-este tee.png' }
       ],
       'arhus-old-town-tee': [
         { title:'Venezia', plate:'01', garment:'Tee',      price:'$64', slug:'tee',    model:'Venezia-tee-m.png',    flat:'Venezia-tee.png' },
         { title:'Venezia', plate:'02', garment:'Hoodie',   price:'$84', slug:'hoodie', model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png' },
         { title:'Venezia', plate:'03', garment:'Crewneck', price:'$84', slug:'crew',   model:'Venezia-crew-m.png',   flat:'Venezia-crew.png' },
         { title:'Wind & Sea', plate:'05', garment:'Tee', price:'$64', slug:'wind-sea-tee', model:'wind & sea tee model.png', flat:'wind & sea tee.png' },
-        { title:'Waves of Life', plate:'06', garment:'Tee', price:'$64', slug:'waves-of-life-tee', model:'waves of life tee model.png', flat:'waves of life tee.png' }
+        { title:'Waves of Life', plate:'06', garment:'Tee', price:'$64', slug:'waves-of-life-tee', model:'waves of life tee model.png', flat:'waves of life tee.png' },
+        { title:'Villa d\'Este', plate:'07', garment:'Tee', price:'$64', slug:'villa-d-este-tee', model:'villa-d-este model.png', flat:'villa-d-este tee.png' }
       ],
       'wind-sea-tee': [
         { title:'Venezia', plate:'01', garment:'Tee',      price:'$64', slug:'tee',    model:'Venezia-tee-m.png',    flat:'Venezia-tee.png' },
         { title:'Venezia', plate:'02', garment:'Hoodie',   price:'$84', slug:'hoodie', model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png' },
         { title:'Venezia', plate:'03', garment:'Crewneck', price:'$84', slug:'crew',   model:'Venezia-crew-m.png',   flat:'Venezia-crew.png' },
         { title:'Arhus, The Old Town', plate:'04', garment:'Tee', price:'$64', slug:'arhus-old-town-tee', model:'arhus the old town tee model.png', flat:'arhus the old town tee.png' },
-        { title:'Waves of Life', plate:'06', garment:'Tee', price:'$64', slug:'waves-of-life-tee', model:'waves of life tee model.png', flat:'waves of life tee.png' }
+        { title:'Waves of Life', plate:'06', garment:'Tee', price:'$64', slug:'waves-of-life-tee', model:'waves of life tee model.png', flat:'waves of life tee.png' },
+        { title:'Villa d\'Este', plate:'07', garment:'Tee', price:'$64', slug:'villa-d-este-tee', model:'villa-d-este model.png', flat:'villa-d-este tee.png' }
       ],
       'waves-of-life-tee': [
         { title:'Venezia', plate:'01', garment:'Tee',      price:'$64', slug:'tee',    model:'Venezia-tee-m.png',    flat:'Venezia-tee.png' },
         { title:'Venezia', plate:'02', garment:'Hoodie',   price:'$84', slug:'hoodie', model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png' },
         { title:'Venezia', plate:'03', garment:'Crewneck', price:'$84', slug:'crew',   model:'Venezia-crew-m.png',   flat:'Venezia-crew.png' },
         { title:'Arhus, The Old Town', plate:'04', garment:'Tee', price:'$64', slug:'arhus-old-town-tee', model:'arhus the old town tee model.png', flat:'arhus the old town tee.png' },
-        { title:'Wind & Sea', plate:'05', garment:'Tee', price:'$64', slug:'wind-sea-tee', model:'wind & sea tee model.png', flat:'wind & sea tee.png' }
+        { title:'Wind & Sea', plate:'05', garment:'Tee', price:'$64', slug:'wind-sea-tee', model:'wind & sea tee model.png', flat:'wind & sea tee.png' },
+        { title:'Villa d\'Este', plate:'07', garment:'Tee', price:'$64', slug:'villa-d-este-tee', model:'villa-d-este model.png', flat:'villa-d-este tee.png' }
+      ],
+      'villa-d-este-tee': [
+        { title:'Venezia', plate:'01', garment:'Tee',      price:'$64', slug:'tee',    model:'Venezia-tee-m.png',    flat:'Venezia-tee.png' },
+        { title:'Venezia', plate:'02', garment:'Hoodie',   price:'$84', slug:'hoodie', model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png' },
+        { title:'Venezia', plate:'03', garment:'Crewneck', price:'$84', slug:'crew',   model:'Venezia-crew-m.png',   flat:'Venezia-crew.png' },
+        { title:'Arhus, The Old Town', plate:'04', garment:'Tee', price:'$64', slug:'arhus-old-town-tee', model:'arhus the old town tee model.png', flat:'arhus the old town tee.png' },
+        { title:'Wind & Sea', plate:'05', garment:'Tee', price:'$64', slug:'wind-sea-tee', model:'wind & sea tee model.png', flat:'wind & sea tee.png' },
+        { title:'Waves of Life', plate:'06', garment:'Tee', price:'$64', slug:'waves-of-life-tee', model:'waves of life tee model.png', flat:'waves of life tee.png' }
       ]
     };
     var alsoGrid = document.getElementById('alsoGrid');
@@ -1238,6 +1271,7 @@
     { title:'Arhus, The Old Town', garment:'Tee', price:'$64', slug:'arhus-old-town-tee', model:'arhus the old town tee model.png' },
     { title:'Wind & Sea', garment:'Tee', price:'$64', slug:'wind-sea-tee', model:'wind & sea tee model.png' },
     { title:'Waves of Life', garment:'Tee', price:'$64', slug:'waves-of-life-tee', model:'waves of life tee model.png' },
+    { title:'Villa d\'Este', garment:'Tee', price:'$64', slug:'villa-d-este-tee', model:'villa-d-este model.png' },
     { title:'Japan', price:'—', soon:true, model:'bella-hoodie.png' },
     { title:'New York Chrysler', price:'—', soon:true, model:'New york chystler hoodie.png' }
   ];

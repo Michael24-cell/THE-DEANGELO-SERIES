@@ -14,3 +14,9 @@ node_modules/
 
 # macOS
 .DS_Store
+
+# Internal SEO audit output — never commit. pages_build_output_dir is "."
+# (repo root), so anything committed here is publicly servable at
+# thedeangeloseries.com/<path>; this documents real, current weaknesses
+# and must stay local-only.
+thedeangeloseries.com-audit/

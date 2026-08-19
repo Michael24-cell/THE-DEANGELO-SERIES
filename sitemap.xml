@@ -26,6 +26,11 @@
     <changefreq>monthly</changefreq>
   </url>
   <url>
+    <loc>https://thedeangeloseries.com/product.html?p=villa-d-este-tee</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
     <loc>https://thedeangeloseries.com/art.html</loc>
     <priority>0.7</priority>
     <changefreq>monthly</changefreq>

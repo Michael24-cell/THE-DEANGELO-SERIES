@@ -399,12 +399,11 @@
       <div class="eyebrow">The Series // MMXXVI</div>
       <h1 class="collection-title">The Collection</h1>
       <p class="collection-sub">
-        Six pieces. Series 01. Each garment is a single titled work — printed on heavyweight cotton, photographed, then archived.
+        Series 01. Each garment is a single titled work — printed on heavyweight cotton, photographed, then archived.
       </p>
     </div>
     <div class="collection-meta">
       <span>Series 01</span>
-      <span>Six Pieces</span>
       <span>Upcoming</span>
     </div>
   </div>
@@ -512,6 +511,9 @@
     { n:"06", title:"Waves of Life", garment:"Tee", price:"$64", slug:"waves-of-life-tee", type:"tee",
       model:"waves of life tee model.png", flat:"waves of life tee.png",
       desc:"Loose blue brushwork fans across the back like a wave caught mid-break. Garment-dyed drop-shoulder tee, vintage-washed cotton, printed vertically across the back." },
+    { n:"07", title:"Villa d'Este", garment:"Tee", price:"$64", slug:"villa-d-este-tee", type:"tee",
+      model:"villa-d-este model.png", flat:"villa-d-este tee.png",
+      desc:"Terraced fountains at Tivoli, caught mid-cascade down a dim stone stairway. Garment-dyed drop-shoulder tee, vintage-washed cotton, printed vertically across the back." },
     { n:"S2", title:"Japan", price:"—", soon:true, type:"sweatshirt",
       model:"bella-hoodie.png", flat:"Japan flat.png",
       desc:"Series 02 candidate. Cast your vote on the homepage to shape the next series." },
@@ -525,7 +527,6 @@
   const PREVIEWS = [
     { title:"Leaning Tower of Pizza", slug:"leaningtowerofpizza", img:"Leaningtowerofpizza-mock.png" },
     { title:"Palatine Hill",          slug:"palatinehill",        img:"palatine-hill.png" },
-    { title:"Villa d'Este",           slug:"villadeste",          img:"villa-d-este.png" },
     { title:"Spiaggia San Marco",     slug:"spiaggiasanmarco",    img:"spaggia-sanmarco.png" },
     { title:"The Wedge",              slug:"thewedge",            img:"thewedge.png" },
     { title:"Ostia Antica",           slug:"ostiaantica",         img:"ostia-antica.png" },
@@ -590,6 +591,19 @@
       <span class="grid-divider-sub">New pieces with mockups ready. Artwork, pricing, and full details are still being finalized.</span>
     </div>` +
     PREVIEWS.map(previewPlateHTML).join('');
+
+  // Filter counts — computed from PLATES so they never go stale as
+  // pieces are added, removed, or archived.
+  const filterCounts = {
+    all: s1.length,
+    tee: s1.filter(p => p.type === 'tee').length,
+    sweatshirt: s1.filter(p => p.type === 'sweatshirt').length,
+    archive: s1.filter(p => p.archived).length
+  };
+  Object.keys(filterCounts).forEach(key => {
+    const badge = document.querySelector(`.filters button[data-filter="${key}"] .filter-count`);
+    if (badge) badge.textContent = String(filterCounts[key]).padStart(2, '0');
+  });
 
   // Series dropdown
   document.getElementById('seriesFilter').addEventListener('change', () => {
