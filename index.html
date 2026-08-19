@@ -203,28 +203,68 @@
             .reveal { opacity: 1; transform: none; transition: none; }
         }
 
-        /* ── CURRENT RELEASE ───────────────────────────────────── */
+        /* ── CURRENT RELEASE — cinematic video ─────────────────── */
         .release-section {
-            background: var(--bone);
-            color: var(--black);
-            display: grid;
-            grid-template-columns: 42fr 58fr;
-            min-height: 90vh;
-            padding: 80px 0;
+            position: relative;
+            /* Brightening now happens during the approach, before the
+               section even locks in (see the JS below) — so this only
+               needs to hold the pin long enough for the pinned moment to
+               register, then release scroll immediately after. */
+            height: 115vh;
+        }
+
+        .release-sticky {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            background: #0f0f0f;
+        }
+
+        .release-video-wrap {
+            position: absolute;
+            inset: 0;
+            /* Resting/no-JS state is full presence — JS dims+scales this
+               down to the entrance state immediately on load, so a page
+               with JS disabled (or before it runs) never shows a half-lit
+               scene, only ever the finished look. */
+            opacity: 1;
+            transform: scale(1);
+            will-change: opacity, transform;
+        }
+
+        .release-video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: 72% 50%;
+            display: block;
+        }
+
+        .release-scrim {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(100deg, rgba(10,10,10,.6) 0%, rgba(10,10,10,.35) 32%, rgba(10,10,10,0) 60%);
+            pointer-events: none;
         }
 
         .release-copy {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 100px 72px 100px 80px;
+            position: relative;
+            z-index: 2;
+            padding: 0 72px 0 80px;
+            max-width: 560px;
+            color: var(--white);
         }
 
         .release-eyebrow {
             font-size: 11px;
             letter-spacing: 0.45em;
             text-transform: uppercase;
-            opacity: 0.55;
+            opacity: 0.75;
             margin-bottom: 40px;
         }
 
@@ -242,7 +282,7 @@
             font-size: 11px;
             letter-spacing: 0.25em;
             text-transform: uppercase;
-            opacity: 0.52;
+            opacity: 0.72;
             margin-bottom: 20px;
         }
 
@@ -250,7 +290,7 @@
             font-size: 14px;
             font-weight: 300;
             line-height: 1.75;
-            opacity: 0.65;
+            opacity: 0.82;
             margin-bottom: 56px;
             max-width: 340px;
         }
@@ -270,21 +310,22 @@
 
         .release-cta:hover { opacity: 0.65; }
 
-        .release-image {
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        /* Staggered one-shot entrance for the copy — reuses the sitewide
+           .reveal/.in-view mechanic (see the IntersectionObserver below)
+           rather than scrubbing text opacity with scroll, which reads as
+           an effects-demo rather than an editorial reveal. */
+        .release-copy .release-eyebrow.reveal { transition-delay: 0ms; }
+        .release-copy .release-title.reveal { transition-delay: 90ms; }
+        .release-copy .release-sub.reveal { transition-delay: 170ms; }
+        .release-copy .release-body.reveal { transition-delay: 230ms; }
+        .release-copy .release-cta.reveal { transition-delay: 340ms; }
 
-        .release-image img {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            padding: 68px 60px;
+        @media (prefers-reduced-motion: reduce) {
+            .release-copy .release-eyebrow.reveal,
+            .release-copy .release-title.reveal,
+            .release-copy .release-sub.reveal,
+            .release-copy .release-body.reveal,
+            .release-copy .release-cta.reveal { transition-delay: 0ms; }
         }
 
         /* ── FEATURED PIECES ────────────────────────────────────── */
@@ -900,10 +941,25 @@
             .hero-visual .hero-slide:nth-child(2) img { object-position: center 58%; }
             .hero-visual .hero-slide:nth-child(3) img { object-position: center 75%; }
             .hero-visual .hero-slide:nth-child(4) img { object-position: center 48%; }
-            .release-section { grid-template-columns: 1fr; }
-            .release-image { min-height: 80vw; position: relative; }
-            .release-image img { padding: 32px 24px; }
-            .release-copy { padding: 80px 48px; }
+            /* Cinematic-but-calm on mobile: no sticky scroll-pin, no
+               scroll-linked fades (see the JS gate below) — just a
+               shorter fixed-height video band with the copy anchored at
+               the bottom over a stronger scrim, revealed once via the
+               same one-shot .reveal stagger used on desktop. */
+            .release-section { height: auto; }
+            .release-sticky {
+                position: static;
+                height: 72vh;
+                min-height: 460px;
+                align-items: flex-end;
+            }
+            .release-video { object-position: 78% 50%; }
+            .release-scrim {
+                background: linear-gradient(to top, rgba(10,10,10,.78) 0%, rgba(10,10,10,.4) 42%, rgba(10,10,10,0) 72%);
+            }
+            .release-copy { padding: 0 24px 48px; max-width: none; }
+            .release-eyebrow { margin-bottom: 24px; }
+            .release-body { margin-bottom: 32px; }
             .featured-section { padding: 96px 24px; }
             .featured-grid { grid-template-columns: 1fr; gap: 48px; }
             .featured-piece--main { grid-row: auto; }
@@ -984,17 +1040,22 @@
         </div>
     </section>
 
-    <!-- CURRENT RELEASE -->
-    <section class="release-section">
-        <div class="release-copy reveal">
-            <p class="release-eyebrow">Current Release &nbsp;/&nbsp; Series 01</p>
-            <h2 class="release-title">Venezia</h2>
-            <p class="release-sub">Artwork 01 &nbsp;&mdash;&nbsp; Wearable Release</p>
-            <p class="release-body">Released as three limited wearable pieces. Tee, hoodie, and crewneck.</p>
-            <a href="collection.html" class="release-cta">Shop Series 01</a>
-        </div>
-        <div class="release-image">
-            <img src="hanging-venezia.png" alt="Venezia — Series 01">
+    <!-- CURRENT RELEASE — cinematic video -->
+    <section class="release-section" id="releaseSection">
+        <div class="release-sticky">
+            <div class="release-video-wrap" id="releaseVideoWrap">
+                <video class="release-video" autoplay muted loop playsinline preload="none" poster="venezia-breeze-poster.jpg" aria-hidden="true">
+                    <source src="venezia breeze video.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="release-scrim"></div>
+            <div class="release-copy" id="releaseCopy">
+                <p class="release-eyebrow reveal">Current Release &nbsp;/&nbsp; Series 01</p>
+                <h2 class="release-title reveal">Venezia</h2>
+                <p class="release-sub reveal">Artwork 01 &nbsp;&mdash;&nbsp; Wearable Release</p>
+                <p class="release-body reveal">Released as three limited wearable pieces. Tee, hoodie, and crewneck.</p>
+                <a href="collection.html" class="release-cta reveal">Shop Series 01</a>
+            </div>
         </div>
     </section>
 
@@ -1266,6 +1327,74 @@
             // the first crossfade begins.
             requestAnimationFrame(function() { gallery.classList.add('is-revealed'); });
             setTimeout(restart, reduceMotion ? 0 : 500);
+        })();
+
+        // Current Release — cinematic video section.
+        // The ONLY thing tied to continuous scroll position is the video's
+        // opacity/scale (its entrance) and the copy's exit fade — never
+        // playback itself. Desktop only; mobile shows the video at full
+        // presence immediately (no sticky pin, no scroll-linked motion —
+        // see the CSS mobile override). The video itself doesn't start
+        // loading/playing until the section is actually getting close to
+        // view, so it costs nothing for visitors who never scroll there.
+        (function() {
+            var section = document.getElementById('releaseSection');
+            var wrap = document.getElementById('releaseVideoWrap');
+            if (!section || !wrap) return;
+            var video = wrap.querySelector('video');
+
+            var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            var isDesktop = window.matchMedia && window.matchMedia('(min-width: 1025px)').matches;
+
+            function clamp01(n) { return Math.max(0, Math.min(1, n)); }
+
+            if (isDesktop && !reduceMotion) {
+                var ticking = false;
+
+                function update() {
+                    ticking = false;
+                    var rect = section.getBoundingClientRect();
+                    var vh = window.innerHeight;
+                    // Brighten/scale in continuously as the section scrolls up
+                    // into view — starts as soon as it's approaching (not only
+                    // once pinned) and finishes right around when it locks in,
+                    // so it reads as gradual rather than snapping all at once.
+                    // The copy itself is never faded back out here — once its
+                    // one-shot entrance (.reveal, below) has played it just
+                    // stays put.
+                    var enter = clamp01((vh - rect.top) / vh);
+                    wrap.style.opacity = String(0.55 + enter * 0.45);
+                    wrap.style.transform = 'scale(' + (1.06 - enter * 0.06) + ')';
+                }
+
+                function onScroll() {
+                    if (!ticking) { ticking = true; requestAnimationFrame(update); }
+                }
+
+                window.addEventListener('scroll', onScroll, { passive: true });
+                window.addEventListener('resize', onScroll);
+                update();
+            }
+
+            // Lazy start — only fetch/play once the section is within
+            // reach, on any breakpoint.
+            if (video) {
+                if ('IntersectionObserver' in window) {
+                    var lazyIo = new IntersectionObserver(function(entries) {
+                        entries.forEach(function(entry) {
+                            if (entry.isIntersecting) {
+                                video.setAttribute('preload', 'auto');
+                                video.play().catch(function() {});
+                                lazyIo.disconnect();
+                            }
+                        });
+                    }, { rootMargin: '400px 0px 400px 0px' });
+                    lazyIo.observe(section);
+                } else {
+                    video.setAttribute('preload', 'auto');
+                    video.play().catch(function() {});
+                }
+            }
         })();
 
         // Scroll reveals — subtle, below the hero only
