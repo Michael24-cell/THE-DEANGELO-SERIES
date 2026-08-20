@@ -875,7 +875,10 @@
 
     var PRODS = {
       tee:    { title:'Venezia', artwork:'Artwork 01', plate:'01', garment:'Tee',      price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'Venezia-tee-m.png',    flat:'Venezia-tee.png',    sizes:['S','M','L','XL','2XL'] },
-      hoodie: { title:'Venezia', artwork:'Artwork 01', plate:'02', garment:'Hoodie',   price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png', sizes:['S','M','L','XL','2XL'] },
+      // unavailable: its Printify product was deleted (404) 2026-08-20 —
+      // see functions/_lib/catalog.js. Piece stays documented/viewable,
+      // just not purchasable, until it's relinked on Printify's side.
+      hoodie: { title:'Venezia', artwork:'Artwork 01', plate:'02', garment:'Hoodie',   price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png', sizes:['S','M','L','XL','2XL'], unavailable:true },
       crew:   { title:'Venezia', artwork:'Artwork 01', plate:'03', garment:'Crewneck', price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'Venezia-crew-m.png',   flat:'Venezia-crew.png',   sizes:['S','M','L','XL','2XL','3XL'] },
       'arhus-old-town-tee': { title:'Arhus, The Old Town', artwork:'Artwork 02', plate:'04', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'arhus the old town tee model.png', flat:'arhus the old town tee.png', sizes:['S','M','L','XL','2XL'] },
       'wind-sea-tee': { title:'Wind & Sea', artwork:'Artwork 03', plate:'05', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'wind & sea tee model.png', flat:'wind & sea tee.png', sizes:['S','M','L','XL','2XL'] },
@@ -885,10 +888,24 @@
           { name:'Black', model:'waves of life black tee model.png', flat:'waves of life black tee.png' }
         ] },
       'villa-d-este-tee': { title:'Villa d\'Este', artwork:'Artwork 05', plate:'07', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'villa-d-este model.png', flat:'villa-d-este tee.png', sizes:['S','M','L','XL','2XL'] },
-      'the-wedge-tee': { title:'The Wedge', artwork:'Artwork 06', plate:'08', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'the wedge tee model.png', flat:'the wedge tee.png', sizes:['S','M','L','XL','2XL'] },
+      // Cream/Oatmeal reuse the White photos — no separate photography
+      // exists for them yet (owner-confirmed 2026-08-20: ship the color
+      // options now rather than wait). Swap in real photos per color
+      // once shot.
+      'the-wedge-tee': { title:'The Wedge', artwork:'Artwork 06', plate:'08', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'the wedge tee model.png', flat:'the wedge tee.png', sizes:['S','M','L','XL','2XL'],
+        colors: [
+          { name:'White', model:'the wedge tee model.png', flat:'the wedge tee.png' },
+          { name:'Cream', model:'the wedge tee model.png', flat:'the wedge tee.png' },
+          { name:'Oatmeal', model:'the wedge tee model.png', flat:'the wedge tee.png' }
+        ] },
       'leaning-tower-of-pisa-tee': { title:'Leaning Tower of Pisa', artwork:'Artwork 07', plate:'09', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'leaningtowerofpisa tee model.png', flat:'leaningtowerofpisa tee.png', sizes:['S','M','L','XL','2XL'] },
       'piazza-san-marco-tee': { title:'Piazza San Marco', artwork:'Artwork 08', plate:'10', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'piazza san marco tee model.png', flat:'piaza san marco tee.png', sizes:['S','M','L','XL','2XL'] },
-      'palatine-hill-tee': { title:'Palatine Hill', artwork:'Artwork 09', plate:'11', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'palatine hill tee model.png', flat:'palatine hill tee.png', sizes:['S','M','L','XL','2XL'] }
+      'palatine-hill-tee': { title:'Palatine Hill', artwork:'Artwork 09', plate:'11', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'palatine hill tee model.png', flat:'palatine hill tee.png', sizes:['S','M','L','XL','2XL'],
+        colors: [
+          { name:'White', model:'palatine hill tee model.png', flat:'palatine hill tee.png' },
+          { name:'Cream', model:'palatine hill tee model.png', flat:'palatine hill tee.png' },
+          { name:'Oatmeal', model:'palatine hill tee model.png', flat:'palatine hill tee.png' }
+        ] }
     };
     var p = PRODS[key] || PRODS.tee;
 
@@ -1105,7 +1122,17 @@
     document.getElementById('eyebrowPlate').textContent = p.artwork + ' · Piece ' + p.plate;
 
     var cta = document.getElementById('ctaBtn');
-    cta.textContent = 'Add to Collection — ' + p.price;
+    if (p.unavailable) {
+      cta.textContent = 'Currently Unavailable';
+      cta.disabled = true;
+      cta.setAttribute('aria-disabled', 'true');
+      cta.removeAttribute('data-add-to-cart');
+    } else {
+      cta.textContent = 'Add to Collection — ' + p.price;
+      cta.disabled = false;
+      cta.removeAttribute('aria-disabled');
+      cta.setAttribute('data-add-to-cart', '');
+    }
     cta.setAttribute('data-price', p.priceNum);
     cta.setAttribute('data-name', p.title + ' ' + p.garment);
     cta.setAttribute('data-img', p.model);
@@ -1214,7 +1241,7 @@
     var alsoGrid = document.getElementById('alsoGrid');
     if (alsoGrid) {
       var also = Object.keys(PRODS)
-        .filter(function(k) { return k !== key; })
+        .filter(function(k) { return k !== key && !PRODS[k].unavailable; })
         .map(function(k) { var e = PRODS[k]; return {
           title: e.title, plate: e.plate, garment: e.garment, price: e.price,
           slug: k, model: e.model, flat: e.flat
@@ -1354,7 +1381,6 @@
 (function() {
   var PLATES = [
     { title:'Venezia', garment:'Tee', price:'$64', slug:'tee', model:'Venezia-tee-m.png' },
-    { title:'Venezia', garment:'Hoodie', price:'$84', slug:'hoodie', model:'Venezia-Hoodie-m.png' },
     { title:'Venezia', garment:'Crewneck', price:'$84', slug:'crew', model:'Venezia-crew-m.png' },
     { title:'Arhus, The Old Town', garment:'Tee', price:'$64', slug:'arhus-old-town-tee', model:'arhus the old town tee model.png' },
     { title:'Wind & Sea', garment:'Tee', price:'$64', slug:'wind-sea-tee', model:'wind & sea tee model.png' },

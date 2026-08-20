@@ -75,7 +75,7 @@ console.log('\n--- Regression: existing products unchanged by this addition ---'
 {
   ok('Venezia Tee (tee) remains unmapped (printify: null)', CATALOG.tee.printify === null);
   ok('Arhus Old Town Tee still maps to its known Printify product ID', CATALOG['arhus-old-town-tee'].printify.productId === '6a3cab048606da46840fa2e7');
-  ok('Hoodie still maps to its known Printify product ID', CATALOG.hoodie.printify.productId === '6a220095de5d2b9583031b16');
+  ok('Hoodie is unmapped (its Printify product was deleted — printify: null)', CATALOG.hoodie.printify === null);
   ok('Crew still maps to its known Printify product ID', CATALOG.crew.printify.productId === '6a3372e03f9ce13ae30dad09');
   ok('Venezia Tee base price unchanged ($64.00)', CATALOG.tee.basePrice === 6400);
   ok('Hoodie base price unchanged ($84.00)', CATALOG.hoodie.basePrice === 8400);

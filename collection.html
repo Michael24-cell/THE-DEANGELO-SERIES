@@ -213,6 +213,18 @@
   }
   .plate.is-archived .plate-price{text-decoration:line-through;opacity:.4}
 
+  /* Temporarily unavailable — distinct from ARCHIVED (a closed series):
+     the piece is still current, just not orderable right now. */
+  .plate.is-unavailable .plate-image-wrap::after{
+    content:"UNAVAILABLE";
+    position:absolute;top:16px;left:16px;
+    font-family:var(--font-sans);font-size:10px;font-weight:500;
+    letter-spacing:.3em;color:rgba(10,10,10,.5);
+    padding:6px 10px;background:rgba(245,245,241,.85);
+  }
+  .plate.is-unavailable .plate-price{text-decoration:line-through;opacity:.4}
+  .plate.is-unavailable .plate-image-wrap{opacity:.7}
+
   /* ── FOOTER (homepage parity) ──────────────────────────────── */
   footer{
     background:var(--black);color:var(--white);
@@ -496,7 +508,7 @@
     { n:"01", title:"Venezia", garment:"Tee", price:"$64", slug:"tee", type:"tee",
       model:"Venezia-tee-m.png", flat:"Venezia-tee.png",
       desc:"Oversized cotton tee. Sourced from Venezia — watercolour, 1979. Gallery-grade water-based screen print." },
-    { n:"02", title:"Venezia", garment:"Hoodie", price:"$84", slug:"hoodie", type:"sweatshirt",
+    { n:"02", title:"Venezia", garment:"Hoodie", price:"$84", slug:"hoodie", type:"sweatshirt", unavailable:true,
       model:"Venezia-Hoodie-m.png", flat:"Venezia-hoodie.png",
       desc:"Heavyweight fleece, relaxed oversized silhouette. Same source artwork, different silhouette." },
     { n:"03", title:"Venezia", garment:"Crewneck", price:"$84", slug:"crew", type:"sweatshirt",
@@ -568,7 +580,7 @@
         <div class="plate-image plate-image--model">${imgModel}</div>
         <div class="plate-image plate-image--flat">${imgFlat}</div>
       </div>`;
-    return `<article class="plate${p.soon ? ' is-soon' : ''}" data-type="${p.type || ''}" data-series="${p.soon ? '02' : '01'}" data-searchable="${(p.title + ' ' + (p.garment || '')).toLowerCase()}">
+    return `<article class="plate${p.soon ? ' is-soon' : ''}${p.unavailable ? ' is-unavailable' : ''}" data-type="${p.type || ''}" data-series="${p.soon ? '02' : '01'}" data-searchable="${(p.title + ' ' + (p.garment || '')).toLowerCase()}">
       ${p.soon
         ? imageWrap
         : `<a class="plate-link" href="product.html?p=${p.slug}" aria-label="View ${title}">${imageWrap}</a>`}
@@ -580,6 +592,7 @@
         </div>
         ${p.soon ? '' : `<p class="plate-price">${p.price}</p>`}
         ${p.soon ? '<p class="plate-soon">Series 02 Candidate — Not for Sale</p>' : ''}
+        ${p.unavailable ? '<p class="plate-soon">Currently Unavailable</p>' : ''}
         <p class="plate-desc">${p.desc}</p>
       </div>
     </article>`;
@@ -601,11 +614,13 @@
     PREVIEWS.map(previewPlateHTML).join('');
 
   // Filter counts — computed from PLATES so they never go stale as
-  // pieces are added, removed, or archived.
+  // pieces are added, removed, or archived. Unavailable pieces stay
+  // visible in the grid but don't count toward "available now" totals.
+  const s1Available = s1.filter(p => !p.unavailable);
   const filterCounts = {
-    all: s1.length,
-    tee: s1.filter(p => p.type === 'tee').length,
-    sweatshirt: s1.filter(p => p.type === 'sweatshirt').length,
+    all: s1Available.length,
+    tee: s1Available.filter(p => p.type === 'tee').length,
+    sweatshirt: s1Available.filter(p => p.type === 'sweatshirt').length,
     archive: s1.filter(p => p.archived).length
   };
   Object.keys(filterCounts).forEach(key => {

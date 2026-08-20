@@ -193,29 +193,61 @@ export const CATALOG = {
   'the-wedge-tee': {
     name: 'The Wedge — Tee',
     image: 'https://thedeangeloseries.com/the%20wedge%20tee%20model.png',
+    // Only White has been photographed — Cream/Oatmeal reuse the White
+    // shots until real photography exists for them (owner-confirmed
+    // 2026-08-20: ship the color options now rather than wait).
     currency: 'usd',
     sizes: ['S', 'M', 'L', 'XL', '2XL'],
-    colors: ['White'],
+    colors: ['White', 'Cream', 'Oatmeal'],
     basePrice: 6400,      // $64.00, in cents — same price point as the other tees.
     upchargePrice: 6800,  // $68.00, in cents
     upchargeSizes: ['2XL'],
     stripeTaxCode: 'txcd_30011000',
     // Printify mapping confirmed live via GET /v1/shops/26931439/products/6a84edc80a842ed2ac036bb4.json
     // on 2026-08-20 — "The Wedge - Tee", blueprint 1723 / print provider 74 (same combo as the other
-    // standalone tees). Printify also has this product in Cream and Oatmeal, but the site only has
-    // White photography confirmed so far — only White is mapped/sellable until that changes.
+    // standalone tees), 15 enabled variants across White/Cream/Oatmeal.
     printify: {
-      productId: '6a84edc80a842ed2ac036bb4',
-      printProviderId: 74,
-      variantIdBySize: {
-        S: 118089, M: 118090, L: 118091, XL: 118107, '2XL': 118092,
+      White: {
+        productId: '6a84edc80a842ed2ac036bb4',
+        printProviderId: 74,
+        variantIdBySize: {
+          S: 118089, M: 118090, L: 118091, XL: 118107, '2XL': 118092,
+        },
+        skuBySize: {
+          S: '28862787019529189822',
+          M: '12505029720861974964',
+          L: '16788989969971939608',
+          XL: '12844102174900449847',
+          '2XL': '37336938863912718746',
+        },
       },
-      skuBySize: {
-        S: '28862787019529189822',
-        M: '12505029720861974964',
-        L: '16788989969971939608',
-        XL: '12844102174900449847',
-        '2XL': '37336938863912718746',
+      Cream: {
+        productId: '6a84edc80a842ed2ac036bb4',
+        printProviderId: 74,
+        variantIdBySize: {
+          S: 118073, M: 118074, L: 118075, XL: 118102, '2XL': 118076,
+        },
+        skuBySize: {
+          S: '15239488764793931958',
+          M: '14645138535348381854',
+          L: '23471051185727195177',
+          XL: '16761904448755901740',
+          '2XL': '48525324841094607766',
+        },
+      },
+      Oatmeal: {
+        productId: '6a84edc80a842ed2ac036bb4',
+        printProviderId: 74,
+        variantIdBySize: {
+          S: 118093, M: 118094, L: 118095, XL: 118104, '2XL': 118096,
+        },
+        skuBySize: {
+          S: '21212870796519566042',
+          M: '52833008129709611525',
+          L: '20774673857276961695',
+          XL: '33002605360509794675',
+          '2XL': '11231503631478486755',
+        },
       },
     },
   },
@@ -278,29 +310,61 @@ export const CATALOG = {
   'palatine-hill-tee': {
     name: 'Palatine Hill — Tee',
     image: 'https://thedeangeloseries.com/palatine%20hill%20tee%20model.png',
+    // Only White has been photographed — Cream/Oatmeal reuse the White
+    // shots until real photography exists for them (owner-confirmed
+    // 2026-08-20: ship the color options now rather than wait).
     currency: 'usd',
     sizes: ['S', 'M', 'L', 'XL', '2XL'],
-    colors: ['White'],
+    colors: ['White', 'Cream', 'Oatmeal'],
     basePrice: 6400,      // $64.00, in cents — same price point as the other tees.
     upchargePrice: 6800,  // $68.00, in cents
     upchargeSizes: ['2XL'],
     stripeTaxCode: 'txcd_30011000',
     // Printify mapping confirmed live via GET /v1/shops/26931439/products/6a84ebad37f7a6e6be0a3bea.json
     // on 2026-08-20 — "Palatine Hill - Tee", blueprint 1723 / print provider 74 (same combo as the
-    // other standalone tees). Printify also has this product in Cream and Oatmeal, but the site only
-    // has White photography confirmed so far — only White is mapped/sellable until that changes.
+    // other standalone tees), 15 enabled variants across White/Cream/Oatmeal.
     printify: {
-      productId: '6a84ebad37f7a6e6be0a3bea',
-      printProviderId: 74,
-      variantIdBySize: {
-        S: 118089, M: 118090, L: 118091, XL: 118107, '2XL': 118092,
+      White: {
+        productId: '6a84ebad37f7a6e6be0a3bea',
+        printProviderId: 74,
+        variantIdBySize: {
+          S: 118089, M: 118090, L: 118091, XL: 118107, '2XL': 118092,
+        },
+        skuBySize: {
+          S: '49166606672086455834',
+          M: '52243808950929545046',
+          L: '23560874620854043348',
+          XL: '14791496092507724798',
+          '2XL': '60022683906889134729',
+        },
       },
-      skuBySize: {
-        S: '49166606672086455834',
-        M: '52243808950929545046',
-        L: '23560874620854043348',
-        XL: '14791496092507724798',
-        '2XL': '60022683906889134729',
+      Cream: {
+        productId: '6a84ebad37f7a6e6be0a3bea',
+        printProviderId: 74,
+        variantIdBySize: {
+          S: 118073, M: 118074, L: 118075, XL: 118102, '2XL': 118076,
+        },
+        skuBySize: {
+          S: '29180879776838017304',
+          M: '11061512022182086736',
+          L: '24830213220491960379',
+          XL: '12240763506582701511',
+          '2XL': '10549320780882568811',
+        },
+      },
+      Oatmeal: {
+        productId: '6a84ebad37f7a6e6be0a3bea',
+        printProviderId: 74,
+        variantIdBySize: {
+          S: 118093, M: 118094, L: 118095, XL: 118104, '2XL': 118096,
+        },
+        skuBySize: {
+          S: '32337420082912964972',
+          M: '98865350102826132750',
+          L: '19817816389124008058',
+          XL: '12588524884107444918',
+          '2XL': '55855557068785116130',
+        },
       },
     },
   },
@@ -314,20 +378,17 @@ export const CATALOG = {
     upchargePrice: 8800,
     upchargeSizes: ['2XL'],
     stripeTaxCode: 'txcd_30011000',
-    printify: {
-      productId: '6a220095de5d2b9583031b16', // Three-Panel Fleece Hoodie
-      printProviderId: 99,
-      variantIdBySize: {
-        S: 68051, M: 68052, L: 68053, XL: 68054, '2XL': 68055,
-      },
-      skuBySize: {
-        S: '24650836604369219693',
-        M: '11466811190940805896',
-        L: '33043393534951849610',
-        XL: '19825577858137957313',
-        '2XL': '31314893818378716050',
-      },
-    },
+    // The Printify product this used to map to ("Three-Panel Fleece
+    // Hoodie", 6a220095de5d2b9583031b16) was deleted from Printify —
+    // confirmed 404 via GET /v1/shops/26931439/products/
+    // 6a220095de5d2b9583031b16.json on 2026-08-20. hasCompletePrintifyMapping
+    // now correctly refuses to quote/ship this product (matches `tee`'s
+    // existing unmapped state below) until it's relinked to a real
+    // Printify product and re-confirmed. Do not restore the old IDs
+    // below without re-verifying them live — they may no longer exist.
+    // Last known mapping, for reference only:
+    //   printProviderId: 99, variantIdBySize: { S:68051, M:68052, L:68053, XL:68054, '2XL':68055 }
+    printify: null,
   },
   crew: {
     name: 'Venezia — Crewneck',
