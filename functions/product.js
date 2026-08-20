@@ -19,17 +19,17 @@ import { CATALOG } from './_lib/catalog.js';
 // than in catalog.js, and intentionally mirrors the EDITION_DESC map in
 // product.html's own client-side JS (the ?p= product-switch script).
 const DESCRIPTIONS = {
-  tee: 'Series 01 — Venezia. Three wearable pieces from a single artwork. The artwork becomes the garment.',
-  hoodie: 'Series 01 — Venezia. Three wearable pieces from a single artwork. The artwork becomes the garment.',
-  crew: 'Series 01 — Venezia. Three wearable pieces from a single artwork. The artwork becomes the garment.',
-  'arhus-old-town-tee': 'Series 01 — Arhus, The Old Town. A standalone artwork, distinct from the Venezia pieces. The artwork becomes the garment.',
-  'wind-sea-tee': 'Series 01 — Wind & Sea. A standalone artwork, distinct from the Venezia pieces. The artwork becomes the garment.',
-  'waves-of-life-tee': 'Series 01 — Waves of Life. A standalone artwork, distinct from the Venezia pieces. The artwork becomes the garment.',
-  'villa-d-este-tee': 'Series 01 — Villa d\'Este. A standalone artwork, distinct from the Venezia pieces. The artwork becomes the garment.',
-  'the-wedge-tee': 'Series 01 — The Wedge. A standalone artwork, distinct from the Venezia pieces. The artwork becomes the garment.',
-  'leaning-tower-of-pisa-tee': 'Series 01 — Leaning Tower of Pisa. A standalone artwork, distinct from the Venezia pieces. The artwork becomes the garment.',
-  'piazza-san-marco-tee': 'Series 01 — Piazza San Marco. A standalone artwork, distinct from the Venezia pieces. The artwork becomes the garment.',
-  'palatine-hill-tee': 'Series 01 — Palatine Hill. A standalone artwork, distinct from the Venezia pieces. The artwork becomes the garment.',
+  tee: 'Series 01 — Venezia Tee. An original watercolor translated onto a heavyweight cotton t-shirt.',
+  hoodie: 'Series 01 — Venezia Hoodie. An original watercolor translated onto a heavyweight fleece hoodie.',
+  crew: 'Series 01 — Venezia Crewneck. An original watercolor translated onto a heavyweight fleece crewneck.',
+  'arhus-old-town-tee': 'Series 01 — Arhus, The Old Town Tee. A standalone artwork printed on a heavyweight cotton shirt, distinct from the Venezia pieces.',
+  'wind-sea-tee': 'Series 01 — Wind & Sea Tee. A standalone artwork printed on a heavyweight cotton shirt, distinct from the Venezia pieces.',
+  'waves-of-life-tee': 'Series 01 — Waves of Life Tee. A standalone artwork printed on a heavyweight cotton shirt, distinct from the Venezia pieces.',
+  'villa-d-este-tee': 'Series 01 — Villa d\'Este Tee. A standalone artwork printed on a heavyweight cotton shirt, distinct from the Venezia pieces.',
+  'the-wedge-tee': 'Series 01 — The Wedge Tee. A standalone artwork printed on a heavyweight cotton shirt, distinct from the Venezia pieces.',
+  'leaning-tower-of-pisa-tee': 'Series 01 — Leaning Tower of Pisa Tee. A standalone artwork printed on a heavyweight cotton shirt, distinct from the Venezia pieces.',
+  'piazza-san-marco-tee': 'Series 01 — Piazza San Marco Tee. A standalone artwork printed on a heavyweight cotton shirt, distinct from the Venezia pieces.',
+  'palatine-hill-tee': 'Series 01 — Palatine Hill Tee. A standalone artwork printed on a heavyweight cotton shirt, distinct from the Venezia pieces.',
 };
 
 class SetAttribute {
@@ -49,6 +49,43 @@ class SetText {
   element(element) {
     element.setInnerContent(this.value);
   }
+}
+
+class AppendHtml {
+  constructor(html) {
+    this.html = html;
+  }
+  element(element) {
+    element.append(this.html, { html: true });
+  }
+}
+
+// Product schema — gives Google an explicit, structured signal that this
+// is a shirt/apparel product sold by "The DeAngelo Series", independent
+// of body copy. availability reflects hasCompletePrintifyMapping's own
+// logic (functions/_lib/catalog.js): no confirmed Printify mapping means
+// it can't actually be fulfilled right now.
+function productSchema(product, description, canonicalUrl) {
+  const lowPrice = product.basePrice / 100;
+  const highPrice = (product.upchargePrice || product.basePrice) / 100;
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name.replace(' — ', ' '),
+    image: product.image,
+    description,
+    brand: { '@type': 'Brand', name: 'The DeAngelo Series' },
+    url: canonicalUrl,
+    offers: {
+      '@type': 'AggregateOffer',
+      priceCurrency: (product.currency || 'usd').toUpperCase(),
+      lowPrice,
+      highPrice,
+      offerCount: product.sizes.length,
+      availability: product.printify ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+    },
+  };
+  return `<script type="application/ld+json">${JSON.stringify(schema)}</script>`;
 }
 
 export async function onRequestGet(context) {
@@ -81,5 +118,6 @@ export async function onRequestGet(context) {
     .on('meta[name="twitter:title"]', new SetAttribute('content', title))
     .on('meta[name="twitter:description"]', new SetAttribute('content', description))
     .on('meta[name="twitter:image"]', new SetAttribute('content', product.image))
+    .on('head', new AppendHtml(productSchema(product, description, canonicalUrl)))
     .transform(response);
 }
