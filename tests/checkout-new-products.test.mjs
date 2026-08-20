@@ -8,7 +8,7 @@
 // Run: node tests/checkout-new-products.test.mjs (or `npm test`)
 
 import { onRequest } from '../functions/api/create-checkout-session.js';
-import { CATALOG } from '../functions/_lib/catalog.js';
+import { CATALOG, printifyMappingForColor } from '../functions/_lib/catalog.js';
 
 let pass = 0, fail = 0;
 function ok(label, cond, extra) {
@@ -42,6 +42,7 @@ function makeRequest(body) {
 const NEW_PRODUCTS = [
   { slug: 'wind-sea-tee', size: 'M', color: 'Black' },
   { slug: 'waves-of-life-tee', size: 'M', color: 'White' },
+  { slug: 'waves-of-life-tee', size: 'M', color: 'Black' },
 ];
 
 async function run() {
@@ -80,7 +81,8 @@ async function run() {
     ok('Printify shipping quote was reached (product is mapped)', printifyShippingCalled === true);
 
     const entry = CATALOG[slug];
-    const expectedVariantId = entry.printify.variantIdBySize[size];
+    const printifyMap = printifyMappingForColor(entry, color);
+    const expectedVariantId = printifyMap.variantIdBySize[size];
     ok(
       'Printify shipping request used the CATALOG-trusted variant ID (not something browser-supplied)',
       printifyRequestBody?.line_items?.some((li) => li.variant_id === expectedVariantId),
@@ -88,7 +90,7 @@ async function run() {
     );
     ok(
       'Printify shipping request used the correct product ID',
-      printifyRequestBody?.line_items?.some((li) => li.product_id === entry.printify.productId),
+      printifyRequestBody?.line_items?.some((li) => li.product_id === printifyMap.productId),
       printifyRequestBody
     );
 

@@ -107,28 +107,58 @@ export const CATALOG = {
   'waves-of-life-tee': {
     name: 'Waves of Life — Tee',
     image: 'https://thedeangeloseries.com/waves%20of%20life%20tee%20model.png',
+    // Multi-color product — imagesByColor overrides `image` above once a
+    // color is known (see resolveProductImage / validateCartItems below).
+    imagesByColor: {
+      White: 'https://thedeangeloseries.com/waves%20of%20life%20tee%20model.png',
+      Black: 'https://thedeangeloseries.com/waves%20of%20life%20black%20tee%20model.png',
+    },
     currency: 'usd',
     sizes: ['S', 'M', 'L', 'XL', '2XL'],
-    colors: ['White'],
+    // White confirmed live 2026-08-14; Black added to the same Printify
+    // product and confirmed live 2026-08-20 (GET /v1/shops/26931439/
+    // products/6a7f88d72355b5d08f0a9e38.json — blueprint 1723 / print
+    // provider 74, same combo as Arhus/Wind & Sea, 5 enabled variants per
+    // color). Retail price is the same across colors even though Printify's
+    // own per-color cost differs (White $45.25/$48.87 vs Black $38.99) —
+    // that's their cost, not our price.
+    colors: ['White', 'Black'],
     basePrice: 6400,      // $64.00, in cents — same price point as the other tees.
     upchargePrice: 6800,  // $68.00, in cents
     upchargeSizes: ['2XL'],
     stripeTaxCode: 'txcd_30011000',
-    // Printify mapping confirmed live via GET /v1/shops/26931439/products/6a7f88d72355b5d08f0a9e38.json
-    // on 2026-08-14 — "Waves of Life - Tee", blueprint 1723 / print provider 74 (same combo as Arhus/
-    // Wind & Sea), 5 enabled variants, all color White.
+    // Multi-color products nest their Printify mapping by color instead of
+    // the flat {productId, printProviderId, variantIdBySize, skuBySize}
+    // shape single-color products use — see printifyMappingForColor below,
+    // which is the only place that should ever read this field directly.
     printify: {
-      productId: '6a7f88d72355b5d08f0a9e38',
-      printProviderId: 74,
-      variantIdBySize: {
-        S: 118089, M: 118090, L: 118091, XL: 118107, '2XL': 118092,
+      White: {
+        productId: '6a7f88d72355b5d08f0a9e38',
+        printProviderId: 74,
+        variantIdBySize: {
+          S: 118089, M: 118090, L: 118091, XL: 118107, '2XL': 118092,
+        },
+        skuBySize: {
+          S: '23603245496908456030',
+          M: '41975995912485104856',
+          L: '15084851229969697539',
+          XL: '16455006015073468463',
+          '2XL': '33276854566387499697',
+        },
       },
-      skuBySize: {
-        S: '23603245496908456030',
-        M: '41975995912485104856',
-        L: '15084851229969697539',
-        XL: '16455006015073468463',
-        '2XL': '33276854566387499697',
+      Black: {
+        productId: '6a7f88d72355b5d08f0a9e38',
+        printProviderId: 74,
+        variantIdBySize: {
+          S: 118085, M: 118086, L: 118087, XL: 118101, '2XL': 118088,
+        },
+        skuBySize: {
+          S: '19821456836916548590',
+          M: '23315823194948060038',
+          L: '28866163467856211923',
+          XL: '52974902146094064874',
+          '2XL': '33711648017503044966',
+        },
       },
     },
   },
@@ -157,6 +187,120 @@ export const CATALOG = {
         L: '46005705100070495334',
         XL: '28508995031255357778',
         '2XL': '30608025617507758941',
+      },
+    },
+  },
+  'the-wedge-tee': {
+    name: 'The Wedge — Tee',
+    image: 'https://thedeangeloseries.com/the%20wedge%20tee%20model.png',
+    currency: 'usd',
+    sizes: ['S', 'M', 'L', 'XL', '2XL'],
+    colors: ['White'],
+    basePrice: 6400,      // $64.00, in cents — same price point as the other tees.
+    upchargePrice: 6800,  // $68.00, in cents
+    upchargeSizes: ['2XL'],
+    stripeTaxCode: 'txcd_30011000',
+    // Printify mapping confirmed live via GET /v1/shops/26931439/products/6a84edc80a842ed2ac036bb4.json
+    // on 2026-08-20 — "The Wedge - Tee", blueprint 1723 / print provider 74 (same combo as the other
+    // standalone tees). Printify also has this product in Cream and Oatmeal, but the site only has
+    // White photography confirmed so far — only White is mapped/sellable until that changes.
+    printify: {
+      productId: '6a84edc80a842ed2ac036bb4',
+      printProviderId: 74,
+      variantIdBySize: {
+        S: 118089, M: 118090, L: 118091, XL: 118107, '2XL': 118092,
+      },
+      skuBySize: {
+        S: '28862787019529189822',
+        M: '12505029720861974964',
+        L: '16788989969971939608',
+        XL: '12844102174900449847',
+        '2XL': '37336938863912718746',
+      },
+    },
+  },
+  'leaning-tower-of-pisa-tee': {
+    name: 'Leaning Tower of Pisa — Tee',
+    image: 'https://thedeangeloseries.com/leaningtowerofpisa%20tee%20model.png',
+    currency: 'usd',
+    sizes: ['S', 'M', 'L', 'XL', '2XL'],
+    colors: ['White'],
+    basePrice: 6400,      // $64.00, in cents — same price point as the other tees.
+    upchargePrice: 6800,  // $68.00, in cents
+    upchargeSizes: ['2XL'],
+    stripeTaxCode: 'txcd_30011000',
+    // Printify mapping confirmed live via GET /v1/shops/26931439/products/6a84f0832ec1f62af907f477.json
+    // on 2026-08-20 — "Leaning Tower of Pisa - Tee", blueprint 1723 / print provider 74 (same combo as
+    // the other standalone tees), 5 enabled variants, all color White.
+    printify: {
+      productId: '6a84f0832ec1f62af907f477',
+      printProviderId: 74,
+      variantIdBySize: {
+        S: 118089, M: 118090, L: 118091, XL: 118107, '2XL': 118092,
+      },
+      skuBySize: {
+        S: '96938111770832728623',
+        M: '16445589811388208089',
+        L: '33381954687747664874',
+        XL: '67728606598756711522',
+        '2XL': '14920260224841091260',
+      },
+    },
+  },
+  'piazza-san-marco-tee': {
+    name: 'Piazza San Marco — Tee',
+    image: 'https://thedeangeloseries.com/piazza%20san%20marco%20tee%20model.png',
+    currency: 'usd',
+    sizes: ['S', 'M', 'L', 'XL', '2XL'],
+    colors: ['White'],
+    basePrice: 6400,      // $64.00, in cents — same price point as the other tees.
+    upchargePrice: 6800,  // $68.00, in cents
+    upchargeSizes: ['2XL'],
+    stripeTaxCode: 'txcd_30011000',
+    // Printify mapping confirmed live via GET /v1/shops/26931439/products/6a84eed38d4f77c3ad0ef7ba.json
+    // on 2026-08-20 — "Piazza San Marco - Tee", blueprint 1723 / print provider 74 (same combo as the
+    // other standalone tees), 5 enabled variants, all color White.
+    printify: {
+      productId: '6a84eed38d4f77c3ad0ef7ba',
+      printProviderId: 74,
+      variantIdBySize: {
+        S: 118089, M: 118090, L: 118091, XL: 118107, '2XL': 118092,
+      },
+      skuBySize: {
+        S: '68992081454908110121',
+        M: '20508543726030943148',
+        L: '17842860172418347845',
+        XL: '21502439819348045236',
+        '2XL': '81966954140395495218',
+      },
+    },
+  },
+  'palatine-hill-tee': {
+    name: 'Palatine Hill — Tee',
+    image: 'https://thedeangeloseries.com/palatine%20hill%20tee%20model.png',
+    currency: 'usd',
+    sizes: ['S', 'M', 'L', 'XL', '2XL'],
+    colors: ['White'],
+    basePrice: 6400,      // $64.00, in cents — same price point as the other tees.
+    upchargePrice: 6800,  // $68.00, in cents
+    upchargeSizes: ['2XL'],
+    stripeTaxCode: 'txcd_30011000',
+    // Printify mapping confirmed live via GET /v1/shops/26931439/products/6a84ebad37f7a6e6be0a3bea.json
+    // on 2026-08-20 — "Palatine Hill - Tee", blueprint 1723 / print provider 74 (same combo as the
+    // other standalone tees). Printify also has this product in Cream and Oatmeal, but the site only
+    // has White photography confirmed so far — only White is mapped/sellable until that changes.
+    printify: {
+      productId: '6a84ebad37f7a6e6be0a3bea',
+      printProviderId: 74,
+      variantIdBySize: {
+        S: 118089, M: 118090, L: 118091, XL: 118107, '2XL': 118092,
+      },
+      skuBySize: {
+        S: '49166606672086455834',
+        M: '52243808950929545046',
+        L: '23560874620854043348',
+        XL: '14791496092507724798',
+        '2XL': '60022683906889134729',
       },
     },
   },
@@ -219,6 +363,28 @@ export const MAX_QUANTITY = 10;
 export class CatalogValidationError extends Error {}
 
 /**
+ * Returns the {productId, printProviderId, variantIdBySize, skuBySize}
+ * Printify mapping for a given catalog entry + color. Single-color products
+ * keep the flat shape (entry.printify itself); multi-color products nest
+ * that same shape per color (entry.printify[color]) — this is the one place
+ * that distinction should be handled, so callers never need to know which
+ * shape a given product uses.
+ */
+export function printifyMappingForColor(entry, color) {
+  if (!entry?.printify) return undefined;
+  return entry.colors.length > 1 ? entry.printify[color] : entry.printify;
+}
+
+/**
+ * Returns the product image to show for a given catalog entry + color —
+ * imagesByColor[color] for multi-color products, falling back to the
+ * product's single `image` for everything else.
+ */
+export function resolveProductImage(entry, color) {
+  return entry?.imagesByColor?.[color] ?? entry?.image;
+}
+
+/**
  * Validates a raw browser-submitted cart against CATALOG and returns a
  * trusted, server-priced line-item array. Throws CatalogValidationError on
  * any mismatch — never falls back to a browser-supplied value for anything
@@ -258,6 +424,7 @@ export function validateCartItems(items) {
     }
 
     const unitAmount = entry.upchargeSizes.includes(size) ? entry.upchargePrice : entry.basePrice;
+    const printifyMap = printifyMappingForColor(entry, color);
 
     return {
       slug,
@@ -268,12 +435,12 @@ export function validateCartItems(items) {
       currency: entry.currency,
       taxCode: entry.stripeTaxCode,
       name: `${entry.name} (${size})`,
-      image: entry.image,
+      image: resolveProductImage(entry, color),
       printify: {
-        productId: entry.printify?.productId ?? null,
-        printProviderId: entry.printify?.printProviderId ?? null,
-        variantId: entry.printify?.variantIdBySize?.[size] ?? null,
-        sku: entry.printify?.skuBySize?.[size] ?? null,
+        productId: printifyMap?.productId ?? null,
+        printProviderId: printifyMap?.printProviderId ?? null,
+        variantId: printifyMap?.variantIdBySize?.[size] ?? null,
+        sku: printifyMap?.skuBySize?.[size] ?? null,
       },
     };
   });

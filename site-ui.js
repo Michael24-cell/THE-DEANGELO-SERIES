@@ -306,7 +306,7 @@
   function cartSubtotal() {
     return cart.reduce(function (n, it) { return n + it.price * it.qty; }, 0);
   }
-  function keyOf(it) { return (it.slug || it.plate) + "|" + it.size; }
+  function keyOf(it) { return (it.slug || it.plate) + "|" + it.size + "|" + (it.color || ""); }
 
   function addToCart(item) {
     var hit = null;
@@ -315,7 +315,7 @@
     }
     if (hit) hit.qty += item.qty || 1;
     else cart.push({
-      slug: item.slug || "", plate: item.plate, name: item.name, size: item.size,
+      slug: item.slug || "", plate: item.plate, name: item.name, size: item.size, color: item.color || "",
       price: item.price, kind: item.kind || "model", img: item.img || "", qty: item.qty || 1
     });
     saveCart(cart);
@@ -510,7 +510,7 @@
         '<div class="du-citem-main">' +
           '<div class="du-citem-line"><span>' + it.plate + '</span><span class="sep">//</span><span>' + it.name + "</span></div>" +
           '<div class="du-citem-name">' + it.name + "</div>" +
-          '<div class="du-citem-size">Size ' + it.size + "</div>" +
+          '<div class="du-citem-size">Size ' + it.size + (it.color ? " &middot; " + it.color : "") + "</div>" +
           '<div class="du-qty">' +
             '<button data-dec="' + i + '" aria-label="Decrease quantity">\u2212</button>' +
             "<span>" + it.qty + "</span>" +
@@ -648,6 +648,11 @@
     var activeSize = document.querySelector(".size.is-active");
     size = trigger.getAttribute("data-size") || (activeSize ? activeSize.textContent.trim() : "M");
 
+    // Only set on products with more than one color (see product.html's
+    // ?p= product-switch script) — absent here means "the catalog's sole
+    // color," which the checkout backend already defaults to on its own.
+    var color = trigger.getAttribute("data-color") || "";
+
     if (!name) {
       var t = document.querySelector(".product-title");
       name = t ? t.textContent.replace(/\s+/g, " ").trim() : "Piece";
@@ -666,7 +671,7 @@
       if (activeFrame) img = activeFrame.getAttribute("src");
     }
     return {
-      name: name, plate: plate, size: size, slug: slug,
+      name: name, plate: plate, size: size, slug: slug, color: color,
       price: Math.round(parseFloat(price) || 0), kind: kind, img: img || "", qty: 1
     };
   }

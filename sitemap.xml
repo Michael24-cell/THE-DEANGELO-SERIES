@@ -31,6 +31,26 @@
     <changefreq>monthly</changefreq>
   </url>
   <url>
+    <loc>https://thedeangeloseries.com/product.html?p=the-wedge-tee</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://thedeangeloseries.com/product.html?p=leaning-tower-of-pisa-tee</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://thedeangeloseries.com/product.html?p=piazza-san-marco-tee</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://thedeangeloseries.com/product.html?p=palatine-hill-tee</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
     <loc>https://thedeangeloseries.com/art.html</loc>
     <priority>0.7</priority>
     <changefreq>monthly</changefreq>

@@ -52,7 +52,7 @@
 // Printify/email outcome — those failures must not cause Stripe to retry an
 // event that's already been correctly recorded.
 
-import { CATALOG } from '../_lib/catalog.js';
+import { CATALOG, printifyMappingForColor } from '../_lib/catalog.js';
 import { createPrintifyOrder, PrintifyConfigError, PrintifyApiError } from '../_lib/printify.js';
 import { fetchExpandedCheckoutSession, fetchStripeFeeAndNet } from '../_lib/stripe.js';
 import { orderConfirmedTemplate, printifyFailureAlertTemplate } from '../_lib/email-templates.js';
@@ -144,6 +144,7 @@ export async function onRequest({ request, env }) {
     const lineItems = (fullSession.line_items?.data || []).map((li) => {
       const meta = li.price?.product?.metadata || {};
       const entry = CATALOG[meta.slug];
+      const printifyMap = printifyMappingForColor(entry, meta.color);
       return {
         id: crypto.randomUUID(),
         productSlug: meta.slug || 'unknown',
@@ -152,9 +153,9 @@ export async function onRequest({ request, env }) {
         color: meta.color || null,
         quantity: li.quantity,
         unitPrice: li.price?.unit_amount ?? 0,
-        printifyProductId: entry?.printify?.productId ?? null,
-        printifyVariantId: entry?.printify?.variantIdBySize?.[meta.size] ?? null,
-        sku: entry?.printify?.skuBySize?.[meta.size] ?? null,
+        printifyProductId: printifyMap?.productId ?? null,
+        printifyVariantId: printifyMap?.variantIdBySize?.[meta.size] ?? null,
+        sku: printifyMap?.skuBySize?.[meta.size] ?? null,
       };
     });
 

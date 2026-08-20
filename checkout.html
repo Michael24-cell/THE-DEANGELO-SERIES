@@ -886,7 +886,7 @@
       shipMethodsEl.innerHTML = '<p style="font-size:.85rem;font-weight:300;color:var(--ink-dim)">Getting shipping rates…</p>';
 
       var items = loadCart().map(function (it) {
-        return { slug: it.slug, size: it.size, quantity: it.qty || 1 };
+        return { slug: it.slug, size: it.size, color: it.color || undefined, quantity: it.qty || 1 };
       });
 
       fetch('/api/printify-shipping-quote', {
@@ -938,7 +938,7 @@
       }
 
       var items = freshCart.map(function (it) {
-        return { slug: it.slug, size: it.size, quantity: it.qty || 1 };
+        return { slug: it.slug, size: it.size, color: it.color || undefined, quantity: it.qty || 1 };
       });
       var email = (document.getElementById('checkoutEmail').value || '').trim();
 

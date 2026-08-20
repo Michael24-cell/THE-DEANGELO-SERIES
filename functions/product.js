@@ -26,6 +26,10 @@ const DESCRIPTIONS = {
   'wind-sea-tee': 'Series 01 — Wind & Sea. A standalone artwork, distinct from the Venezia pieces. The artwork becomes the garment.',
   'waves-of-life-tee': 'Series 01 — Waves of Life. A standalone artwork, distinct from the Venezia pieces. The artwork becomes the garment.',
   'villa-d-este-tee': 'Series 01 — Villa d\'Este. A standalone artwork, distinct from the Venezia pieces. The artwork becomes the garment.',
+  'the-wedge-tee': 'Series 01 — The Wedge. A standalone artwork, distinct from the Venezia pieces. The artwork becomes the garment.',
+  'leaning-tower-of-pisa-tee': 'Series 01 — Leaning Tower of Pisa. A standalone artwork, distinct from the Venezia pieces. The artwork becomes the garment.',
+  'piazza-san-marco-tee': 'Series 01 — Piazza San Marco. A standalone artwork, distinct from the Venezia pieces. The artwork becomes the garment.',
+  'palatine-hill-tee': 'Series 01 — Palatine Hill. A standalone artwork, distinct from the Venezia pieces. The artwork becomes the garment.',
 };
 
 class SetAttribute {
