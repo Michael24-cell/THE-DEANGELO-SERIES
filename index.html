@@ -1439,16 +1439,16 @@
         // Search
         (function() {
             var PLATES = [
-                { title:'Venezia', garment:'Tee', price:'$64', slug:'tee', model:'Venezia-tee-m.png' },
-                { title:'Venezia', garment:'Crewneck', price:'$84', slug:'crew', model:'Venezia-crew-m.png' },
-                { title:'Arhus, The Old Town', garment:'Tee', price:'$64', slug:'arhus-old-town-tee', model:'arhus the old town tee model.png' },
-                { title:'Wind & Sea', garment:'Tee', price:'$64', slug:'wind-sea-tee', model:'wind & sea tee model.png' },
-                { title:'Waves of Life', garment:'Tee', price:'$64', slug:'waves-of-life-tee', model:'waves of life tee model.png' },
-                { title:'Villa d\'Este', garment:'Tee', price:'$64', slug:'villa-d-este-tee', model:'villa-d-este model.png' },
-                { title:'The Wedge', garment:'Tee', price:'$64', slug:'the-wedge-tee', model:'the wedge tee model.png' },
-                { title:'Leaning Tower of Pisa', garment:'Tee', price:'$64', slug:'leaning-tower-of-pisa-tee', model:'leaningtowerofpisa tee model.png' },
-                { title:'Piazza San Marco', garment:'Tee', price:'$64', slug:'piazza-san-marco-tee', model:'piazza san marco tee model.png' },
-                { title:'Palatine Hill', garment:'Tee', price:'$64', slug:'palatine-hill-tee', model:'palatine hill tee model.png' },
+                { title:'Venezia', garment:'Tee', price:'$64', slug:'tee', model:'Venezia-tee-m.png', colors:['White'] },
+                { title:'Venezia', garment:'Crewneck', price:'$84', slug:'crew', model:'Venezia-crew-m.png', colors:['White'] },
+                { title:'Arhus, The Old Town', garment:'Tee', price:'$64', slug:'arhus-old-town-tee', model:'arhus the old town tee model.png', colors:['Black'] },
+                { title:'Wind & Sea', garment:'Tee', price:'$64', slug:'wind-sea-tee', model:'wind & sea tee model.png', colors:['Black'] },
+                { title:'Waves of Life', garment:'Tee', price:'$64', slug:'waves-of-life-tee', model:'waves of life tee model.png', colors:['White','Black'] },
+                { title:'Villa d\'Este', garment:'Tee', price:'$64', slug:'villa-d-este-tee', model:'villa-d-este model.png', colors:['Black'] },
+                { title:'The Wedge', garment:'Tee', price:'$64', slug:'the-wedge-tee', model:'the wedge tee model.png', colors:['White','Cream','Oatmeal'] },
+                { title:'Leaning Tower of Pisa', garment:'Tee', price:'$64', slug:'leaning-tower-of-pisa-tee', model:'leaningtowerofpisa tee model.png', colors:['White'] },
+                { title:'Piazza San Marco', garment:'Tee', price:'$64', slug:'piazza-san-marco-tee', model:'piazza san marco tee model.png', colors:['White'] },
+                { title:'Palatine Hill', garment:'Tee', price:'$64', slug:'palatine-hill-tee', model:'palatine hill tee model.png', colors:['White','Cream','Oatmeal'] },
                 { title:'Japan', price:'—', soon:true, model:'bella-hoodie.png' },
                 { title:'New York Chrysler', price:'—', soon:true, model:'New york chystler hoodie.png' }
             ];
@@ -1459,7 +1459,8 @@
 
             function renderSuggs(q) {
                 var matches = PLATES.filter(function(p) {
-                    return !q || p.title.toLowerCase().includes(q) || (p.garment || '').toLowerCase().includes(q);
+                    return !q || p.title.toLowerCase().includes(q) || (p.garment || '').toLowerCase().includes(q) ||
+                        (p.colors || []).some(function(c) { return c.toLowerCase().includes(q); });
                 });
                 if (!matches.length) { sugg.innerHTML = '<p class="search-no-results">No results</p>'; return; }
                 sugg.innerHTML = matches.map(function(p) {

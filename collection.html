@@ -505,37 +505,37 @@
 <!-- ── Static product data + render ───────────────────────────── -->
 <script>
   const PLATES = [
-    { n:"01", title:"Venezia", garment:"Tee", price:"$64", slug:"tee", type:"tee",
+    { n:"01", title:"Venezia", garment:"Tee", price:"$64", slug:"tee", type:"tee", colors:["White"],
       model:"Venezia-tee-m.png", flat:"Venezia-tee.png",
       desc:"Oversized cotton tee. Sourced from Venezia — watercolour, 1979. Gallery-grade water-based screen print." },
-    { n:"02", title:"Venezia", garment:"Hoodie", price:"$84", slug:"hoodie", type:"sweatshirt", unavailable:true,
+    { n:"02", title:"Venezia", garment:"Hoodie", price:"$84", slug:"hoodie", type:"sweatshirt", unavailable:true, colors:["White"],
       model:"Venezia-Hoodie-m.png", flat:"Venezia-hoodie.png",
       desc:"Heavyweight fleece, relaxed oversized silhouette. Same source artwork, different silhouette." },
-    { n:"03", title:"Venezia", garment:"Crewneck", price:"$84", slug:"crew", type:"sweatshirt",
+    { n:"03", title:"Venezia", garment:"Crewneck", price:"$84", slug:"crew", type:"sweatshirt", colors:["White"],
       model:"Venezia-crew-m.png", flat:"Venezia-crew.png",
       desc:"Heavyweight fleece crewneck. Dropped shoulder, ribbed cuffs and waistband, boxy crew neck." },
-    { n:"04", title:"Arhus, The Old Town", garment:"Tee", price:"$64", slug:"arhus-old-town-tee", type:"tee",
+    { n:"04", title:"Arhus, The Old Town", garment:"Tee", price:"$64", slug:"arhus-old-town-tee", type:"tee", colors:["Black"],
       model:"arhus the old town tee model.png", flat:"arhus the old town tee.png",
       desc:"A quiet moment at the edge of shadow and light. Garment-dyed drop-shoulder tee, vintage-washed cotton, printed vertically across the back." },
-    { n:"05", title:"Wind & Sea", garment:"Tee", price:"$64", slug:"wind-sea-tee", type:"tee",
+    { n:"05", title:"Wind & Sea", garment:"Tee", price:"$64", slug:"wind-sea-tee", type:"tee", colors:["Black"],
       model:"wind & sea tee model.png", flat:"wind & sea tee.png",
       desc:"A coastal scene caught mid-gust — a lone tree bent low over dark tidepools beneath a wind-scoured sky. Garment-dyed drop-shoulder tee, vintage-washed cotton, printed vertically across the back." },
-    { n:"06", title:"Waves of Life", garment:"Tee", price:"$64", slug:"waves-of-life-tee", type:"tee",
+    { n:"06", title:"Waves of Life", garment:"Tee", price:"$64", slug:"waves-of-life-tee", type:"tee", colors:["White","Black"],
       model:"waves of life tee model.png", flat:"waves of life tee.png",
       desc:"Loose blue brushwork fans across the back like a wave caught mid-break. Garment-dyed drop-shoulder tee, vintage-washed cotton, printed vertically across the back." },
-    { n:"07", title:"Villa d'Este", garment:"Tee", price:"$64", slug:"villa-d-este-tee", type:"tee",
+    { n:"07", title:"Villa d'Este", garment:"Tee", price:"$64", slug:"villa-d-este-tee", type:"tee", colors:["Black"],
       model:"villa-d-este model.png", flat:"villa-d-este tee.png",
       desc:"Terraced fountains at Tivoli, caught mid-cascade down a dim stone stairway. Garment-dyed drop-shoulder tee, vintage-washed cotton, printed vertically across the back." },
-    { n:"08", title:"The Wedge", garment:"Tee", price:"$64", slug:"the-wedge-tee", type:"tee",
+    { n:"08", title:"The Wedge", garment:"Tee", price:"$64", slug:"the-wedge-tee", type:"tee", colors:["White","Cream","Oatmeal"],
       model:"the wedge tee model.png", flat:"the wedge tee.png",
       desc:"A single wave held at its peak, in loose wind-scoured watercolour. Garment-dyed drop-shoulder tee, vintage-washed cotton, printed vertically across the back." },
-    { n:"09", title:"Leaning Tower of Pisa", garment:"Tee", price:"$64", slug:"leaning-tower-of-pisa-tee", type:"tee",
+    { n:"09", title:"Leaning Tower of Pisa", garment:"Tee", price:"$64", slug:"leaning-tower-of-pisa-tee", type:"tee", colors:["White"],
       model:"leaningtowerofpisa tee model.png", flat:"leaningtowerofpisa tee.png",
       desc:"Pisa's bell tower, leaning against a low, overcast sky. Garment-dyed drop-shoulder tee, vintage-washed cotton, printed vertically across the back." },
-    { n:"10", title:"Piazza San Marco", garment:"Tee", price:"$64", slug:"piazza-san-marco-tee", type:"tee",
+    { n:"10", title:"Piazza San Marco", garment:"Tee", price:"$64", slug:"piazza-san-marco-tee", type:"tee", colors:["White"],
       model:"piazza san marco tee model.png", flat:"piaza san marco tee.png",
       desc:"Venice's central square under a clear sky, St. Mark's Basilica rising above the stone. Garment-dyed drop-shoulder tee, vintage-washed cotton, printed vertically across the back." },
-    { n:"11", title:"Palatine Hill", garment:"Tee", price:"$64", slug:"palatine-hill-tee", type:"tee",
+    { n:"11", title:"Palatine Hill", garment:"Tee", price:"$64", slug:"palatine-hill-tee", type:"tee", colors:["White","Cream","Oatmeal"],
       model:"palatine hill tee model.png", flat:"palatine hill tee.png",
       desc:"A brick retaining wall curves through the ruins where Rome is said to have begun. Garment-dyed drop-shoulder tee, vintage-washed cotton, printed vertically across the back." },
     { n:"S2", title:"Japan", price:"—", soon:true, type:"sweatshirt",
@@ -580,7 +580,7 @@
         <div class="plate-image plate-image--model">${imgModel}</div>
         <div class="plate-image plate-image--flat">${imgFlat}</div>
       </div>`;
-    return `<article class="plate${p.soon ? ' is-soon' : ''}${p.unavailable ? ' is-unavailable' : ''}" data-type="${p.type || ''}" data-series="${p.soon ? '02' : '01'}" data-searchable="${(p.title + ' ' + (p.garment || '')).toLowerCase()}">
+    return `<article class="plate${p.soon ? ' is-soon' : ''}${p.unavailable ? ' is-unavailable' : ''}" data-type="${p.type || ''}" data-series="${p.soon ? '02' : '01'}" data-searchable="${(p.title + ' ' + (p.garment || '') + ' ' + (p.colors || []).join(' ')).toLowerCase()}">
       ${p.soon
         ? imageWrap
         : `<a class="plate-link" href="product.html?p=${p.slug}" aria-label="View ${title}">${imageWrap}</a>`}
@@ -677,7 +677,8 @@
 
   function renderSuggs(q) {
     const matches = PLATES.filter(p =>
-      !q || p.title.toLowerCase().includes(q) || (p.garment || '').toLowerCase().includes(q)
+      !q || p.title.toLowerCase().includes(q) || (p.garment || '').toLowerCase().includes(q) ||
+        (p.colors || []).some(c => c.toLowerCase().includes(q))
     );
     if (!matches.length) {
       searchSugg.innerHTML = '<p class="search-no-results">No results</p>';

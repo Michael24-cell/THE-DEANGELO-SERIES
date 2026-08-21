@@ -702,6 +702,13 @@
       var add = t.closest("[data-add-to-cart]");
       if (add) { e.preventDefault(); addToCart(readProduct(add)); openCart(); return; }
 
+      // "Buy Now" — adds this one item same as data-add-to-cart, but skips
+      // the cart drawer and goes straight to checkout instead of staying
+      // on the page. Merges into whatever's already in the cart rather
+      // than replacing it, same as every other add-to-cart path here.
+      var buyNow = t.closest("[data-buy-now]");
+      if (buyNow) { e.preventDefault(); addToCart(readProduct(buyNow)); location.href = "checkout.html"; return; }
+
       if (t.closest("[data-menu-close]")) { closeMenu(); return; }
       if (t.closest("[data-cart-close]")) { closeCart(); return; }
       if (t.closest("[data-modal-close]")) { closeModal(); return; }

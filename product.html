@@ -224,6 +224,9 @@
     transition:border-color 180ms ease;
   }
   .cta-secondary:hover{border-color:var(--ink)}
+  .cta-primary:disabled,.cta-secondary:disabled{opacity:.35;cursor:not-allowed}
+  .cta-primary:disabled:hover{background:var(--ink);color:var(--bone)}
+  .cta-secondary:disabled:hover{border-color:var(--hairline-dark)}
 
   /* Meta pairs in info column */
   .meta-pair{display:grid;grid-template-columns:1fr 1.6fr;gap:24px;align-items:start;padding:14px 0}
@@ -323,7 +326,7 @@
   }
   .also-head .all{font-size:11px;letter-spacing:.3em;text-transform:uppercase}
 
-  .also-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:56px}
+  .also-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:32px}
 
   /* ── REVIEWS ──────────────────────────────────────────────── */
   .reviews{background:var(--bone);padding:0 48px 144px}
@@ -382,7 +385,7 @@
     .provenance-inner{grid-template-columns:repeat(2,1fr);gap:40px}
     .also{padding:96px 24px}
     .also-head{flex-wrap:wrap;gap:24px}
-    .also-grid{grid-template-columns:1fr;gap:64px}
+    .also-grid{grid-template-columns:repeat(2,1fr);gap:40px}
     .reviews{padding:0 24px 104px}
     .footer-grid{grid-template-columns:1fr 1fr;gap:48px}
   }
@@ -399,6 +402,7 @@
     .provenance-inner{grid-template-columns:1fr;gap:32px}
     .prov-item .prov-value{font-size:1.7rem}
     .also{padding:72px 20px}
+    .also-grid{gap:24px}
     .footer-grid{grid-template-columns:1fr;gap:40px}
     .reviews{padding:0 20px 80px}
     .reviews-head{align-items:flex-end;margin-bottom:48px}
@@ -571,7 +575,7 @@
 
     <div class="cta-row">
       <button class="cta-primary" id="ctaBtn" data-add-to-cart data-kind="model" data-price="64" data-name="Venezia Tee" data-slug="tee">Add to Collection — $64</button>
-      <button class="cta-secondary">Save to Archive</button>
+      <button class="cta-secondary" id="buyNowBtn" data-buy-now data-kind="model" data-price="64" data-name="Venezia Tee" data-slug="tee">Buy Now</button>
     </div>
 
     <div class="du-acc" style="margin-top:40px">
@@ -856,6 +860,24 @@
 </footer>
 
 <script>
+  // Keeps the "Buy Now" button (id="buyNowBtn") in lockstep with the main
+  // "Add to Collection" CTA (id="ctaBtn") — same product/size/color/price,
+  // same enabled/disabled state — since it needs identical data for
+  // readProduct() in site-ui.js to build the right cart item before
+  // jumping to checkout.
+  function syncBuyNow(cta) {
+    var buyBtn = document.getElementById('buyNowBtn');
+    if (!buyBtn) return;
+    buyBtn.disabled = cta.disabled;
+    if (cta.disabled) buyBtn.setAttribute('aria-disabled', 'true');
+    else buyBtn.removeAttribute('aria-disabled');
+    ['data-price', 'data-name', 'data-img', 'data-plate', 'data-slug', 'data-color', 'data-kind'].forEach(function(attr) {
+      var v = cta.getAttribute(attr);
+      if (v === null) buyBtn.removeAttribute(attr);
+      else buyBtn.setAttribute(attr, v);
+    });
+  }
+
   // Product switching via ?p= query param
   (function() {
     // Pieces with a mockup image but no confirmed artwork, pricing, or sizing yet.
@@ -961,7 +983,7 @@
         signMeta: '',
         provArtworkValueHtml: 'No. <em>02</em>',
         provArtworkAside: 'Arhus, The Old Town.',
-        provPrintedAside: 'Small-batch screen print. Water-based inks.'
+        provPrintedAside: ''
       },
       'wind-sea-tee': {
         artImg: 'wind-sea.png',
@@ -978,7 +1000,7 @@
         signMeta: '',
         provArtworkValueHtml: 'No. <em>03</em>',
         provArtworkAside: 'Wind & Sea, 1999.',
-        provPrintedAside: 'Small-batch screen print. Water-based inks.'
+        provPrintedAside: ''
       },
       'waves-of-life-tee': {
         artImg: 'wavesoflife-mock.png',
@@ -995,7 +1017,7 @@
         signMeta: '',
         provArtworkValueHtml: 'No. <em>04</em>',
         provArtworkAside: 'Waves of Life, 1990.',
-        provPrintedAside: 'Small-batch screen print. Water-based inks.'
+        provPrintedAside: ''
       },
       'villa-d-este-tee': {
         artImg: 'villa-d-este tee.png',
@@ -1012,7 +1034,7 @@
         signMeta: '',
         provArtworkValueHtml: 'No. <em>05</em>',
         provArtworkAside: 'Villa d\'Este, 1980.',
-        provPrintedAside: 'Small-batch screen print. Water-based inks.'
+        provPrintedAside: ''
       },
       'the-wedge-tee': {
         artImg: 'the wedge tee.png',
@@ -1029,7 +1051,7 @@
         signMeta: '',
         provArtworkValueHtml: 'No. <em>06</em>',
         provArtworkAside: 'The Wedge, 1990.',
-        provPrintedAside: 'Small-batch screen print. Water-based inks.'
+        provPrintedAside: ''
       },
       'leaning-tower-of-pisa-tee': {
         artImg: 'leaningtowerofpisa tee.png',
@@ -1046,7 +1068,7 @@
         signMeta: '',
         provArtworkValueHtml: 'No. <em>07</em>',
         provArtworkAside: 'Leaning Tower of Pisa.',
-        provPrintedAside: 'Small-batch screen print. Water-based inks.'
+        provPrintedAside: ''
       },
       'piazza-san-marco-tee': {
         artImg: 'piaza san marco tee.png',
@@ -1063,7 +1085,7 @@
         signMeta: '',
         provArtworkValueHtml: 'No. <em>08</em>',
         provArtworkAside: 'Piazza San Marco.',
-        provPrintedAside: 'Small-batch screen print. Water-based inks.'
+        provPrintedAside: ''
       },
       'palatine-hill-tee': {
         artImg: 'palatine hill tee.png',
@@ -1080,7 +1102,7 @@
         signMeta: '',
         provArtworkValueHtml: 'No. <em>09</em>',
         provArtworkAside: 'Palatine Hill.',
-        provPrintedAside: 'Small-batch screen print. Water-based inks.'
+        provPrintedAside: ''
       }
     };
     var src = SOURCE[key] || VENEZIA_SOURCE;
@@ -1138,6 +1160,7 @@
     cta.setAttribute('data-img', p.model);
     cta.setAttribute('data-plate', 'Piece ' + p.plate);
     cta.setAttribute('data-slug', key);
+    syncBuyNow(cta);
 
     var mImg = document.getElementById('frameModel');
     mImg.src = p.model;
@@ -1165,6 +1188,7 @@
         return '<button class="color' + (i === 0 ? ' is-active' : '') + '" data-color="' + c.name + '">' + c.name + '</button>';
       }).join('');
       cta.setAttribute('data-color', p.colors[0].name);
+      syncBuyNow(cta);
 
       colorsEl.onclick = function(e) {
         var btn = e.target.closest('.color');
@@ -1183,6 +1207,7 @@
         fImg.alt = p.title + ' ' + p.garment + ' — ' + chosen.name + ' — Flat';
         tModel.style.backgroundImage = "url('" + chosen.model + "')";
         tFlat.style.backgroundImage = "url('" + chosen.flat + "')";
+        syncBuyNow(cta);
       };
     } else {
       colorBlock.style.display = 'none';
@@ -1247,7 +1272,21 @@
           slug: k, model: e.model, flat: e.flat
         }; })
         .sort(function(a, b) { return a.plate.localeCompare(b.plate); });
-      alsoGrid.innerHTML = also.map(function(a) {
+
+      // Show a curated 4, not the full board — "View all pieces" above
+      // covers the rest. Prefer one piece per distinct artwork first (more
+      // variety than three Venezia garments in a row), then fill any
+      // remaining slots with whatever's left, in plate order.
+      var seenTitles = {};
+      var distinct = also.filter(function(a) {
+        if (seenTitles[a.title]) return false;
+        seenTitles[a.title] = true;
+        return true;
+      });
+      var rest = also.filter(function(a) { return !distinct.includes(a); });
+      var picks = distinct.concat(rest).slice(0, 4);
+
+      alsoGrid.innerHTML = picks.map(function(a) {
         return '<article class="plate">' +
           '<a class="plate-link" href="product.html?p=' + a.slug + '">' +
             '<div class="plate-image-wrap">' +
@@ -1285,6 +1324,7 @@
       cta.disabled = true;
       cta.setAttribute('aria-disabled', 'true');
       cta.removeAttribute('data-add-to-cart');
+      syncBuyNow(cta);
 
       var mImg = document.getElementById('frameModel');
       mImg.src = p.img;
@@ -1365,6 +1405,7 @@
       const cta = document.getElementById('ctaBtn');
       cta.setAttribute('data-price', price);
       cta.textContent = 'Add to Collection — $' + price;
+      syncBuyNow(cta);
     }
   });
 
@@ -1380,16 +1421,16 @@
 // Search
 (function() {
   var PLATES = [
-    { title:'Venezia', garment:'Tee', price:'$64', slug:'tee', model:'Venezia-tee-m.png' },
-    { title:'Venezia', garment:'Crewneck', price:'$84', slug:'crew', model:'Venezia-crew-m.png' },
-    { title:'Arhus, The Old Town', garment:'Tee', price:'$64', slug:'arhus-old-town-tee', model:'arhus the old town tee model.png' },
-    { title:'Wind & Sea', garment:'Tee', price:'$64', slug:'wind-sea-tee', model:'wind & sea tee model.png' },
-    { title:'Waves of Life', garment:'Tee', price:'$64', slug:'waves-of-life-tee', model:'waves of life tee model.png' },
-    { title:'Villa d\'Este', garment:'Tee', price:'$64', slug:'villa-d-este-tee', model:'villa-d-este model.png' },
-    { title:'The Wedge', garment:'Tee', price:'$64', slug:'the-wedge-tee', model:'the wedge tee model.png' },
-    { title:'Leaning Tower of Pisa', garment:'Tee', price:'$64', slug:'leaning-tower-of-pisa-tee', model:'leaningtowerofpisa tee model.png' },
-    { title:'Piazza San Marco', garment:'Tee', price:'$64', slug:'piazza-san-marco-tee', model:'piazza san marco tee model.png' },
-    { title:'Palatine Hill', garment:'Tee', price:'$64', slug:'palatine-hill-tee', model:'palatine hill tee model.png' },
+    { title:'Venezia', garment:'Tee', price:'$64', slug:'tee', model:'Venezia-tee-m.png', colors:['White'] },
+    { title:'Venezia', garment:'Crewneck', price:'$84', slug:'crew', model:'Venezia-crew-m.png', colors:['White'] },
+    { title:'Arhus, The Old Town', garment:'Tee', price:'$64', slug:'arhus-old-town-tee', model:'arhus the old town tee model.png', colors:['Black'] },
+    { title:'Wind & Sea', garment:'Tee', price:'$64', slug:'wind-sea-tee', model:'wind & sea tee model.png', colors:['Black'] },
+    { title:'Waves of Life', garment:'Tee', price:'$64', slug:'waves-of-life-tee', model:'waves of life tee model.png', colors:['White','Black'] },
+    { title:'Villa d\'Este', garment:'Tee', price:'$64', slug:'villa-d-este-tee', model:'villa-d-este model.png', colors:['Black'] },
+    { title:'The Wedge', garment:'Tee', price:'$64', slug:'the-wedge-tee', model:'the wedge tee model.png', colors:['White','Cream','Oatmeal'] },
+    { title:'Leaning Tower of Pisa', garment:'Tee', price:'$64', slug:'leaning-tower-of-pisa-tee', model:'leaningtowerofpisa tee model.png', colors:['White'] },
+    { title:'Piazza San Marco', garment:'Tee', price:'$64', slug:'piazza-san-marco-tee', model:'piazza san marco tee model.png', colors:['White'] },
+    { title:'Palatine Hill', garment:'Tee', price:'$64', slug:'palatine-hill-tee', model:'palatine hill tee model.png', colors:['White','Cream','Oatmeal'] },
     { title:'Japan', price:'—', soon:true, model:'bella-hoodie.png' },
     { title:'New York Chrysler', price:'—', soon:true, model:'New york chystler hoodie.png' }
   ];
@@ -1400,7 +1441,8 @@
 
   function renderSuggs(q) {
     var matches = PLATES.filter(function(p) {
-      return !q || p.title.toLowerCase().includes(q) || (p.garment || '').toLowerCase().includes(q);
+      return !q || p.title.toLowerCase().includes(q) || (p.garment || '').toLowerCase().includes(q) ||
+        (p.colors || []).some(function(c) { return c.toLowerCase().includes(q); });
     });
     if (!matches.length) { sugg.innerHTML = '<p class="search-no-results">No results</p>'; return; }
     sugg.innerHTML = matches.map(function(p) {
