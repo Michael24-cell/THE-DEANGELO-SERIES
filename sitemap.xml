@@ -26,6 +26,21 @@
     <changefreq>monthly</changefreq>
   </url>
   <url>
+    <loc>https://thedeangeloseries.com/product.html?p=arhus-old-town-tee</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://thedeangeloseries.com/product.html?p=wind-sea-tee</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://thedeangeloseries.com/product.html?p=waves-of-life-tee</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
     <loc>https://thedeangeloseries.com/product.html?p=villa-d-este-tee</loc>
     <priority>0.8</priority>
     <changefreq>monthly</changefreq>
