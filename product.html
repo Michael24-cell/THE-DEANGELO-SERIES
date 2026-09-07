@@ -118,6 +118,22 @@
     background:rgba(245,245,241,.7);padding:6px 10px;
   }
 
+  /* Color swatches — shown only for products with more than one confirmed
+     color (see the ?p= product-switch script). Sits on the image itself,
+     bottom-center, rather than as a text chip in the info column. */
+  .color-dots{
+    position:absolute;left:50%;bottom:16px;transform:translateX(-50%);
+    display:flex;gap:10px;align-items:center;
+    background:rgba(245,245,241,.7);padding:8px 10px;border-radius:999px;
+  }
+  .color-dot{
+    width:18px;height:18px;border-radius:50%;padding:0;
+    border:1px solid rgba(10,10,10,.2);cursor:pointer;
+    transition:transform 150ms ease,box-shadow 150ms ease;
+  }
+  .color-dot:hover{transform:scale(1.12)}
+  .color-dot.is-active{box-shadow:0 0 0 2px rgba(245,245,241,.95),0 0 0 3.5px var(--ink)}
+
   .thumbs{
     display:grid;grid-template-columns:repeat(2,1fr);gap:14px;
   }
@@ -192,18 +208,6 @@
     opacity:.35;color:var(--ink-mute);text-decoration:line-through;cursor:not-allowed;
   }
   .size.is-disabled:hover{border-color:var(--hairline-dark)}
-
-  /* Color chips — same treatment as size chips, shown only for products
-     with more than one confirmed color (see the ?p= product-switch script). */
-  .colors{display:flex;gap:8px;flex-wrap:wrap}
-  .color{
-    background:transparent;border:1px solid var(--hairline-dark);
-    padding:11px 22px;text-align:center;
-    font-size:11px;letter-spacing:.25em;text-transform:uppercase;font-weight:500;
-    transition:border-color 180ms ease,background 180ms ease,color 180ms ease;
-  }
-  .color:hover{border-color:var(--ink)}
-  .color.is-active{background:var(--ink);color:var(--bone);border-color:var(--ink)}
 
   /* CTA */
   .cta-row{display:flex;flex-direction:column;gap:14px;margin-top:24px}
@@ -533,6 +537,7 @@
         <img id="frameFlat" src="Venezia-tee.png" alt="Venezia Tee — Flat">
       </div>
       <div class="gallery-counter" id="counter">01 / 02</div>
+      <div class="color-dots" id="colors"></div>
     </div>
     <div class="thumbs" id="thumbs">
       <button class="thumb is-active" data-target="front" data-i="1" id="thumbModel" style="background-image:url('Venezia-tee-m.png');background-size:cover;background-position:center;"><span class="thumb-label">Model</span></button>
@@ -551,13 +556,6 @@
     <p class="product-price" id="productPrice">$64 USD</p>
 
     <div class="hairline"></div>
-
-    <div class="info-block" id="colorBlock" style="display:none">
-      <div class="info-block-label">
-        <span>Color</span>
-      </div>
-      <div class="colors" id="colors"></div>
-    </div>
 
     <div class="info-block" id="sizeBlock">
       <div class="info-block-label">
@@ -898,6 +896,15 @@
       return;
     }
 
+    // Approximate swatch colors for the color-dot picker on the gallery
+    // image — cosmetic only, never used for pricing/Printify mapping.
+    var COLOR_SWATCHES = {
+      White: '#FAFAF7',
+      Black: '#141414',
+      Cream: '#EFE6D2',
+      Oatmeal: '#DDD0B4',
+    };
+
     var PRODS = {
       tee:    { title:'Venezia', artwork:'Artwork 01', plate:'01', garment:'Tee',      price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'Venezia-tee-m.png',    flat:'Venezia-tee.png',    sizes:['S','M','L','XL','2XL'] },
       // unavailable: its Printify product was deleted (404) 2026-08-20 —
@@ -1182,24 +1189,25 @@
     // Color — shown only for products with more than one confirmed color.
     // p.model/p.flat above are always the first (default) color's images,
     // so the gallery is already correct before this runs; this only wires
-    // up switching to any additional colors.
-    var colorBlock = document.getElementById('colorBlock');
+    // up switching to any additional colors. Rendered as small swatch dots
+    // on the image itself (bottom-center of the gallery stage) rather than
+    // text chips in the info column.
     var colorsEl = document.getElementById('colors');
     if (p.colors && p.colors.length > 1) {
-      colorBlock.style.display = 'block';
       colorsEl.innerHTML = p.colors.map(function(c, i) {
-        return '<button class="color' + (i === 0 ? ' is-active' : '') + '" data-color="' + c.name + '">' + c.name + '</button>';
+        var swatch = COLOR_SWATCHES[c.name] || '#ccc';
+        return '<button class="color-dot' + (i === 0 ? ' is-active' : '') + '" data-color="' + c.name + '" style="background:' + swatch + '" aria-label="' + c.name + '" title="' + c.name + '"></button>';
       }).join('');
       cta.setAttribute('data-color', p.colors[0].name);
       syncBuyNow(cta);
 
       colorsEl.onclick = function(e) {
-        var btn = e.target.closest('.color');
+        var btn = e.target.closest('.color-dot');
         if (!btn) return;
         var chosen = p.colors.filter(function(c) { return c.name === btn.getAttribute('data-color'); })[0];
         if (!chosen) return;
 
-        [].forEach.call(colorsEl.querySelectorAll('.color'), function(b) { b.classList.remove('is-active'); });
+        [].forEach.call(colorsEl.querySelectorAll('.color-dot'), function(b) { b.classList.remove('is-active'); });
         btn.classList.add('is-active');
 
         cta.setAttribute('data-color', chosen.name);
@@ -1213,7 +1221,6 @@
         syncBuyNow(cta);
       };
     } else {
-      colorBlock.style.display = 'none';
       colorsEl.innerHTML = '';
     }
 
