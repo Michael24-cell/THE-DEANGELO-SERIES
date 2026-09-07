@@ -480,7 +480,7 @@ export const CATALOG = {
   },
   crew: {
     name: 'Venezia — Crewneck',
-    image: 'https://thedeangeloseries.com/Venezia-crew-m.png',
+    image: 'https://thedeangeloseries.com/venezia%20crew%20model%20front.png',
     currency: 'usd',
     sizes: ['S', 'M', 'L', 'XL', '2XL', '3XL'],
     colors: ['White'],

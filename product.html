@@ -934,24 +934,28 @@
       Oatmeal: '#DDD0B4',
     };
 
-    // Front-of-garment shot (small "The DeAngelo Series" wordmark) — a
-    // third gallery image alongside the existing back-print Model/Flat
-    // shots. One photo per garment color; Cream/Oatmeal have no front
-    // photography of their own yet, so they reuse White (same pattern as
-    // their back-print model/flat shots). Crewneck has its own single
-    // (White) front shot regardless of color. Hoodie has no front shot at
-    // all — frontImageFor() returns null and the caller hides that frame.
+    // Third gallery image/thumb, alongside the existing Model/Flat shots.
+    // What it shows (and its label) varies per garment:
+    //  - Tees: the front-of-garment wordmark flat-lay, one photo per color
+    //    ("Front"). Cream/Oatmeal have no front photography of their own
+    //    yet, so they reuse White (same pattern as their back-print
+    //    model/flat shots).
+    //  - Venezia Crewneck: Model/Flat above show the FRONT of the garment
+    //    (wordmark) by default and its flat lay — this third slot instead
+    //    shows the back-print model shot ("Back").
+    //  - Hoodie: no third photo exists — thirdImageFor() returns null and
+    //    the caller hides that frame entirely.
     var FRONT_IMAGE_BY_COLOR = {
       White: 'deangelo series front white.png',
       Black: 'deangelo series front black.png',
       Cream: 'deangelo series front white.png',
       Oatmeal: 'deangelo series front white.png',
     };
-    var CREW_FRONT_IMAGE = 'deangelo series front crew white.png';
-    function frontImageFor(p, colorName) {
-      if (p.garment === 'Crewneck') return CREW_FRONT_IMAGE;
+    var CREW_BACK_IMAGE = 'venezia crew model back.png';
+    function thirdImageFor(p, colorName) {
+      if (p.garment === 'Crewneck') return { src: CREW_BACK_IMAGE, label: 'Back' };
       if (p.garment === 'Hoodie') return null;
-      return FRONT_IMAGE_BY_COLOR[colorName] || FRONT_IMAGE_BY_COLOR.White;
+      return { src: FRONT_IMAGE_BY_COLOR[colorName] || FRONT_IMAGE_BY_COLOR.White, label: 'Front' };
     }
 
     var PRODS = {
@@ -964,7 +968,7 @@
       // see functions/_lib/catalog.js. Piece stays documented/viewable,
       // just not purchasable, until it's relinked on Printify's side.
       hoodie: { title:'Venezia', artwork:'Artwork 01', plate:'02', garment:'Hoodie',   price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png', sizes:['S','M','L','XL','2XL'], unavailable:true },
-      crew:   { title:'Venezia', artwork:'Artwork 01', plate:'03', garment:'Crewneck', price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'Venezia-crew-m.png',   flat:'Venezia-crew.png',   sizes:['S','M','L','XL','2XL','3XL'] },
+      crew:   { title:'Venezia', artwork:'Artwork 01', plate:'03', garment:'Crewneck', price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'venezia crew model front.png',   flat:'venezia crewneck.png',   sizes:['S','M','L','XL','2XL','3XL'] },
       'arhus-old-town-tee': { title:'Arhus, The Old Town', artwork:'Artwork 02', plate:'04', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'the old town model.png', flat:'arhus the old town tee.png', sizes:['S','M','L','XL','2XL'], frontColor:'Black' },
       'wind-sea-tee': { title:'Wind & Sea', artwork:'Artwork 03', plate:'05', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'wind & sea tee model.png', flat:'wind & sea tee.png', sizes:['S','M','L','XL','2XL'], frontColor:'Black' },
       'waves-of-life-tee': { title:'Waves of Life', artwork:'Artwork 04', plate:'06', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'waves of life tee model.png', flat:'waves of life tee.png', sizes:['S','M','L','XL','2XL'],
@@ -1265,20 +1269,22 @@
     var tFlat = document.getElementById('thumbFlat');
     tFlat.style.backgroundImage = "url('" + p.flat + "')";
 
-    // Front-of-garment shot — hidden entirely for products with no front
-    // photo available (currently just the hoodie).
+    // Third gallery image — hidden entirely for products with none
+    // available (currently just the hoodie).
     var frameFrontWrap = document.getElementById('frameFrontWrap');
     var frontImg = document.getElementById('frameFront');
     var tFront = document.getElementById('thumbFront');
+    var tFrontLabel = tFront.querySelector('.thumb-label');
     var initialColorName = (p.colors && p.colors.length > 1) ? p.colors[0].name : p.frontColor;
-    var frontSrc = frontImageFor(p, initialColorName);
+    var third = thirdImageFor(p, initialColorName);
     var counterEl = document.getElementById('counter');
-    if (frontSrc) {
+    if (third) {
       frameFrontWrap.style.display = '';
       tFront.style.display = '';
-      frontImg.src = frontSrc;
-      frontImg.alt = p.title + ' ' + p.garment + ' — Front';
-      tFront.style.backgroundImage = "url('" + frontSrc + "')";
+      frontImg.src = third.src;
+      frontImg.alt = p.title + ' ' + p.garment + ' — ' + third.label;
+      tFront.style.backgroundImage = "url('" + third.src + "')";
+      if (tFrontLabel) tFrontLabel.textContent = third.label;
       if (counterEl) counterEl.textContent = '01 / 03';
     } else {
       frameFrontWrap.style.display = 'none';
@@ -1331,11 +1337,12 @@
         fImg.alt = p.title + ' ' + p.garment + ' — ' + chosen.name + ' — Flat';
         tModel.style.backgroundImage = "url('" + chosen.model + "')";
         tFlat.style.backgroundImage = "url('" + chosen.flat + "')";
-        var chosenFrontSrc = frontImageFor(p, chosen.name);
-        if (chosenFrontSrc) {
-          frontImg.src = chosenFrontSrc;
-          frontImg.alt = p.title + ' ' + p.garment + ' — ' + chosen.name + ' — Front';
-          tFront.style.backgroundImage = "url('" + chosenFrontSrc + "')";
+        var chosenThird = thirdImageFor(p, chosen.name);
+        if (chosenThird) {
+          frontImg.src = chosenThird.src;
+          frontImg.alt = p.title + ' ' + p.garment + ' — ' + chosen.name + ' — ' + chosenThird.label;
+          tFront.style.backgroundImage = "url('" + chosenThird.src + "')";
+          if (tFrontLabel) tFrontLabel.textContent = chosenThird.label;
         }
         syncBuyNow(cta);
       }
@@ -1569,7 +1576,7 @@
 (function() {
   var PLATES = [
     { title:'Venezia', garment:'Tee', price:'$64', slug:'tee', model:'venezia tee white model.png', colors:['White','Black'] },
-    { title:'Venezia', garment:'Crewneck', price:'$84', slug:'crew', model:'Venezia-crew-m.png', colors:['White'] },
+    { title:'Venezia', garment:'Crewneck', price:'$84', slug:'crew', model:'venezia crew model front.png', colors:['White'] },
     { title:'Arhus, The Old Town', garment:'Tee', price:'$64', slug:'arhus-old-town-tee', model:'the old town model.png', colors:['Black'] },
     { title:'Wind & Sea', garment:'Tee', price:'$64', slug:'wind-sea-tee', model:'wind & sea tee model.png', colors:['Black'] },
     { title:'Waves of Life', garment:'Tee', price:'$64', slug:'waves-of-life-tee', model:'waves of life tee model.png', colors:['White','Black'] },
