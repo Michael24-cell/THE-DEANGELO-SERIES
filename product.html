@@ -816,10 +816,10 @@
 
     <article class="vote-card" data-candidate="arthus">
       <div class="vote-img">
-        <img src="Arhus, The Old Town.png" alt="Arhus, The Old Town">
+        <img src="Arhus, The Old Town.png" alt="Århus, The Old Town">
       </div>
       <div class="vote-meta">
-        <span class="vote-name">Arhus, The Old Town</span>
+        <span class="vote-name">Århus, The Old Town</span>
       </div>
       <button class="vote-btn" aria-pressed="false">Select</button>
     </article>
@@ -969,7 +969,7 @@
       // just not purchasable, until it's relinked on Printify's side.
       hoodie: { title:'Venezia', artwork:'Artwork 01', plate:'02', garment:'Hoodie',   price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png', sizes:['S','M','L','XL','2XL'], unavailable:true },
       crew:   { title:'Venezia', artwork:'Artwork 01', plate:'03', garment:'Crewneck', price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'venezia crew model front.png',   flat:'venezia crewneck.png',   sizes:['S','M','L','XL','2XL','3XL'] },
-      'arhus-old-town-tee': { title:'Arhus, The Old Town', artwork:'Artwork 02', plate:'04', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'the old town model.png', flat:'arhus the old town tee.png', sizes:['S','M','L','XL','2XL'], frontColor:'Black' },
+      'arhus-old-town-tee': { title:'Århus, The Old Town', artwork:'Artwork 02', plate:'04', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'the old town model.png', flat:'arhus the old town tee.png', sizes:['S','M','L','XL','2XL'], frontColor:'Black' },
       'wind-sea-tee': { title:'Wind & Sea', artwork:'Artwork 03', plate:'05', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'wind & sea tee model.png', flat:'wind & sea tee.png', sizes:['S','M','L','XL','2XL'], frontColor:'Black' },
       'waves-of-life-tee': { title:'Waves of Life', artwork:'Artwork 04', plate:'06', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'waves of life tee model.png', flat:'waves of life tee.png', sizes:['S','M','L','XL','2XL'],
         colors: [
@@ -1010,21 +1010,21 @@
       tee: 'Series 01 — Venezia Tee. A heavyweight cotton t-shirt, one of three wearable pieces from a single artwork.',
       hoodie: 'Series 01 — Venezia Hoodie. A heavyweight fleece hoodie, one of three wearable pieces from a single artwork.',
       crew: 'Series 01 — Venezia Crewneck. A heavyweight fleece crewneck, one of three wearable pieces from a single artwork.',
-      'arhus-old-town-tee': 'Series 01 — Arhus, The Old Town Tee. A standalone artwork shirt, distinct from the Venezia pieces.',
-      'wind-sea-tee': 'Series 01 — Wind & Sea Tee. A standalone artwork shirt, distinct from the Venezia pieces.',
-      'waves-of-life-tee': 'Series 01 — Waves of Life Tee. A standalone artwork shirt, distinct from the Venezia pieces.',
-      'villa-d-este-tee': 'Series 01 — Villa d\'Este Tee. A standalone artwork shirt, distinct from the Venezia pieces.',
-      'the-wedge-tee': 'Series 01 — The Wedge Tee. A standalone artwork shirt, distinct from the Venezia pieces.',
-      'leaning-tower-of-pisa-tee': 'Series 01 — Leaning Tower of Pisa Tee. A standalone artwork shirt, distinct from the Venezia pieces.',
-      'piazza-san-marco-tee': 'Series 01 — Piazza San Marco Tee. A standalone artwork shirt, distinct from the Venezia pieces.',
-      'palatine-hill-tee': 'Series 01 — Palatine Hill Tee. A standalone artwork shirt, distinct from the Venezia pieces.',
-      'ostia-antica-tee': 'Series 01 — Ostia Antica Tee. A standalone artwork shirt, distinct from the Venezia pieces.'
+      'arhus-old-town-tee': 'Series 01 — Århus, The Old Town Tee. A 1980 vintage Kodak slide from Århus, Denmark.',
+      'wind-sea-tee': 'Series 01 — Wind & Sea Tee. "Valley Vista to the Ocean," painted by Tony DeAngelo in New York, 1999.',
+      'waves-of-life-tee': 'Series 01 — Waves of Life Tee. "Crashing waves of life," painted by Tony DeAngelo in New York, 1990.',
+      'villa-d-este-tee': 'Series 01 — Villa d\'Este Tee. A 1980 vintage Kodak slide of Tivoli, Italy.',
+      'the-wedge-tee': 'Series 01 — The Wedge Tee. "By Water or By Air," painted by Tony DeAngelo in New York, 1990.',
+      'leaning-tower-of-pisa-tee': 'Series 01 — Leaning Tower of Pisa Tee. A 1980 vintage Kodak slide of Pisa, Italy.',
+      'piazza-san-marco-tee': 'Series 01 — Piazza San Marco Tee. A 1980 vintage Kodak slide of Venice, Italy.',
+      'palatine-hill-tee': 'Series 01 — Palatine Hill Tee. A 1980 vintage Kodak slide of Rome, Italy.',
+      'ostia-antica-tee': 'Series 01 — Ostia Antica Tee. A 1980 vintage Kodak slide of Ostia Antica, Italy.'
     };
     var editionEl = document.getElementById('editionDesc');
     if (editionEl) editionEl.textContent = EDITION_DESC[key] || EDITION_DESC.tee;
 
     // The Source — per-artwork story. Venezia products (tee/hoodie/crew)
-    // keep their existing, unchanged copy. Arhus gets its own confirmed
+    // keep their existing, unchanged copy. Århus gets its own confirmed
     // artwork description and garment description — never Venezia's.
     var VENEZIA_SOURCE = {
       artImg: 'Venezia-Original.png',
@@ -1046,32 +1046,32 @@
       tee: VENEZIA_SOURCE, hoodie: VENEZIA_SOURCE, crew: VENEZIA_SOURCE,
       'arhus-old-town-tee': {
         artImg: 'Arhus, The Old Town.png',
-        artAlt: 'Arhus, The Old Town — Original Artwork',
-        captionMedium: 'Arhus, The Old Town',
-        captionYear: '',
+        artAlt: 'Århus, The Old Town — Original Photograph',
+        captionMedium: 'Århus, The Old Town · Vintage Kodak Slide',
+        captionYear: '1980',
         eyebrow: 'The Source · Artwork 02',
-        titleHtml: 'Arhus, <em>The Old Town</em>',
-        medium: 'Arhus, The Old Town — Artwork No. 02',
-        pull: '"A quiet moment at the edge of shadow and light."',
-        bodyHtml: '<p>Arhus, The Old Town captures a quiet moment at the edge of shadow and light. A dark, narrow passage opens onto sunlit tiled rooftops and timbered buildings, while a lone seated figure rests at the threshold. Softened detail, layered texture, and painterly light give the scene the feeling of a half-remembered place.</p>' +
-          '<p>Printed vertically across the back of a garment-dyed drop-shoulder tee, the artwork is paired with a relaxed silhouette and vintage-washed cotton that suit its atmospheric, timeworn character.</p>',
+        titleHtml: 'Århus, <em>The Old Town</em>',
+        medium: 'Århus, The Old Town — Artwork No. 02',
+        pull: '"A quiet corner of Denmark, held on film since 1980."',
+        bodyHtml: '<p>A 1980 vintage Kodak slide from Århus, Denmark — a quiet, narrow passage opening onto sunlit tiled rooftops and timbered buildings in the city\'s old town.</p>' +
+          '<p>Printed vertically across the back of a garment-dyed drop-shoulder tee, the photograph is paired with a relaxed silhouette and vintage-washed cotton.</p>',
         signName: '',
         signMeta: '',
         provArtworkValueHtml: 'No. <em>02</em>',
-        provArtworkAside: 'Arhus, The Old Town.',
+        provArtworkAside: 'Århus, The Old Town, 1980.',
         provPrintedAside: ''
       },
       'wind-sea-tee': {
         artImg: 'wind-sea.png',
         artAlt: 'Wind & Sea — Original Artwork',
-        captionMedium: 'Wind & Sea',
+        captionMedium: 'Wind & Sea · Water-Based Latex',
         captionYear: '1999',
         eyebrow: 'The Source · Artwork 03',
         titleHtml: 'Wind &amp; <em>Sea</em>',
         medium: 'Wind & Sea — Artwork No. 03',
-        pull: '"Where the tree bends, the wind has already passed."',
-        bodyHtml: '<p>Wind & Sea holds a coastal scene caught mid-gust — a lone tree bent low over dark tidepools, its branches streaked against a pale, wind-scoured sky. Loose, weathered brushwork in deep teal and bone give the painting a sense of motion frozen in place.</p>' +
-          '<p>Printed vertically across the back of a garment-dyed drop-shoulder tee, the artwork is paired with a relaxed silhouette and vintage-washed cotton that suit its elemental, weathered character.</p>',
+        pull: '"Valley Vista to the Ocean."',
+        bodyHtml: '<p>Wind & Sea holds a valley vista opening toward the ocean — painted by Tony DeAngelo in water-based latex on canvas, New York, 1999.</p>' +
+          '<p>Printed vertically across the back of a garment-dyed drop-shoulder tee, the artwork is paired with a relaxed silhouette and vintage-washed cotton.</p>',
         signName: '',
         signMeta: '',
         provArtworkValueHtml: 'No. <em>03</em>',
@@ -1081,14 +1081,14 @@
       'waves-of-life-tee': {
         artImg: 'wavesoflife-mock.png',
         artAlt: 'Waves of Life — Original Artwork',
-        captionMedium: 'Waves of Life',
+        captionMedium: 'Waves of Life · Pastel',
         captionYear: '1990',
         eyebrow: 'The Source · Artwork 04',
         titleHtml: 'Waves of <em>Life</em>',
         medium: 'Waves of Life — Artwork No. 04',
-        pull: '"Loose brushwork, caught mid-break."',
-        bodyHtml: '<p>Waves of Life holds loose blue and teal brushwork that fans across the page like a wave caught mid-break — layered, restless, and unresolved. The forms sit against a pale ground, their edges soft and overlapping, giving the piece a sense of continuous motion.</p>' +
-          '<p>Printed vertically across the back of a garment-dyed drop-shoulder tee, the artwork is paired with a relaxed silhouette and vintage-washed cotton that suit its fluid, unfinished character.</p>',
+        pull: '"Crashing waves of life."',
+        bodyHtml: '<p>Waves of Life holds crashing waves rendered in pastel on textured paper — painted by Tony DeAngelo in New York, 1990.</p>' +
+          '<p>Printed vertically across the back of a garment-dyed drop-shoulder tee, the artwork is paired with a relaxed silhouette and vintage-washed cotton.</p>',
         signName: '',
         signMeta: '',
         provArtworkValueHtml: 'No. <em>04</em>',
@@ -1097,15 +1097,15 @@
       },
       'villa-d-este-tee': {
         artImg: 'villa-d-este tee.png',
-        artAlt: 'Villa d\'Este — Original Artwork',
-        captionMedium: 'Villa d\'Este',
+        artAlt: 'Villa d\'Este — Original Photograph',
+        captionMedium: 'Villa d\'Este · Vintage Kodak Slide',
         captionYear: '1980',
         eyebrow: 'The Source · Artwork 05',
         titleHtml: 'Villa d\'<em>Este</em>',
         medium: 'Villa d\'Este — Artwork No. 05',
         pull: '"A thousand fountains, caught mid-fall."',
-        bodyHtml: '<p>Villa d\'Este holds the terraced fountains of Tivoli, Italy, in motion — water caught mid-cascade down a dim stone stairway, framed by dense garden shadow. Rendered almost monochrome, the scene reads more like a held breath than a photograph.</p>' +
-          '<p>Printed vertically across the back of a garment-dyed drop-shoulder tee, the artwork is paired with a relaxed silhouette and vintage-washed cotton that suit its still, atmospheric character.</p>',
+        bodyHtml: '<p>A 1980 vintage Kodak slide of the terraced fountains at Villa d\'Este, Tivoli, Italy — water caught mid-cascade down a dim stone stairway, framed by dense garden shadow.</p>' +
+          '<p>Printed vertically across the back of a garment-dyed drop-shoulder tee, the photograph is paired with a relaxed silhouette and vintage-washed cotton.</p>',
         signName: '',
         signMeta: '',
         provArtworkValueHtml: 'No. <em>05</em>',
@@ -1120,9 +1120,9 @@
         eyebrow: 'The Source · Artwork 06',
         titleHtml: 'The <em>Wedge</em>',
         medium: 'The Wedge — Artwork No. 06',
-        pull: '"A single wave, held at its peak."',
-        bodyHtml: '<p>The Wedge holds one wave at the exact moment it breaks — a dark crest thrown up against a wide, weathered sky, rendered in loose, wind-scoured brushwork. The horizon barely holds; everything below it is motion.</p>' +
-          '<p>Printed vertically across the back of a garment-dyed drop-shoulder tee, the artwork is paired with a relaxed silhouette and vintage-washed cotton that suit its restless, elemental character.</p>',
+        pull: '"By Water or By Air."',
+        bodyHtml: '<p>The Wedge holds a scene titled "By Water or By Air" — painted by Tony DeAngelo in watercolor on textured paper, New York, 1990.</p>' +
+          '<p>Printed vertically across the back of a garment-dyed drop-shoulder tee, the artwork is paired with a relaxed silhouette and vintage-washed cotton.</p>',
         signName: '',
         signMeta: '',
         provArtworkValueHtml: 'No. <em>06</em>',
@@ -1131,70 +1131,70 @@
       },
       'leaning-tower-of-pisa-tee': {
         artImg: 'leaningtowerofpisa tee.png',
-        artAlt: 'Leaning Tower of Pisa — Original Artwork',
-        captionMedium: 'Leaning Tower of Pisa',
-        captionYear: '',
+        artAlt: 'Leaning Tower of Pisa — Original Photograph',
+        captionMedium: 'Leaning Tower of Pisa · Vintage Kodak Slide',
+        captionYear: '1980',
         eyebrow: 'The Source · Artwork 07',
         titleHtml: 'Leaning Tower <em>of Pisa</em>',
         medium: 'Leaning Tower of Pisa — Artwork No. 07',
         pull: '"Eight centuries off balance, and still standing."',
-        bodyHtml: '<p>The bell tower of Pisa\'s cathedral square, caught leaning against a low, overcast sky — its marble tiers stacked slightly off true, a flaw the centuries turned into its signature.</p>' +
+        bodyHtml: '<p>A 1980 vintage Kodak slide of Pisa\'s cathedral square — the bell tower caught leaning against a low, overcast sky, its marble tiers stacked slightly off true, a flaw the centuries turned into its signature.</p>' +
           '<p>Printed vertically across the back of a garment-dyed drop-shoulder tee, the photograph is paired with a relaxed silhouette and vintage-washed cotton.</p>',
         signName: '',
         signMeta: '',
         provArtworkValueHtml: 'No. <em>07</em>',
-        provArtworkAside: 'Leaning Tower of Pisa.',
+        provArtworkAside: 'Leaning Tower of Pisa, 1980.',
         provPrintedAside: ''
       },
       'piazza-san-marco-tee': {
         artImg: 'piaza san marco tee.png',
-        artAlt: 'Piazza San Marco — Original Artwork',
-        captionMedium: 'Piazza San Marco',
-        captionYear: '',
+        artAlt: 'Piazza San Marco — Original Photograph',
+        captionMedium: 'Piazza San Marco · Vintage Kodak Slide',
+        captionYear: '1980',
         eyebrow: 'The Source · Artwork 08',
         titleHtml: 'Piazza <em>San Marco</em>',
         medium: 'Piazza San Marco — Artwork No. 08',
         pull: '"The square empties, and the basilica remains."',
-        bodyHtml: '<p>Venice\'s central square under a clear sky, the domes and arches of St. Mark\'s Basilica rising above a scattering of figures crossing the stone at midday.</p>' +
+        bodyHtml: '<p>A 1980 vintage Kodak slide of Venice\'s central square — the domes and arches of St. Mark\'s Basilica rising above a scattering of figures crossing the stone at midday.</p>' +
           '<p>Printed vertically across the back of a garment-dyed drop-shoulder tee, the photograph is paired with a relaxed silhouette and vintage-washed cotton.</p>',
         signName: '',
         signMeta: '',
         provArtworkValueHtml: 'No. <em>08</em>',
-        provArtworkAside: 'Piazza San Marco.',
+        provArtworkAside: 'Piazza San Marco, 1980.',
         provPrintedAside: ''
       },
       'palatine-hill-tee': {
         artImg: 'palatine hill tee.png',
-        artAlt: 'Palatine Hill — Original Artwork',
-        captionMedium: 'Palatine Hill',
-        captionYear: '',
+        artAlt: 'Palatine Hill — Original Photograph',
+        captionMedium: 'Palatine Hill · Vintage Kodak Slide',
+        captionYear: '1980',
         eyebrow: 'The Source · Artwork 09',
         titleHtml: 'Palatine <em>Hill</em>',
         medium: 'Palatine Hill — Artwork No. 09',
         pull: '"Rome\'s oldest quarter, still standing at the edge of itself."',
-        bodyHtml: '<p>A brick retaining wall curves along the ruins of Palatine Hill, columns and overgrowth framing the path where Rome is said to have begun.</p>' +
+        bodyHtml: '<p>A 1980 vintage Kodak slide of Palatine Hill, Rome — a brick retaining wall curves through the ruins, columns and overgrowth framing the path where Rome is said to have begun.</p>' +
           '<p>Printed vertically across the back of a garment-dyed drop-shoulder tee, the photograph is paired with a relaxed silhouette and vintage-washed cotton.</p>',
         signName: '',
         signMeta: '',
         provArtworkValueHtml: 'No. <em>09</em>',
-        provArtworkAside: 'Palatine Hill.',
+        provArtworkAside: 'Palatine Hill, 1980.',
         provPrintedAside: ''
       },
       'ostia-antica-tee': {
         artImg: 'ostia antica tee.png',
-        artAlt: 'Ostia Antica — Original Artwork',
-        captionMedium: 'Ostia Antica',
-        captionYear: '',
+        artAlt: 'Ostia Antica — Original Photograph',
+        captionMedium: 'Ostia Antica · Vintage Kodak Slide',
+        captionYear: '1980',
         eyebrow: 'The Source · Artwork 10',
         titleHtml: 'Ostia <em>Antica</em>',
         medium: 'Ostia Antica — Artwork No. 10',
         pull: '"Rome\'s ancient port, quiet now beneath the pines."',
-        bodyHtml: '<p>Sun-bleached brick and columns rise from the grass at Ostia Antica, the excavated port city where Rome once met the sea.</p>' +
+        bodyHtml: '<p>A 1980 vintage Kodak slide of Ostia Antica, the excavated Roman port city — sun-bleached brick and columns rising from the grass where Rome once met the sea.</p>' +
           '<p>Printed vertically across the back of a garment-dyed drop-shoulder tee, the photograph is paired with a relaxed silhouette and vintage-washed cotton.</p>',
         signName: '',
         signMeta: '',
         provArtworkValueHtml: 'No. <em>10</em>',
-        provArtworkAside: 'Ostia Antica.',
+        provArtworkAside: 'Ostia Antica, 1980.',
         provPrintedAside: ''
       }
     };
@@ -1577,7 +1577,7 @@
   var PLATES = [
     { title:'Venezia', garment:'Tee', price:'$64', slug:'tee', model:'venezia tee white model.png', colors:['White','Black'] },
     { title:'Venezia', garment:'Crewneck', price:'$84', slug:'crew', model:'venezia crew model front.png', colors:['White'] },
-    { title:'Arhus, The Old Town', garment:'Tee', price:'$64', slug:'arhus-old-town-tee', model:'the old town model.png', colors:['Black'] },
+    { title:'Århus, The Old Town', garment:'Tee', price:'$64', slug:'arhus-old-town-tee', model:'the old town model.png', colors:['Black'] },
     { title:'Wind & Sea', garment:'Tee', price:'$64', slug:'wind-sea-tee', model:'wind & sea tee model.png', colors:['Black'] },
     { title:'Waves of Life', garment:'Tee', price:'$64', slug:'waves-of-life-tee', model:'waves of life tee model.png', colors:['White','Black'] },
     { title:'Villa d\'Este', garment:'Tee', price:'$64', slug:'villa-d-este-tee', model:'villa-d-este model.png', colors:['Black'] },
