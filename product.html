@@ -135,7 +135,7 @@
   .color-dot.is-active{box-shadow:0 0 0 2px rgba(245,245,241,.95),0 0 0 3.5px var(--ink)}
 
   .thumbs{
-    display:grid;grid-template-columns:repeat(2,1fr);gap:14px;
+    display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
   }
   .thumb{
     aspect-ratio:4/5;background:var(--bone-tint);border:1px solid transparent;
@@ -399,7 +399,7 @@
     .nav-brand{font-size:11px;letter-spacing:.3em}
     .crumb{padding:90px 20px 0;flex-wrap:wrap}
     .product{padding:24px 20px 64px;gap:32px}
-    .thumbs{grid-template-columns:repeat(4,1fr);gap:8px}
+    .thumbs{grid-template-columns:repeat(3,1fr);gap:8px}
     .sizes{grid-template-columns:repeat(3,1fr)}
     .product-price{margin-bottom:32px}
     .source-section{padding:72px 20px}
@@ -536,12 +536,16 @@
       <div class="frame" data-kind="back">
         <img id="frameFlat" src="venezia tee white.png" alt="Venezia Tee — Flat">
       </div>
-      <div class="gallery-counter" id="counter">01 / 02</div>
+      <div class="frame" data-kind="detail" id="frameFrontWrap">
+        <img id="frameFront" src="deangelo series front white.png" alt="Venezia Tee — Front">
+      </div>
+      <div class="gallery-counter" id="counter">01 / 03</div>
       <div class="color-dots" id="colors"></div>
     </div>
     <div class="thumbs" id="thumbs">
       <button class="thumb is-active" data-target="front" data-i="1" id="thumbModel" style="background-image:url('venezia tee white model.png');background-size:cover;background-position:center;"><span class="thumb-label">Model</span></button>
       <button class="thumb" data-target="back" data-i="2" id="thumbFlat" style="background-image:url('venezia tee white.png');background-size:cover;background-position:center;"><span class="thumb-label">Flat</span></button>
+      <button class="thumb" data-target="detail" data-i="3" id="thumbFront" style="background-image:url('deangelo series front white.png');background-size:cover;background-position:center;"><span class="thumb-label">Front</span></button>
     </div>
   </div>
 
@@ -905,6 +909,26 @@
       Oatmeal: '#DDD0B4',
     };
 
+    // Front-of-garment shot (small "The DeAngelo Series" wordmark) — a
+    // third gallery image alongside the existing back-print Model/Flat
+    // shots. One photo per garment color; Cream/Oatmeal have no front
+    // photography of their own yet, so they reuse White (same pattern as
+    // their back-print model/flat shots). Crewneck has its own single
+    // (White) front shot regardless of color. Hoodie has no front shot at
+    // all — frontImageFor() returns null and the caller hides that frame.
+    var FRONT_IMAGE_BY_COLOR = {
+      White: 'deangelo series front white.png',
+      Black: 'deangelo series front black.png',
+      Cream: 'deangelo series front white.png',
+      Oatmeal: 'deangelo series front white.png',
+    };
+    var CREW_FRONT_IMAGE = 'deangelo series front crew white.png';
+    function frontImageFor(p, colorName) {
+      if (p.garment === 'Crewneck') return CREW_FRONT_IMAGE;
+      if (p.garment === 'Hoodie') return null;
+      return FRONT_IMAGE_BY_COLOR[colorName] || FRONT_IMAGE_BY_COLOR.White;
+    }
+
     var PRODS = {
       tee:    { title:'Venezia', artwork:'Artwork 01', plate:'01', garment:'Tee',      price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'venezia tee white model.png',    flat:'venezia tee white.png',    sizes:['S','M','L','XL','2XL'],
         colors: [
@@ -916,14 +940,14 @@
       // just not purchasable, until it's relinked on Printify's side.
       hoodie: { title:'Venezia', artwork:'Artwork 01', plate:'02', garment:'Hoodie',   price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png', sizes:['S','M','L','XL','2XL'], unavailable:true },
       crew:   { title:'Venezia', artwork:'Artwork 01', plate:'03', garment:'Crewneck', price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'Venezia-crew-m.png',   flat:'Venezia-crew.png',   sizes:['S','M','L','XL','2XL','3XL'] },
-      'arhus-old-town-tee': { title:'Arhus, The Old Town', artwork:'Artwork 02', plate:'04', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'the old town model.png', flat:'arhus the old town tee.png', sizes:['S','M','L','XL','2XL'] },
-      'wind-sea-tee': { title:'Wind & Sea', artwork:'Artwork 03', plate:'05', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'wind & sea tee model.png', flat:'wind & sea tee.png', sizes:['S','M','L','XL','2XL'] },
+      'arhus-old-town-tee': { title:'Arhus, The Old Town', artwork:'Artwork 02', plate:'04', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'the old town model.png', flat:'arhus the old town tee.png', sizes:['S','M','L','XL','2XL'], frontColor:'Black' },
+      'wind-sea-tee': { title:'Wind & Sea', artwork:'Artwork 03', plate:'05', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'wind & sea tee model.png', flat:'wind & sea tee.png', sizes:['S','M','L','XL','2XL'], frontColor:'Black' },
       'waves-of-life-tee': { title:'Waves of Life', artwork:'Artwork 04', plate:'06', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'waves of life tee model.png', flat:'waves of life tee.png', sizes:['S','M','L','XL','2XL'],
         colors: [
           { name:'White', model:'waves of life tee model.png', flat:'waves of life tee.png' },
           { name:'Black', model:'waves of life black tee model.png', flat:'waves of life black tee.png' }
         ] },
-      'villa-d-este-tee': { title:'Villa d\'Este', artwork:'Artwork 05', plate:'07', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'villa-d-este model.png', flat:'villa-d-este tee.png', sizes:['S','M','L','XL','2XL'] },
+      'villa-d-este-tee': { title:'Villa d\'Este', artwork:'Artwork 05', plate:'07', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'villa-d-este model.png', flat:'villa-d-este tee.png', sizes:['S','M','L','XL','2XL'], frontColor:'Black' },
       // Cream/Oatmeal reuse the White photos — no separate photography
       // exists for them yet (owner-confirmed 2026-08-20: ship the color
       // options now rather than wait). Swap in real photos per color
@@ -934,8 +958,8 @@
           { name:'Cream', model:'the wedge tee model.png', flat:'the wedge tee.png' },
           { name:'Oatmeal', model:'the wedge tee model.png', flat:'the wedge tee.png' }
         ] },
-      'leaning-tower-of-pisa-tee': { title:'Leaning Tower of Pisa', artwork:'Artwork 07', plate:'09', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'leaningtowerofpisa tee model.png', flat:'leaningtowerofpisa tee.png', sizes:['S','M','L','XL','2XL'] },
-      'piazza-san-marco-tee': { title:'Piazza San Marco', artwork:'Artwork 08', plate:'10', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'piazza san marco tee model.png', flat:'piaza san marco tee.png', sizes:['S','M','L','XL','2XL'] },
+      'leaning-tower-of-pisa-tee': { title:'Leaning Tower of Pisa', artwork:'Artwork 07', plate:'09', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'leaningtowerofpisa tee model.png', flat:'leaningtowerofpisa tee.png', sizes:['S','M','L','XL','2XL'], frontColor:'White' },
+      'piazza-san-marco-tee': { title:'Piazza San Marco', artwork:'Artwork 08', plate:'10', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'piazza san marco tee model.png', flat:'piaza san marco tee.png', sizes:['S','M','L','XL','2XL'], frontColor:'White' },
       'palatine-hill-tee': { title:'Palatine Hill', artwork:'Artwork 09', plate:'11', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'palatine hill tee model.png', flat:'palatine hill tee.png', sizes:['S','M','L','XL','2XL'],
         colors: [
           { name:'White', model:'palatine hill tee model.png', flat:'palatine hill tee.png' },
@@ -1216,6 +1240,27 @@
     var tFlat = document.getElementById('thumbFlat');
     tFlat.style.backgroundImage = "url('" + p.flat + "')";
 
+    // Front-of-garment shot — hidden entirely for products with no front
+    // photo available (currently just the hoodie).
+    var frameFrontWrap = document.getElementById('frameFrontWrap');
+    var frontImg = document.getElementById('frameFront');
+    var tFront = document.getElementById('thumbFront');
+    var initialColorName = (p.colors && p.colors.length > 1) ? p.colors[0].name : p.frontColor;
+    var frontSrc = frontImageFor(p, initialColorName);
+    var counterEl = document.getElementById('counter');
+    if (frontSrc) {
+      frameFrontWrap.style.display = '';
+      tFront.style.display = '';
+      frontImg.src = frontSrc;
+      frontImg.alt = p.title + ' ' + p.garment + ' — Front';
+      tFront.style.backgroundImage = "url('" + frontSrc + "')";
+      if (counterEl) counterEl.textContent = '01 / 03';
+    } else {
+      frameFrontWrap.style.display = 'none';
+      tFront.style.display = 'none';
+      if (counterEl) counterEl.textContent = '01 / 02';
+    }
+
     // Color — shown only for products with more than one confirmed color.
     // p.model/p.flat above are always the first (default) color's images,
     // so the gallery is already correct before this runs; this only wires
@@ -1248,6 +1293,12 @@
         fImg.alt = p.title + ' ' + p.garment + ' — ' + chosen.name + ' — Flat';
         tModel.style.backgroundImage = "url('" + chosen.model + "')";
         tFlat.style.backgroundImage = "url('" + chosen.flat + "')";
+        var chosenFrontSrc = frontImageFor(p, chosen.name);
+        if (chosenFrontSrc) {
+          frontImg.src = chosenFrontSrc;
+          frontImg.alt = p.title + ' ' + p.garment + ' — ' + chosen.name + ' — Front';
+          tFront.style.backgroundImage = "url('" + chosenFrontSrc + "')";
+        }
         syncBuyNow(cta);
       };
     } else {
@@ -1426,7 +1477,11 @@
       f.classList.toggle('is-active', f.dataset.kind === target);
     });
     [...thumbs.querySelectorAll('.thumb')].forEach(t => t.classList.toggle('is-active', t === btn));
-    counter.textContent = `0${btn.dataset.i} / 02`;
+    // Counted among only the currently-visible thumbs, so products without
+    // a front shot (currently just the hoodie) correctly show "/ 02".
+    const visibleThumbs = [...thumbs.querySelectorAll('.thumb')].filter(t => t.style.display !== 'none');
+    const idx = visibleThumbs.indexOf(btn) + 1;
+    counter.textContent = `0${idx} / 0${visibleThumbs.length}`;
   });
 
   // Size selection
