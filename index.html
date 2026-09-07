@@ -76,13 +76,7 @@
             align-items: center;
             padding: 24px 48px;
             z-index: 1000;
-            /* A flat transparent background disappears over the hero's bright
-               photo slides (the right ~45% of the hero) while reading fine
-               over the hero-text panel's solid black (the left ~55%) — a
-               top-down scrim keeps nav text legible across the full width
-               regardless of what's behind it, without losing the see-through
-               look over the dark side. */
-            background: linear-gradient(180deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,.22) 55%, transparent 100%);
+            background: rgba(10, 10, 10, 0.98);
             transition: background 0.4s ease;
             text-transform: uppercase;
             letter-spacing: 0.2em;
