@@ -515,7 +515,7 @@
       model:"Venezia-crew-m.png", flat:"Venezia-crew.png",
       desc:"Heavyweight fleece crewneck. Dropped shoulder, ribbed cuffs and waistband, boxy crew neck." },
     { n:"04", title:"Arhus, The Old Town", garment:"Tee", price:"$64", slug:"arhus-old-town-tee", type:"tee", colors:["Black"],
-      model:"arhus the old town tee model.png", flat:"arhus the old town tee.png",
+      model:"the old town model.png", flat:"arhus the old town tee.png",
       desc:"A quiet moment at the edge of shadow and light. Garment-dyed drop-shoulder tee, vintage-washed cotton, printed vertically across the back." },
     { n:"05", title:"Wind & Sea", garment:"Tee", price:"$64", slug:"wind-sea-tee", type:"tee", colors:["Black"],
       model:"wind & sea tee model.png", flat:"wind & sea tee.png",
@@ -541,14 +541,12 @@
     { n:"12", title:"Ostia Antica", garment:"Tee", price:"$64", slug:"ostia-antica-tee", type:"tee", colors:["White","Cream"],
       model:"ostia antica tee model.png", flat:"ostia antica tee.png",
       desc:"Sun-bleached brick and columns rise from the grass at Rome's ancient port, quiet now beneath the pines. Garment-dyed drop-shoulder tee, vintage-washed cotton, printed vertically across the back." },
-    { n:"S2", title:"New York Chrysler", price:"—", soon:true, type:"sweatshirt",
-      model:"New york chystler hoodie.png", flat:"New York Chrystler flat.png",
-      desc:"Series 02 candidate. Not yet available." },
   ];
 
   // Mockups exist; artwork, pricing, and full details are still being
-  // finalized. Shown separately from Series 01 and the Series 02 vote.
+  // finalized. Shown separately from Series 01.
   const PREVIEWS = [
+    { title:"New York Chrysler",      slug:"new-york-chrysler",   img:"New york chystler hoodie.png" },
     { title:"Verona — Oat",           slug:"verona-oat",          img:"verona-oat.png" },
     { title:"Verona — Black",         slug:"verona-black",        img:"verona-black.png" },
   ];
@@ -598,14 +596,8 @@
   }
 
   const s1 = PLATES.filter(p => !p.soon);
-  const s2 = PLATES.filter(p => p.soon);
   grid.innerHTML =
     s1.map(plateHTML).join('') +
-    `<div class="grid-divider" id="gridDivider">
-      <span>Series 02 &mdash; Candidates</span>
-      <span class="grid-divider-sub">One artwork under consideration. Not yet available.</span>
-    </div>` +
-    s2.map(plateHTML).join('') +
     `<div class="grid-divider" id="gridDividerDev">
       <span>In Development</span>
       <span class="grid-divider-sub">New pieces with mockups ready. Artwork, pricing, and full details are still being finalized.</span>
