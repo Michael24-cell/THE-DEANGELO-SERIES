@@ -209,6 +209,24 @@
   }
   .size.is-disabled:hover{border-color:var(--hairline-dark)}
 
+  /* Color swatches — under Size, same visual language as the size chips.
+     Syncs with the small color-dot picker on the gallery image itself;
+     clicking either updates both. */
+  .color-swatches{display:flex;flex-wrap:wrap;gap:8px}
+  .color-swatch{
+    display:flex;align-items:center;gap:10px;
+    background:transparent;border:1px solid var(--hairline-dark);
+    padding:11px 18px;text-align:center;
+    font-size:11px;letter-spacing:.25em;text-transform:uppercase;font-weight:500;
+    transition:border-color 180ms ease,background 180ms ease,color 180ms ease;
+  }
+  .color-swatch .dot{
+    width:14px;height:14px;border-radius:50%;flex:0 0 14px;
+    border:1px solid rgba(10,10,10,.2);
+  }
+  .color-swatch:hover{border-color:var(--ink)}
+  .color-swatch.is-active{border-color:var(--ink);background:rgba(10,10,10,.03)}
+
   /* CTA */
   .cta-row{display:flex;flex-direction:column;gap:14px;margin-top:24px}
   .cta-primary{
@@ -573,6 +591,13 @@
         <button class="size">XL</button>
         <button class="size">2XL</button>
       </div>
+    </div>
+
+    <div class="info-block" id="colorBlock" style="display:none">
+      <div class="info-block-label">
+        <span>Color</span>
+      </div>
+      <div class="color-swatches" id="colorSwatches"></div>
     </div>
 
     <div class="cta-row">
@@ -1264,26 +1289,39 @@
     // Color — shown only for products with more than one confirmed color.
     // p.model/p.flat above are always the first (default) color's images,
     // so the gallery is already correct before this runs; this only wires
-    // up switching to any additional colors. Rendered as small swatch dots
-    // on the image itself (bottom-center of the gallery stage) rather than
-    // text chips in the info column.
+    // up switching to any additional colors. Two synced pickers share one
+    // selectColor() function: small dots on the gallery image itself, and
+    // a proper labeled swatch picker in the info column under Size —
+    // picking a color in either place updates both, plus the gallery,
+    // front shot, and CTA/Buy Now data-color together.
     var colorsEl = document.getElementById('colors');
+    var colorBlock = document.getElementById('colorBlock');
+    var colorSwatchesEl = document.getElementById('colorSwatches');
     if (p.colors && p.colors.length > 1) {
       colorsEl.innerHTML = p.colors.map(function(c, i) {
         var swatch = COLOR_SWATCHES[c.name] || '#ccc';
         return '<button class="color-dot' + (i === 0 ? ' is-active' : '') + '" data-color="' + c.name + '" style="background:' + swatch + '" aria-label="' + c.name + '" title="' + c.name + '"></button>';
       }).join('');
+
+      colorBlock.style.display = '';
+      colorSwatchesEl.innerHTML = p.colors.map(function(c, i) {
+        var swatch = COLOR_SWATCHES[c.name] || '#ccc';
+        return '<button class="color-swatch' + (i === 0 ? ' is-active' : '') + '" data-color="' + c.name + '"><span class="dot" style="background:' + swatch + '"></span><span>' + c.name + '</span></button>';
+      }).join('');
+
       cta.setAttribute('data-color', p.colors[0].name);
       syncBuyNow(cta);
 
-      colorsEl.onclick = function(e) {
-        var btn = e.target.closest('.color-dot');
-        if (!btn) return;
-        var chosen = p.colors.filter(function(c) { return c.name === btn.getAttribute('data-color'); })[0];
+      function selectColor(colorName) {
+        var chosen = p.colors.filter(function(c) { return c.name === colorName; })[0];
         if (!chosen) return;
 
-        [].forEach.call(colorsEl.querySelectorAll('.color-dot'), function(b) { b.classList.remove('is-active'); });
-        btn.classList.add('is-active');
+        [].forEach.call(colorsEl.querySelectorAll('.color-dot'), function(b) {
+          b.classList.toggle('is-active', b.getAttribute('data-color') === colorName);
+        });
+        [].forEach.call(colorSwatchesEl.querySelectorAll('.color-swatch'), function(b) {
+          b.classList.toggle('is-active', b.getAttribute('data-color') === colorName);
+        });
 
         cta.setAttribute('data-color', chosen.name);
         cta.setAttribute('data-img', chosen.model);
@@ -1300,9 +1338,22 @@
           tFront.style.backgroundImage = "url('" + chosenFrontSrc + "')";
         }
         syncBuyNow(cta);
+      }
+
+      colorsEl.onclick = function(e) {
+        var btn = e.target.closest('.color-dot');
+        if (!btn) return;
+        selectColor(btn.getAttribute('data-color'));
+      };
+      colorSwatchesEl.onclick = function(e) {
+        var btn = e.target.closest('.color-swatch');
+        if (!btn) return;
+        selectColor(btn.getAttribute('data-color'));
       };
     } else {
       colorsEl.innerHTML = '';
+      colorBlock.style.display = 'none';
+      colorSwatchesEl.innerHTML = '';
     }
 
     // Sizes — generate buttons dynamically per product
