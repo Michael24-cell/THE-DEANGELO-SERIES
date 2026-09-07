@@ -494,7 +494,7 @@
         </div>
       </div>
 
-      <!-- Step 02 — Shipping -->
+      <!-- Step 02 — Shipping estimate -->
       <div class="step">
         <div class="step-head">
           <span class="step-title">Shipping</span>
@@ -502,24 +502,6 @@
         </div>
 
         <div class="field-group">
-          <div class="field-row two">
-            <div class="field">
-              <label>First name</label>
-              <input type="text" id="shipFirstName" placeholder="First name" autocomplete="given-name">
-            </div>
-            <div class="field">
-              <label>Last name</label>
-              <input type="text" id="shipLastName" placeholder="Last name" autocomplete="family-name">
-            </div>
-          </div>
-          <div class="field">
-            <label>Address</label>
-            <input type="text" id="shipAddress1" placeholder="Street address" autocomplete="address-line1">
-          </div>
-          <div class="field">
-            <label>Apartment, suite <span class="opt">Optional</span></label>
-            <input type="text" id="shipAddress2" placeholder="Apt, suite, etc." autocomplete="address-line2">
-          </div>
           <div class="field-row three">
             <div class="field">
               <label>City</label>
@@ -545,7 +527,7 @@
 
           <p class="submit-fine" id="shipQuoteError" role="alert" style="display:none;color:#a33"></p>
           <div class="ship-methods" id="shipMethods">
-            <p style="font-size:.85rem;font-weight:300;color:var(--ink-dim)">Enter your full shipping address above to see rates.</p>
+            <p style="font-size:.85rem;font-weight:300;color:var(--ink-dim)">Enter your city, state, and ZIP above to see rates.</p>
           </div>
         </div>
       </div>
@@ -561,6 +543,7 @@
           <span class="lock"></span>
           <span>Card details are entered securely on Stripe. This page never collects card data.</span>
         </div>
+        <p class="submit-fine" style="text-align:left;margin-top:14px">Your name and full delivery address are entered on the next screen (Stripe) — that's where your order actually ships from.</p>
       </div>
 
       <!-- Submit -->
@@ -789,13 +772,17 @@
       el.textContent = '';
     }
 
-    // ── Shipping address + live rate quoting ─────────────────────────────────
-    // The full destination is collected here, before Stripe is ever involved,
-    // and sent to /api/printify-shipping-quote for a real rate. The exact
-    // same address is sent again with the order at submit time — the server
-    // (create-checkout-session.js) re-validates it and re-quotes Printify
-    // itself; this page never computes or sends a shipping price.
-    var shipFieldIds = ['shipFirstName', 'shipLastName', 'shipAddress1', 'shipAddress2', 'shipCity', 'shipRegion', 'shipZip', 'shipCountry'];
+    // ── Shipping estimate + live rate quoting ─────────────────────────────────
+    // Only city/state/ZIP/country are collected here — that's all Printify's
+    // rate lookup uses (see functions/_lib/printify.js's getShippingRates()).
+    // Name and full street address are deliberately NOT asked for on this
+    // page: the real fulfillment address always comes from Stripe's own
+    // hosted Checkout page (shipping_details on the completed Session, read
+    // in functions/api/stripe-webhook.js), so collecting it twice would just
+    // make the customer type it twice. The server (create-checkout-session.js)
+    // re-validates this same city/state/ZIP and re-quotes Printify itself;
+    // this page never computes or sends a shipping price.
+    var shipFieldIds = ['shipCity', 'shipRegion', 'shipZip', 'shipCountry'];
     var shipMethodsEl = document.getElementById('shipMethods');
     var shipQuoteErrorEl = document.getElementById('shipQuoteError');
     var selectedShippingOptionId = null;
@@ -836,10 +823,6 @@
 
     function getShippingAddress() {
       return {
-        firstName: (document.getElementById('shipFirstName').value || '').trim(),
-        lastName: (document.getElementById('shipLastName').value || '').trim(),
-        address1: (document.getElementById('shipAddress1').value || '').trim(),
-        address2: (document.getElementById('shipAddress2').value || '').trim(),
         city: (document.getElementById('shipCity').value || '').trim(),
         region: (document.getElementById('shipRegion').value || '').trim(),
         zip: (document.getElementById('shipZip').value || '').trim(),
@@ -848,7 +831,7 @@
     }
 
     function shippingAddressComplete(a) {
-      return !!(a.firstName && a.lastName && a.address1 && a.city && a.region && a.zip && a.country);
+      return !!(a.city && a.region && a.zip && a.country);
     }
 
     function renderShipMethods(options) {
@@ -947,7 +930,7 @@
 
       var shippingAddress = getShippingAddress();
       if (!shippingAddressComplete(shippingAddress)) {
-        showError('Please fill in your full shipping address.');
+        showError('Please fill in your city, state, and ZIP.');
         return;
       }
 

@@ -89,22 +89,27 @@ export function normalizeUSState(raw) {
 }
 
 /**
+ * Validates only what a Printify rate quote actually needs (see
+ * functions/_lib/printify.js's getShippingRates() — its address_to is
+ * exactly {country, region, city, zip}, nothing else) and what
+ * create-checkout-session.js stores in Session metadata for the later
+ * mismatch check against Stripe's own collected address (also
+ * country/region/zip only). Name and street address are deliberately NOT
+ * collected or validated here — the real fulfillment address (name,
+ * address1, address2) always comes from Stripe's own hosted page
+ * (`shipping_details` on the completed Session, read in
+ * stripe-webhook.js), never from this site's pre-Stripe form. Collecting
+ * name/street here would just be asking the customer to type it twice.
+ *
  * @param {unknown} raw - raw `body.shippingAddress` / `body.address` from a request
- * @returns {{firstName:string,lastName:string,address1:string,address2:string,city:string,region:string,zip:string,country:string}}
+ * @returns {{city:string,region:string,zip:string,country:string}}
  */
 export function validateAddress(raw) {
-  const firstName = String(raw?.firstName || '').trim();
-  const lastName = String(raw?.lastName || '').trim();
-  const address1 = String(raw?.address1 || '').trim();
-  const address2 = String(raw?.address2 || '').trim();
   const city = String(raw?.city || '').trim();
   const regionRaw = String(raw?.region || raw?.state || '').trim();
   const zip = String(raw?.zip || raw?.postal_code || '').trim();
   const country = String(raw?.country || '').trim().toUpperCase();
 
-  if (!firstName) throw new AddressValidationError('First name is required.');
-  if (!lastName) throw new AddressValidationError('Last name is required.');
-  if (!address1) throw new AddressValidationError('Street address is required.');
   if (!city) throw new AddressValidationError('City is required.');
   if (!regionRaw) throw new AddressValidationError('State is required.');
   if (!zip) throw new AddressValidationError('ZIP code is required.');
@@ -126,5 +131,5 @@ export function validateAddress(raw) {
   // means we genuinely don't know the destination).
   const region = country === 'US' ? normalizeUSState(regionRaw) : regionRaw;
 
-  return { firstName, lastName, address1, address2, city, region, zip, country };
+  return { city, region, zip, country };
 }
