@@ -1,11 +1,13 @@
 // Proves the live storefront cannot complete a purchase of a product with no
-// confirmed Printify mapping (currently: Venezia Tee, `tee` in
-// functions/_lib/catalog.js — `printify: null`). Shipping is mandatory
-// (functions/api/create-checkout-session.js) and the shipping quote path
-// (functions/_lib/printify.js's getShippingRates) refuses any cart containing
-// an unmapped item — so the request fails before a Stripe Checkout Session
-// is ever created. This test exercises the REAL onRequest() end-to-end with
-// a stubbed fetch, and asserts Stripe's API was never called at all.
+// confirmed Printify mapping (currently: Venezia Hoodie, `hoodie` in
+// functions/_lib/catalog.js — `printify: null`, pulled from the site after
+// its Printify product was deleted; see catalog.js for the full story).
+// Shipping is mandatory (functions/api/create-checkout-session.js) and the
+// shipping quote path (functions/_lib/printify.js's getShippingRates)
+// refuses any cart containing an unmapped item — so the request fails before
+// a Stripe Checkout Session is ever created. This test exercises the REAL
+// onRequest() end-to-end with a stubbed fetch, and asserts Stripe's API was
+// never called at all.
 //
 // Run: node tests/checkout-unmapped-product.test.mjs (or `npm test`)
 
@@ -61,10 +63,10 @@ async function run() {
     throw new Error('Unexpected fetch in unmapped-product test: ' + u);
   };
 
-  console.log('--- Venezia Tee (unmapped): checkout session creation is refused ---');
+  console.log('--- Venezia Hoodie (unmapped): checkout session creation is refused ---');
   {
     const body = {
-      items: [{ slug: 'tee', size: 'M', color: 'White', quantity: 1 }],
+      items: [{ slug: 'hoodie', size: 'M', color: 'White', quantity: 1 }],
       email: 'buyer@example.com',
       shippingOptionId: 'standard',
       shippingAddress: VALID_ADDRESS,

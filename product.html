@@ -531,17 +531,17 @@
   <div class="gallery">
     <div class="gallery-stage" id="stage">
       <div class="frame is-active" data-kind="front">
-        <img id="frameModel" src="Venezia-tee-m.png" alt="Venezia Tee — Model">
+        <img id="frameModel" src="venezia tee white model.png" alt="Venezia Tee — Model">
       </div>
       <div class="frame" data-kind="back">
-        <img id="frameFlat" src="Venezia-tee.png" alt="Venezia Tee — Flat">
+        <img id="frameFlat" src="venezia tee white.png" alt="Venezia Tee — Flat">
       </div>
       <div class="gallery-counter" id="counter">01 / 02</div>
       <div class="color-dots" id="colors"></div>
     </div>
     <div class="thumbs" id="thumbs">
-      <button class="thumb is-active" data-target="front" data-i="1" id="thumbModel" style="background-image:url('Venezia-tee-m.png');background-size:cover;background-position:center;"><span class="thumb-label">Model</span></button>
-      <button class="thumb" data-target="back" data-i="2" id="thumbFlat" style="background-image:url('Venezia-tee.png');background-size:cover;background-position:center;"><span class="thumb-label">Flat</span></button>
+      <button class="thumb is-active" data-target="front" data-i="1" id="thumbModel" style="background-image:url('venezia tee white model.png');background-size:cover;background-position:center;"><span class="thumb-label">Model</span></button>
+      <button class="thumb" data-target="back" data-i="2" id="thumbFlat" style="background-image:url('venezia tee white.png');background-size:cover;background-position:center;"><span class="thumb-label">Flat</span></button>
     </div>
   </div>
 
@@ -906,7 +906,11 @@
     };
 
     var PRODS = {
-      tee:    { title:'Venezia', artwork:'Artwork 01', plate:'01', garment:'Tee',      price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'Venezia-tee-m.png',    flat:'Venezia-tee.png',    sizes:['S','M','L','XL','2XL'] },
+      tee:    { title:'Venezia', artwork:'Artwork 01', plate:'01', garment:'Tee',      price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'venezia tee white model.png',    flat:'venezia tee white.png',    sizes:['S','M','L','XL','2XL'],
+        colors: [
+          { name:'White', model:'venezia tee white model.png', flat:'venezia tee white.png' },
+          { name:'Black', model:'venezia tee black model.png', flat:'venezia tee black.png' }
+        ] },
       // unavailable: its Printify product was deleted (404) 2026-08-20 —
       // see functions/_lib/catalog.js. Piece stays documented/viewable,
       // just not purchasable, until it's relinked on Printify's side.
@@ -1458,7 +1462,7 @@
 // Search
 (function() {
   var PLATES = [
-    { title:'Venezia', garment:'Tee', price:'$64', slug:'tee', model:'Venezia-tee-m.png', colors:['White'] },
+    { title:'Venezia', garment:'Tee', price:'$64', slug:'tee', model:'venezia tee white model.png', colors:['White','Black'] },
     { title:'Venezia', garment:'Crewneck', price:'$84', slug:'crew', model:'Venezia-crew-m.png', colors:['White'] },
     { title:'Arhus, The Old Town', garment:'Tee', price:'$64', slug:'arhus-old-town-tee', model:'arhus the old town tee model.png', colors:['Black'] },
     { title:'Wind & Sea', garment:'Tee', price:'$64', slug:'wind-sea-tee', model:'wind & sea tee model.png', colors:['Black'] },

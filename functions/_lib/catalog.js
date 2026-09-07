@@ -20,14 +20,16 @@
 // "Harbor The Old Town T-Shirt" also exists in the shop but has no site
 // product/slug and is intentionally not mapped.
 //
-// `tee` (Venezia Tee) has NO confirmed Printify product as of this pass.
-// It was incorrectly mapped to the Arhus Printify product in an earlier
-// version of this file — that mapping has been removed. Until a real
-// "Venezia Tee" product is created in Printify and its IDs are confirmed
-// here, `tee` cannot be fulfilled and printify-shipping-quote /
-// create-checkout-session will correctly refuse to quote/ship it (see
-// hasCompletePrintifyMapping below). Do not reuse Arhus's or any other
-// product's fulfillment mapping for `tee`.
+// `tee` (Venezia Tee) was incorrectly mapped to the Arhus Printify product
+// in an earlier version of this file, then went unmapped entirely once that
+// was caught — it briefly could not be fulfilled at all (hoodie is
+// currently in that same unmapped state; see below). A real "Venezia Tee"
+// product now exists in Printify (White + Black) — confirmed live via
+// GET /v1/shops/26931439/products/6a9e5512d4f10211ae0c5568.json on
+// 2026-09-08, blueprint 1723 / print provider 99 (same provider as the
+// Venezia Crewneck — a different provider from the standalone artwork
+// tees' 74). Do not reuse Arhus's or any other product's fulfillment
+// mapping for `tee` going forward.
 //
 // Only the Printify variants the owner confirmed as final are mapped below.
 // The Three-Panel Fleece Hoodie also has enabled XS and 3XL variants in
@@ -41,15 +43,54 @@
 export const CATALOG = {
   tee: {
     name: 'Venezia — Tee',
-    image: 'https://thedeangeloseries.com/Venezia-tee-m.png',
+    image: 'https://thedeangeloseries.com/venezia%20tee%20white%20model.png',
+    // Multi-color product — imagesByColor overrides `image` above once a
+    // color is known (see resolveProductImage / validateCartItems below).
+    imagesByColor: {
+      White: 'https://thedeangeloseries.com/venezia%20tee%20white%20model.png',
+      Black: 'https://thedeangeloseries.com/venezia%20tee%20black%20model.png',
+    },
     currency: 'usd',
     sizes: ['S', 'M', 'L', 'XL', '2XL'],
-    colors: ['White'], // Unconfirmed — no Printify product exists yet to verify against.
+    colors: ['White', 'Black'],
     basePrice: 6400,      // $64.00, in cents
     upchargePrice: 6800,  // $68.00, in cents
     upchargeSizes: ['2XL'],
     stripeTaxCode: 'txcd_30011000', // Stripe Tax: t-shirts / apparel (clothing)
-    printify: null, // TODO: no confirmed Venezia Tee product in Printify — see module note above.
+    // Printify mapping confirmed live via GET /v1/shops/26931439/products/
+    // 6a9e5512d4f10211ae0c5568.json on 2026-09-08 — "Venezia - Tee",
+    // blueprint 1723 / print provider 99, 10 enabled variants across
+    // White/Black.
+    printify: {
+      White: {
+        productId: '6a9e5512d4f10211ae0c5568',
+        printProviderId: 99,
+        variantIdBySize: {
+          S: 118089, M: 118090, L: 118091, XL: 118107, '2XL': 118092,
+        },
+        skuBySize: {
+          S: '71663963689614523189',
+          M: '48331297202852878124',
+          L: '24605492024500342873',
+          XL: '29434223566593684662',
+          '2XL': '25891756247833900082',
+        },
+      },
+      Black: {
+        productId: '6a9e5512d4f10211ae0c5568',
+        printProviderId: 99,
+        variantIdBySize: {
+          S: 118085, M: 118086, L: 118087, XL: 118101, '2XL': 118088,
+        },
+        skuBySize: {
+          S: '77682723245001045554',
+          M: '33054355010774183968',
+          L: '11321249902396843074',
+          XL: '13216717713662294153',
+          '2XL': '19650998568129984277',
+        },
+      },
+    },
   },
   'arhus-old-town-tee': {
     name: 'Arhus, The Old Town — Tee',

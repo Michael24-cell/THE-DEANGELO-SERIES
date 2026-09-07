@@ -73,7 +73,7 @@ console.log('\n--- New products: distinct products, not accidentally aliased to 
 
 console.log('\n--- Regression: existing products unchanged by this addition ---');
 {
-  ok('Venezia Tee (tee) remains unmapped (printify: null)', CATALOG.tee.printify === null);
+  ok('Venezia Tee now maps to its confirmed Printify product ID', printifyMappingForColor(CATALOG.tee, 'White').productId === '6a9e5512d4f10211ae0c5568');
   ok('Arhus Old Town Tee still maps to its known Printify product ID', CATALOG['arhus-old-town-tee'].printify.productId === '6a3cab048606da46840fa2e7');
   ok('Hoodie is unmapped (its Printify product was deleted — printify: null)', CATALOG.hoodie.printify === null);
   ok('Crew still maps to its known Printify product ID', CATALOG.crew.printify.productId === '6a3372e03f9ce13ae30dad09');
