@@ -16,11 +16,6 @@
     <changefreq>monthly</changefreq>
   </url>
   <url>
-    <loc>https://thedeangeloseries.com/product.html?p=hoodie</loc>
-    <priority>0.8</priority>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
     <loc>https://thedeangeloseries.com/product.html?p=crew</loc>
     <priority>0.8</priority>
     <changefreq>monthly</changefreq>

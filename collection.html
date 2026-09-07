@@ -508,9 +508,9 @@
     { n:"01", title:"Venezia", garment:"Tee", price:"$64", slug:"tee", type:"tee", colors:["White"],
       model:"Venezia-tee-m.png", flat:"Venezia-tee.png",
       desc:"Oversized cotton tee. Sourced from Venezia — watercolor, 1979. Gallery-grade water-based screen print." },
-    { n:"02", title:"Venezia", garment:"Hoodie", price:"$84", slug:"hoodie", type:"sweatshirt", unavailable:true, colors:["White"],
-      model:"Venezia-Hoodie-m.png", flat:"Venezia-hoodie.png",
-      desc:"Heavyweight fleece, relaxed oversized silhouette. Same source artwork, different silhouette." },
+    // Hoodie pulled from the site for now (unrelated to voting/pricing —
+    // see functions/_lib/catalog.js for why). Re-add this plate entry to
+    // bring it back once relinked on Printify's side.
     { n:"03", title:"Venezia", garment:"Crewneck", price:"$84", slug:"crew", type:"sweatshirt", colors:["White"],
       model:"Venezia-crew-m.png", flat:"Venezia-crew.png",
       desc:"Heavyweight fleece crewneck. Dropped shoulder, ribbed cuffs and waistband, boxy crew neck." },
@@ -540,10 +540,10 @@
       desc:"A brick retaining wall curves through the ruins where Rome is said to have begun. Garment-dyed drop-shoulder tee, vintage-washed cotton, printed vertically across the back." },
     { n:"S2", title:"Japan", price:"—", soon:true, type:"sweatshirt",
       model:"bella-hoodie.png", flat:"Japan flat.png",
-      desc:"Series 02 candidate. Cast your vote on the homepage to shape the next series." },
+      desc:"Series 02 candidate. Not yet available." },
     { n:"S2", title:"New York Chrysler", price:"—", soon:true, type:"sweatshirt",
       model:"New york chystler hoodie.png", flat:"New York Chrystler flat.png",
-      desc:"Series 02 candidate. Cast your vote on the homepage to shape the next series." },
+      desc:"Series 02 candidate. Not yet available." },
   ];
 
   // Mockups exist; artwork, pricing, and full details are still being
@@ -604,7 +604,7 @@
     s1.map(plateHTML).join('') +
     `<div class="grid-divider" id="gridDivider">
       <span>Series 02 &mdash; Candidates</span>
-      <span class="grid-divider-sub">Two artworks under consideration. Not yet available &mdash; cast your vote on the homepage.</span>
+      <span class="grid-divider-sub">Two artworks under consideration. Not yet available.</span>
     </div>` +
     s2.map(plateHTML).join('') +
     `<div class="grid-divider" id="gridDividerDev">
