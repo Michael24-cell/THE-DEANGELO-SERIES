@@ -368,6 +368,53 @@ export const CATALOG = {
       },
     },
   },
+  'ostia-antica-tee': {
+    name: 'Ostia Antica — Tee',
+    image: 'https://thedeangeloseries.com/ostia%20antica%20tee%20model.png',
+    // Only White has been photographed — Cream reuses the White shots
+    // until real photography exists for it, same pattern as The Wedge/
+    // Palatine Hill.
+    currency: 'usd',
+    sizes: ['S', 'M', 'L', 'XL', '2XL'],
+    colors: ['White', 'Cream'],
+    basePrice: 6400,      // $64.00, in cents — same price point as the other tees.
+    upchargePrice: 6800,  // $68.00, in cents
+    upchargeSizes: ['2XL'],
+    stripeTaxCode: 'txcd_30011000',
+    // Printify mapping confirmed live via GET /v1/shops/26931439/products/6a872f9bd45e50fc2506b101.json
+    // on 2026-09-06 — "Ostia Antica - Tee", blueprint 1723 / print provider 74 (same combo as the
+    // other standalone tees), 10 enabled variants across White/Cream.
+    printify: {
+      White: {
+        productId: '6a872f9bd45e50fc2506b101',
+        printProviderId: 74,
+        variantIdBySize: {
+          S: 118089, M: 118090, L: 118091, XL: 118107, '2XL': 118092,
+        },
+        skuBySize: {
+          S: '27625534152527550068',
+          M: '16257516992909733032',
+          L: '14001630753020042294',
+          XL: '18863662322991678382',
+          '2XL': '18973477193390954442',
+        },
+      },
+      Cream: {
+        productId: '6a872f9bd45e50fc2506b101',
+        printProviderId: 74,
+        variantIdBySize: {
+          S: 118073, M: 118074, L: 118075, XL: 118102, '2XL': 118076,
+        },
+        skuBySize: {
+          S: '14166584459876716556',
+          M: '22260161100351253938',
+          L: '25375397969174636881',
+          XL: '10146664744610624373',
+          '2XL': '22160285195618227382',
+        },
+      },
+    },
+  },
   hoodie: {
     name: 'Venezia — Hoodie',
     image: 'https://thedeangeloseries.com/Venezia-Hoodie-m.png',

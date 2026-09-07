@@ -30,6 +30,7 @@ const DESCRIPTIONS = {
   'leaning-tower-of-pisa-tee': 'Series 01 — Leaning Tower of Pisa Tee. A standalone artwork printed on a heavyweight cotton shirt, distinct from the Venezia pieces.',
   'piazza-san-marco-tee': 'Series 01 — Piazza San Marco Tee. A standalone artwork printed on a heavyweight cotton shirt, distinct from the Venezia pieces.',
   'palatine-hill-tee': 'Series 01 — Palatine Hill Tee. A standalone artwork printed on a heavyweight cotton shirt, distinct from the Venezia pieces.',
+  'ostia-antica-tee': 'Series 01 — Ostia Antica Tee. A standalone artwork printed on a heavyweight cotton shirt, distinct from the Venezia pieces.',
 };
 
 class SetAttribute {

@@ -937,6 +937,14 @@
           { name:'White', model:'palatine hill tee model.png', flat:'palatine hill tee.png' },
           { name:'Cream', model:'palatine hill tee model.png', flat:'palatine hill tee.png' },
           { name:'Oatmeal', model:'palatine hill tee model.png', flat:'palatine hill tee.png' }
+        ] },
+      // Only White has been photographed — Cream reuses the White shots
+      // until real photography exists for it, same pattern as The Wedge/
+      // Palatine Hill.
+      'ostia-antica-tee': { title:'Ostia Antica', artwork:'Artwork 10', plate:'12', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'ostia antica tee model.png', flat:'ostia antica tee.png', sizes:['S','M','L','XL','2XL'],
+        colors: [
+          { name:'White', model:'ostia antica tee model.png', flat:'ostia antica tee.png' },
+          { name:'Cream', model:'ostia antica tee model.png', flat:'ostia antica tee.png' }
         ] }
     };
     var p = PRODS[key] || PRODS.tee;
@@ -952,7 +960,8 @@
       'the-wedge-tee': 'Series 01 — The Wedge Tee. A standalone artwork shirt, distinct from the Venezia pieces.',
       'leaning-tower-of-pisa-tee': 'Series 01 — Leaning Tower of Pisa Tee. A standalone artwork shirt, distinct from the Venezia pieces.',
       'piazza-san-marco-tee': 'Series 01 — Piazza San Marco Tee. A standalone artwork shirt, distinct from the Venezia pieces.',
-      'palatine-hill-tee': 'Series 01 — Palatine Hill Tee. A standalone artwork shirt, distinct from the Venezia pieces.'
+      'palatine-hill-tee': 'Series 01 — Palatine Hill Tee. A standalone artwork shirt, distinct from the Venezia pieces.',
+      'ostia-antica-tee': 'Series 01 — Ostia Antica Tee. A standalone artwork shirt, distinct from the Venezia pieces.'
     };
     var editionEl = document.getElementById('editionDesc');
     if (editionEl) editionEl.textContent = EDITION_DESC[key] || EDITION_DESC.tee;
@@ -1113,6 +1122,23 @@
         provArtworkValueHtml: 'No. <em>09</em>',
         provArtworkAside: 'Palatine Hill.',
         provPrintedAside: ''
+      },
+      'ostia-antica-tee': {
+        artImg: 'ostia antica tee.png',
+        artAlt: 'Ostia Antica — Original Artwork',
+        captionMedium: 'Ostia Antica',
+        captionYear: '',
+        eyebrow: 'The Source · Artwork 10',
+        titleHtml: 'Ostia <em>Antica</em>',
+        medium: 'Ostia Antica — Artwork No. 10',
+        pull: '"Rome\'s ancient port, quiet now beneath the pines."',
+        bodyHtml: '<p>Sun-bleached brick and columns rise from the grass at Ostia Antica, the excavated port city where Rome once met the sea.</p>' +
+          '<p>Printed vertically across the back of a garment-dyed drop-shoulder tee, the photograph is paired with a relaxed silhouette and vintage-washed cotton.</p>',
+        signName: '',
+        signMeta: '',
+        provArtworkValueHtml: 'No. <em>10</em>',
+        provArtworkAside: 'Ostia Antica.',
+        provPrintedAside: ''
       }
     };
     var src = SOURCE[key] || VENEZIA_SOURCE;
@@ -1238,7 +1264,7 @@
       var el = document.getElementById(id);
       if (el) el.style.display = 'none';
     });
-    var SIZE_CHART_ID = { tee:'sgTee', hoodie:'sgHoodie', crew:'sgCrew', 'arhus-old-town-tee':'sgTee', 'wind-sea-tee':'sgTee', 'waves-of-life-tee':'sgTee', 'villa-d-este-tee':'sgTee', 'the-wedge-tee':'sgTee', 'leaning-tower-of-pisa-tee':'sgTee', 'piazza-san-marco-tee':'sgTee', 'palatine-hill-tee':'sgTee' };
+    var SIZE_CHART_ID = { tee:'sgTee', hoodie:'sgHoodie', crew:'sgCrew', 'arhus-old-town-tee':'sgTee', 'wind-sea-tee':'sgTee', 'waves-of-life-tee':'sgTee', 'villa-d-este-tee':'sgTee', 'the-wedge-tee':'sgTee', 'leaning-tower-of-pisa-tee':'sgTee', 'piazza-san-marco-tee':'sgTee', 'palatine-hill-tee':'sgTee', 'ostia-antica-tee':'sgTee' };
     var chartEl = document.getElementById(SIZE_CHART_ID[key]);
     if (chartEl) chartEl.style.display = '';
 
@@ -1261,7 +1287,8 @@
       'the-wedge-tee': { material:'Garment-dyed, vintage-washed cotton.', fit:'Relaxed drop-shoulder silhouette.', print:'Printed vertically across the back.' },
       'leaning-tower-of-pisa-tee': { material:'Garment-dyed, vintage-washed cotton.', fit:'Relaxed drop-shoulder silhouette.', print:'Printed vertically across the back.' },
       'piazza-san-marco-tee': { material:'Garment-dyed, vintage-washed cotton.', fit:'Relaxed drop-shoulder silhouette.', print:'Printed vertically across the back.' },
-      'palatine-hill-tee': { material:'Garment-dyed, vintage-washed cotton.', fit:'Relaxed drop-shoulder silhouette.', print:'Printed vertically across the back.' }
+      'palatine-hill-tee': { material:'Garment-dyed, vintage-washed cotton.', fit:'Relaxed drop-shoulder silhouette.', print:'Printed vertically across the back.' },
+      'ostia-antica-tee': { material:'Garment-dyed, vintage-washed cotton.', fit:'Relaxed drop-shoulder silhouette.', print:'Printed vertically across the back.' }
     };
     var d = DETAILS[key] || DETAILS.tee;
     document.getElementById('detailMaterial').textContent = d.material;
@@ -1441,6 +1468,7 @@
     { title:'Leaning Tower of Pisa', garment:'Tee', price:'$64', slug:'leaning-tower-of-pisa-tee', model:'leaningtowerofpisa tee model.png', colors:['White'] },
     { title:'Piazza San Marco', garment:'Tee', price:'$64', slug:'piazza-san-marco-tee', model:'piazza san marco tee model.png', colors:['White'] },
     { title:'Palatine Hill', garment:'Tee', price:'$64', slug:'palatine-hill-tee', model:'palatine hill tee model.png', colors:['White','Cream','Oatmeal'] },
+    { title:'Ostia Antica', garment:'Tee', price:'$64', slug:'ostia-antica-tee', model:'ostia antica tee model.png', colors:['White','Cream'] },
     { title:'Japan', price:'—', soon:true, model:'bella-hoodie.png' },
     { title:'New York Chrysler', price:'—', soon:true, model:'New york chystler hoodie.png' }
   ];
