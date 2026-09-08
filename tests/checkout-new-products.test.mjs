@@ -72,6 +72,7 @@ async function run() {
     const body = {
       items: [{ slug, size, color, quantity: 1 }],
       email: 'buyer@example.com',
+      marketingOptIn: true,
       shippingOptionId: 'standard',
       shippingAddress: VALID_ADDRESS,
       attribution: {
@@ -114,6 +115,38 @@ async function run() {
       stripeRequestBody,
     );
     ok('Facebook click IDs are not forwarded to Stripe', !stripeRequestBody.includes('fbclid'), stripeRequestBody);
+    ok(
+      'marketingOptIn:true reaches Stripe Session metadata as the literal string "true"',
+      stripeRequestBody.includes('metadata%5Bmarketing_opt_in%5D=true'),
+      stripeRequestBody,
+    );
+  }
+
+  console.log('\n--- marketingOptIn defaults to false when omitted, and non-boolean values never pass through as true ---');
+  {
+    let stripeRequestBody = null;
+    global.fetch = async (url, opts) => {
+      const u = String(url);
+      if (u.includes('orders/shipping.json')) return { ok: true, json: async () => ({ standard: 500 }) };
+      if (u.includes('api.stripe.com')) {
+        stripeRequestBody = opts.body;
+        return { ok: true, json: async () => ({ id: 'cs_test_456', url: 'https://checkout.stripe.com/cs_test_456' }) };
+      }
+      throw new Error('Unexpected fetch: ' + u);
+    };
+    const body = {
+      items: [{ slug: 'wind-sea-tee', size: 'M', color: 'Black', quantity: 1 }],
+      email: 'buyer@example.com',
+      marketingOptIn: 'true', // a string, not a boolean — must NOT be trusted
+      shippingOptionId: 'standard',
+      shippingAddress: VALID_ADDRESS,
+    };
+    await onRequest({ request: makeRequest(body), env: makeEnv() });
+    ok(
+      'A non-boolean marketingOptIn value is recorded as false, not guessed at',
+      stripeRequestBody.includes('metadata%5Bmarketing_opt_in%5D=false'),
+      stripeRequestBody,
+    );
   }
 
   console.log(`\n${pass} passed, ${fail} failed`);

@@ -190,6 +190,18 @@ export async function onRequest({ request, env }) {
       totalAmount: fullSession.amount_total ?? 0,
       paymentStatus: fullSession.payment_status,
       fulfillmentStatus: 'unfulfilled',
+      // Set at checkout (checkout.html's "Note me when new pieces are
+      // released" checkbox), carried through Stripe Session metadata since
+      // nothing else survives from the browser request to here. Anything
+      // other than the literal strings 'true'/'false' (missing metadata on
+      // an older session, a tampered value, etc.) resolves to
+      // undefined -> NULL in insertOrder — never silently treated as
+      // consent.
+      marketingOptIn: fullSession.metadata?.marketing_opt_in === 'true'
+        ? true
+        : fullSession.metadata?.marketing_opt_in === 'false'
+          ? false
+          : undefined,
       createdAt: new Date(session.created * 1000).toISOString(),
       updatedAt: new Date().toISOString(),
     };

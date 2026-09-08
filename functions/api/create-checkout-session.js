@@ -125,6 +125,12 @@ export async function onRequest({ request, env }) {
   // ── Build the Stripe Checkout Session payload ──────────────────────────────────
   const taxEnabled = env.STRIPE_TAX_ENABLED === 'true';
   const attribution = sanitizeAttribution(body.attribution);
+  // "Note me when new pieces are released" checkbox on checkout.html. Only
+  // a strict boolean is trusted — anything else (missing field, a string,
+  // etc.) is recorded as false rather than guessed at. This is the ONLY
+  // signal that survives to stripe-webhook.js (Stripe strips unknown
+  // fields from the Session object it hands back), so it must be set here.
+  const marketingOptIn = body.marketingOptIn === true;
 
   const payload = {
     mode: 'payment',
@@ -159,6 +165,7 @@ export async function onRequest({ request, env }) {
       shipping_quote_country: shippingAddress.country,
       shipping_quote_region: shippingAddress.region,
       shipping_quote_zip: shippingAddress.zip,
+      marketing_opt_in: marketingOptIn ? 'true' : 'false',
       ...attribution,
     },
     shipping_options: [{

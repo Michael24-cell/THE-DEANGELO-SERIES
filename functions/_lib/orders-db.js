@@ -63,15 +63,21 @@ export async function insertOrder(env, order) {
       shipping_name, shipping_address_line1, shipping_address_line2, shipping_city,
       shipping_state, shipping_postal_code, shipping_country,
       currency, subtotal_amount, shipping_amount, tax_amount, total_amount,
-      payment_status, fulfillment_status, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      payment_status, fulfillment_status, marketing_opt_in, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   ).bind(
     order.id, order.publicOrderNumber, order.stripeCheckoutSessionId, order.stripePaymentIntentId ?? null,
     order.customerEmail, order.customerName ?? null,
     order.shippingName ?? null, order.shippingAddressLine1 ?? null, order.shippingAddressLine2 ?? null, order.shippingCity ?? null,
     order.shippingState ?? null, order.shippingPostalCode ?? null, order.shippingCountry ?? null,
     order.currency, order.subtotalAmount, order.shippingAmount ?? 0, order.taxAmount ?? 0, order.totalAmount,
-    order.paymentStatus, order.fulfillmentStatus ?? 'unfulfilled', order.createdAt, order.updatedAt,
+    order.paymentStatus, order.fulfillmentStatus ?? 'unfulfilled',
+    // Tri-state, not a plain boolean default: NULL means "unknown/predates
+    // this field," which must never be treated as consent. Only an
+    // explicit true/false from Stripe Session metadata (set at checkout)
+    // resolves to 1/0 here.
+    order.marketingOptIn === true ? 1 : order.marketingOptIn === false ? 0 : null,
+    order.createdAt, order.updatedAt,
   ).run();
 }
 

@@ -497,7 +497,7 @@
             <input type="email" id="checkoutEmail" placeholder="you@email.com">
           </div>
           <label class="check">
-            <input type="checkbox" checked>
+            <input type="checkbox" id="marketingOptIn">
             <span>Note me when new pieces are released. One email per series, never anything else.</span>
           </label>
         </div>
@@ -936,6 +936,7 @@
         return { slug: it.slug, size: it.size, color: it.color || undefined, quantity: it.qty || 1 };
       });
       var email = (document.getElementById('checkoutEmail').value || '').trim();
+      var marketingOptIn = !!document.getElementById('marketingOptIn').checked;
 
       var shippingAddress = getShippingAddress();
       if (!shippingAddressComplete(shippingAddress)) {
@@ -968,7 +969,7 @@
       fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: items, email: email || undefined, shippingOptionId: shippingOptionId, shippingAddress: shippingAddress, attribution: attribution }),
+        body: JSON.stringify({ items: items, email: email || undefined, marketingOptIn: marketingOptIn, shippingOptionId: shippingOptionId, shippingAddress: shippingAddress, attribution: attribution }),
       })
         .then(function (res) {
           return res.json().then(function (data) { return { ok: res.ok, data: data }; });
