@@ -508,9 +508,10 @@
     { n:"01", title:"Venezia", garment:"Tee", price:"$64", slug:"tee", type:"tee", colors:["White","Black"],
       model:"venezia tee white model.png", flat:"venezia tee white.png",
       desc:"Oversized cotton tee. Sourced from Venezia — watercolor, 1979. Direct-to-garment print, water-based inks." },
-    // Hoodie pulled from the site for now (unrelated to voting/pricing —
-    // see functions/_lib/catalog.js for why). Re-add this plate entry to
-    // bring it back once relinked on Printify's side.
+    // Venezia Hoodie removed from the site entirely 2026-09-08 (owner:
+    // "we only have tees and crews right now") — see functions/_lib/
+    // catalog.js. Do not re-add without the owner confirming a real,
+    // live Printify product for it first.
     { n:"03", title:"Venezia", garment:"Crewneck", price:"$84", slug:"crew", type:"sweatshirt", colors:["White","Black"],
       model:"venezia crew model front.png", flat:"venezia crewneck.png",
       desc:"Heavyweight fleece crewneck. Dropped shoulder, ribbed cuffs and waistband, boxy crew neck." },
@@ -527,10 +528,10 @@
       model:"villa-d-este model.png", flat:"villa-d-este tee.png",
       desc:"A 1980 vintage Kodak slide of the terraced fountains at Tivoli, Italy, caught mid-cascade down a dim stone stairway. Garment-dyed drop-shoulder tee, vintage-washed cotton, printed vertically across the back." },
     { n:"17", title:"Århus, The Old Town", garment:"Crewneck", price:"$84", slug:"arhus-old-town-crew", type:"sweatshirt", colors:["Black"],
-      model:"arhus the old town crew.png", flat:"arhus the old town crew.png",
+      model:"arhus the old town crew model.png", flat:"arhus the old town crew.png",
       desc:"A 1980 vintage Kodak slide from Århus, Denmark. Heavyweight fleece crewneck, dropped shoulder, ribbed cuffs and waistband, printed across the back." },
     { n:"16", title:"Wind & Sea", garment:"Crewneck", price:"$84", slug:"wind-sea-crew", type:"sweatshirt", colors:["Black"],
-      model:"wind & sea crew.png", flat:"wind & sea crew.png",
+      model:"wind & sea crew model.png", flat:"wind & sea crew.png",
       desc:"\"Valley Vista to the Ocean\" — painted by Tony DeAngelo in New York, 1999. Heavyweight fleece crewneck, dropped shoulder, ribbed cuffs and waistband, printed across the back." },
     { n:"13", title:"Waves of Life", garment:"Crewneck", price:"$84", slug:"waves-of-life-crew", type:"sweatshirt", colors:["White","Black"],
       model:"waves of life white crew model.png", flat:"waves of life white crew.png",
@@ -732,7 +733,7 @@
 
   const CATEGORY_KEYS = [
     { words: ['tee','tees'], filter: 'tee' },
-    { words: ['sweatshirt','sweatshirts','hoodie','hoodies','crewneck','crewnecks','crew','fleece'], filter: 'sweatshirt' }
+    { words: ['sweatshirt','sweatshirts','crewneck','crewnecks','crew','fleece'], filter: 'sweatshirt' }
   ];
 
   function detectCategory(q) {

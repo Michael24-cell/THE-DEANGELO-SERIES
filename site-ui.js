@@ -110,8 +110,7 @@
 
   /* ---- size guide data (flat measures / in), per garment ----------------
      Mirrors the real per-product tables on product.html (#sgTee/#sgCrew) \u2014
-     same source numbers, not a separate/placeholder set. Hoodie has no
-     confirmed measurements yet, matching product.html's "coming soon". */
+     same source numbers, not a separate/placeholder set. */
   var SIZE_GUIDES = {
     tee: {
       label: "Tee",
@@ -127,18 +126,17 @@
       label: "Crewneck",
       sizes: ["S", "M", "L", "XL", "2XL", "3XL"],
       rows: [
-        ["Width", ["21.00", "23.00", "25.00", "26.50", "28.00", "29.50"]],
-        ["Length", ["27.50", "28.50", "29.50", "30.50", "31.50", "32.50"]],
-        ["Sleeve from center back", ["31.50", "33.50", "35.25", "36.75", "38.25", "39.25"]]
+        ["Body Length", ["28.50", "29.50", "30.50", "31.50", "32.50", "33.50"]],
+        ["Body Length Tolerance", ["1.00", "1.00", "1.00", "1.00", "1.00", "1.00"]],
+        ["Chest Width (Laid Flat)", ["21.00", "23.00", "24.50", "26.50", "27.50", "28.50"]],
+        ["Chest Tolerance", ["1.00", "1.00", "1.00", "1.00", "1.00", "1.00"]],
+        ["Sleeve Length (From Center Back)", ["35.50", "36.50", "37.50", "38.50", "39.50", "40.50"]],
+        ["Sleeve Tolerance", ["1.00", "1.00", "1.00", "1.00", "1.00", "1.00"]]
       ],
-      tolerance: "1.5\""
-    },
-    hoodie: {
-      label: "Hoodie",
-      comingSoon: true
+      tolerance: "1\""
     }
   };
-  var SIZE_GUIDE_ORDER = ["tee", "crew", "hoodie"];
+  var SIZE_GUIDE_ORDER = ["tee", "crew"];
 
   /* ---- swatch backgrounds (reuse the site's hatch placeholder look) ------ */
   function swatchBg(kind) {

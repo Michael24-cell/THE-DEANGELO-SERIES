@@ -20,7 +20,6 @@ import { CATALOG } from './_lib/catalog.js';
 // product.html's own client-side JS (the ?p= product-switch script).
 const DESCRIPTIONS = {
   tee: 'Series 01 — Venezia Tee. An original watercolor translated onto a heavyweight cotton t-shirt.',
-  hoodie: 'Series 01 — Venezia Hoodie. An original watercolor translated onto a heavyweight fleece hoodie.',
   crew: 'Series 01 — Venezia Crewneck. An original watercolor translated onto a heavyweight fleece crewneck.',
   'arhus-old-town-tee': 'Series 01 — Århus, The Old Town Tee. A 1980 vintage Kodak slide from Århus, Denmark, printed on a heavyweight cotton shirt.',
   'wind-sea-tee': 'Series 01 — Wind & Sea Tee. "Valley Vista to the Ocean," painted by Tony DeAngelo in New York, 1999, printed on a heavyweight cotton shirt.',

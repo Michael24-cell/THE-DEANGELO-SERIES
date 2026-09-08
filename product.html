@@ -653,7 +653,7 @@
           <dl>
             <div class="meta-pair">
               <dt>Edition</dt>
-              <dd id="editionDesc">Series 01 &mdash; Venezia. Three wearable pieces from a single artwork.</dd>
+              <dd id="editionDesc">Series 01 &mdash; Venezia. Two wearable pieces from a single artwork.</dd>
             </div>
             <div class="meta-pair">
               <dt>Authenticity</dt>
@@ -691,18 +691,16 @@
                   <tr><th></th><th>S</th><th>M</th><th>L</th><th>XL</th><th>2XL</th><th>3XL</th></tr>
                 </thead>
                 <tbody>
-                  <tr><td>Width</td><td>21.00</td><td>23.00</td><td>25.00</td><td>26.50</td><td>28.00</td><td>29.50</td></tr>
-                  <tr><td>Length</td><td>27.50</td><td>28.50</td><td>29.50</td><td>30.50</td><td>31.50</td><td>32.50</td></tr>
-                  <tr><td>Sleeve from center back</td><td>31.50</td><td>33.50</td><td>35.25</td><td>36.75</td><td>38.25</td><td>39.25</td></tr>
-                  <tr><td>Size tolerance</td><td>1.50</td><td>1.50</td><td>1.50</td><td>1.50</td><td>1.50</td><td>1.50</td></tr>
+                  <tr><td>Body Length</td><td>28.50</td><td>29.50</td><td>30.50</td><td>31.50</td><td>32.50</td><td>33.50</td></tr>
+                  <tr><td>Body Length Tolerance</td><td>1.00</td><td>1.00</td><td>1.00</td><td>1.00</td><td>1.00</td><td>1.00</td></tr>
+                  <tr><td>Chest Width (Laid Flat)</td><td>21.00</td><td>23.00</td><td>24.50</td><td>26.50</td><td>27.50</td><td>28.50</td></tr>
+                  <tr><td>Chest Tolerance</td><td>1.00</td><td>1.00</td><td>1.00</td><td>1.00</td><td>1.00</td><td>1.00</td></tr>
+                  <tr><td>Sleeve Length (From Center Back)</td><td>35.50</td><td>36.50</td><td>37.50</td><td>38.50</td><td>39.50</td><td>40.50</td></tr>
+                  <tr><td>Sleeve Tolerance</td><td>1.00</td><td>1.00</td><td>1.00</td><td>1.00</td><td>1.00</td><td>1.00</td></tr>
                 </tbody>
               </table>
             </div>
-            <p class="sg-note">All measurements in inches &nbsp;&middot;&nbsp; Tolerance &plusmn;1.5"</p>
-          </div>
-
-          <div id="sgHoodie" style="display:none">
-            <p class="sg-note">Size chart coming soon.</p>
+            <p class="sg-note">All measurements in inches &nbsp;&middot;&nbsp; Tolerance &plusmn;1"</p>
           </div>
 
         </div></div>
@@ -942,9 +940,8 @@ purchase label. Do not enable public submission before those controls exist.
     //    the garment (wordmark) by default and its flat lay — this third
     //    slot instead shows the back-print model shot ("Back"). The other
     //    artworks' crewnecks have no back-shot photography yet, so they
-    //    fall through to the Hoodie case below (null) until they do.
-    //  - Hoodie: no third photo exists — thirdImageFor() returns null and
-    //    the caller hides that frame entirely.
+    //    return null (no third photo — the caller hides that frame
+    //    entirely) until they do.
     var FRONT_IMAGE_BY_COLOR = {
       White: 'deangelo series front white.png',
       Black: 'deangelo series front black.png',
@@ -955,7 +952,6 @@ purchase label. Do not enable public submission before those controls exist.
     function thirdImageFor(p, colorName) {
       if (p.garment === 'Crewneck' && p.title === 'Venezia') return { src: CREW_BACK_IMAGE, label: 'Back' };
       if (p.garment === 'Crewneck') return null;
-      if (p.garment === 'Hoodie') return null;
       return { src: FRONT_IMAGE_BY_COLOR[colorName] || FRONT_IMAGE_BY_COLOR.White, label: 'Front' };
     }
 
@@ -965,10 +961,6 @@ purchase label. Do not enable public submission before those controls exist.
           { name:'White', model:'venezia tee white model.png', flat:'venezia tee white.png' },
           { name:'Black', model:'venezia tee black model.png', flat:'venezia tee black.png' }
         ] },
-      // unavailable: its Printify product was deleted (404) 2026-08-20 —
-      // see functions/_lib/catalog.js. Piece stays documented/viewable,
-      // just not purchasable, until it's relinked on Printify's side.
-      hoodie: { title:'Venezia', artwork:'Artwork 01', plate:'02', garment:'Hoodie',   price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png', sizes:['S','M','L','XL','2XL'], unavailable:true },
       crew:   { title:'Venezia', artwork:'Artwork 01', plate:'03', garment:'Crewneck', price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'venezia crew model front.png',   flat:'venezia crewneck.png',   sizes:['S','M','L','XL','2XL','3XL'],
         colors: [
           { name:'White', model:'venezia crew model front.png', flat:'venezia crewneck.png' },
@@ -1019,20 +1011,15 @@ purchase label. Do not enable public submission before those controls exist.
           { name:'Bone', model:'palatine hill crew bone model.png', flat:'palatine hill crew bone.png' },
           { name:'White', model:'palatine hill crew white model.png', flat:'palatine hill crew white.png' }
         ] },
-      // Only a flat lay exists for this one — no model (person) shot yet.
-      // Reusing the flat for both slots until one is photographed.
-      'wind-sea-crew': { title:'Wind & Sea', artwork:'Artwork 03', plate:'16', garment:'Crewneck', price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'wind & sea crew.png', flat:'wind & sea crew.png', sizes:['S','M','L','XL','2XL','3XL'] },
-      // Only a flat lay exists for this one — no model (person) shot yet.
-      // Reusing the flat for both slots until one is photographed.
-      'arhus-old-town-crew': { title:'Århus, The Old Town', artwork:'Artwork 02', plate:'17', garment:'Crewneck', price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'arhus the old town crew.png', flat:'arhus the old town crew.png', sizes:['S','M','L','XL','2XL','3XL'] },
+      'wind-sea-crew': { title:'Wind & Sea', artwork:'Artwork 03', plate:'16', garment:'Crewneck', price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'wind & sea crew model.png', flat:'wind & sea crew.png', sizes:['S','M','L','XL','2XL','3XL'] },
+      'arhus-old-town-crew': { title:'Århus, The Old Town', artwork:'Artwork 02', plate:'17', garment:'Crewneck', price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'arhus the old town crew model.png', flat:'arhus the old town crew.png', sizes:['S','M','L','XL','2XL','3XL'] },
       'new-york-crew': { title:'New York', artwork:'Artwork 11', plate:'18', garment:'Crewneck', price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'new york crew model.png', flat:'new york crew.png', sizes:['S','M','L','XL','2XL','3XL'] }
     };
     var p = PRODS[key] || PRODS.tee;
 
     var EDITION_DESC = {
-      tee: 'Series 01 — Venezia Tee. A heavyweight cotton t-shirt, one of three wearable pieces from a single artwork.',
-      hoodie: 'Series 01 — Venezia Hoodie. A heavyweight fleece hoodie, one of three wearable pieces from a single artwork.',
-      crew: 'Series 01 — Venezia Crewneck. A heavyweight fleece crewneck, one of three wearable pieces from a single artwork.',
+      tee: 'Series 01 — Venezia Tee. A heavyweight cotton t-shirt, one of two wearable pieces from a single artwork.',
+      crew: 'Series 01 — Venezia Crewneck. A heavyweight fleece crewneck, one of two wearable pieces from a single artwork.',
       'arhus-old-town-tee': 'Series 01 — Århus, The Old Town Tee. A 1980 vintage Kodak slide from Århus, Denmark.',
       'wind-sea-tee': 'Series 01 — Wind & Sea Tee. "Valley Vista to the Ocean," painted by Tony DeAngelo in New York, 1999.',
       'waves-of-life-tee': 'Series 01 — Waves of Life Tee. "Crashing waves of life," painted by Tony DeAngelo in New York, 1990.',
@@ -1052,8 +1039,8 @@ purchase label. Do not enable public submission before those controls exist.
     var editionEl = document.getElementById('editionDesc');
     if (editionEl) editionEl.textContent = EDITION_DESC[key] || EDITION_DESC.tee;
 
-    // The Source — per-artwork story. Venezia products (tee/hoodie/crew)
-    // keep their existing, unchanged copy. Århus gets its own confirmed
+    // The Source — per-artwork story. Venezia products (tee/crew) keep
+    // their existing, unchanged copy. Århus gets its own confirmed
     // artwork description and garment description — never Venezia's.
     var VENEZIA_SOURCE = {
       artImg: 'Venezia-Original.png',
@@ -1071,9 +1058,8 @@ purchase label. Do not enable public submission before those controls exist.
       provArtworkAside: 'Venezia — water color on textured paper, 1979.',
       provPrintedAside: 'Direct-to-garment print. Water-based inks.'
     };
-    var VENEZIA_SOURCE_HOODIE = Object.assign({}, VENEZIA_SOURCE, { signatureImg: '' });
     var SOURCE = {
-      tee: VENEZIA_SOURCE, crew: VENEZIA_SOURCE, hoodie: VENEZIA_SOURCE_HOODIE,
+      tee: VENEZIA_SOURCE, crew: VENEZIA_SOURCE,
       'arhus-old-town-tee': {
         artImg: 'arhus-source.jpg',
         artAlt: 'Århus, The Old Town — Original Photograph',
@@ -1410,7 +1396,8 @@ purchase label. Do not enable public submission before those controls exist.
     tFlat.style.backgroundImage = "url('" + p.flat + "')";
 
     // Third gallery image — hidden entirely for products with none
-    // available (currently just the hoodie).
+    // available (every crewneck except Venezia's, until back-shot
+    // photography exists for them).
     var frameFrontWrap = document.getElementById('frameFrontWrap');
     var frontImg = document.getElementById('frameFront');
     var tFront = document.getElementById('thumbFront');
@@ -1513,16 +1500,16 @@ purchase label. Do not enable public submission before those controls exist.
     }).join('');
 
     // Size chart — show the correct table for this product
-    ['sgTee','sgCrew','sgHoodie'].forEach(function(id) {
+    ['sgTee','sgCrew'].forEach(function(id) {
       var el = document.getElementById(id);
       if (el) el.style.display = 'none';
     });
-    var SIZE_CHART_ID = { tee:'sgTee', hoodie:'sgHoodie', crew:'sgCrew', 'arhus-old-town-tee':'sgTee', 'wind-sea-tee':'sgTee', 'waves-of-life-tee':'sgTee', 'villa-d-este-tee':'sgTee', 'the-wedge-tee':'sgTee', 'leaning-tower-of-pisa-tee':'sgTee', 'piazza-san-marco-tee':'sgTee', 'palatine-hill-tee':'sgTee', 'ostia-antica-tee':'sgTee', 'waves-of-life-crew':'sgCrew', 'villa-d-este-crew':'sgCrew', 'palatine-hill-crew':'sgCrew', 'wind-sea-crew':'sgCrew', 'arhus-old-town-crew':'sgCrew', 'new-york-crew':'sgCrew' };
+    var SIZE_CHART_ID = { tee:'sgTee', crew:'sgCrew', 'arhus-old-town-tee':'sgTee', 'wind-sea-tee':'sgTee', 'waves-of-life-tee':'sgTee', 'villa-d-este-tee':'sgTee', 'the-wedge-tee':'sgTee', 'leaning-tower-of-pisa-tee':'sgTee', 'piazza-san-marco-tee':'sgTee', 'palatine-hill-tee':'sgTee', 'ostia-antica-tee':'sgTee', 'waves-of-life-crew':'sgCrew', 'villa-d-este-crew':'sgCrew', 'palatine-hill-crew':'sgCrew', 'wind-sea-crew':'sgCrew', 'arhus-old-town-crew':'sgCrew', 'new-york-crew':'sgCrew' };
     var chartEl = document.getElementById(SIZE_CHART_ID[key]);
     if (chartEl) chartEl.style.display = '';
 
     // Footer/sidebar "Size Guide" links should open pre-selected to this
-    // product's own garment (tee/hoodie/crew), not always default to tee.
+    // product's own garment (tee/crew), not always default to tee.
     var sizeGuideGarment = (SIZE_CHART_ID[key] || 'sgTee').replace('sg', '').toLowerCase();
     [].forEach.call(document.querySelectorAll('[data-size-guide]'), function(a) {
       a.setAttribute('data-size-guide-garment', sizeGuideGarment);
@@ -1531,16 +1518,12 @@ purchase label. Do not enable public submission before those controls exist.
     // Per-product details
     var DETAILS = {
       // Material/fit/print confirmed against Printify's own blueprint specs
-      // (GET /v1/catalog/blueprints/1723.json for tee, /1296.json for crew)
+      // (GET /v1/catalog/blueprints/1723.json for tee, /6992.json for crew)
       // and print_providers.json for the blueprint, which lists "dtg" as the
-      // only decoration method for every provider on this account (Ink
-      // Blot/74, Printify Choice/99) -- there is no screen-printing option
-      // at all, so "hand-pulled screen print" was never accurate. Hoodie is
-      // currently unmapped (no live Printify product), so its material/fit
-      // are left non-specific rather than inventing numbers with nothing to
-      // verify them against.
+      // only decoration method for every provider on this account -- there
+      // is no screen-printing option at all, so "hand-pulled screen print"
+      // was never accurate.
       tee:    { material:'100% USA cotton, medium-weight (7.5oz/yd²). Garment-dyed for a soft, vintage, worn-in look.', fit:'Oversized drop-shoulder silhouette. Double-needle stitched collar, forward-thrusted shoulder seam.', print:'Direct-to-garment print, water-based inks. Back placement.' },
-      hoodie: { material:'Garment-dyed fleece.', fit:'Relaxed pullover silhouette, dropped shoulder.', print:'Direct-to-garment print, water-based inks. Back placement.' },
       crew:   { material:'70% ring-spun cotton, 30% polyester, heavyweight fleece (10oz/yd²), 100% cotton face.', fit:'Generous, relaxed crewneck fit. Double-needle stitched seams, twill neck tape, 1x1 ribbed cuff and waistband.', print:'Direct-to-garment print, water-based inks. Back placement.' },
       'arhus-old-town-tee': { material:'Garment-dyed, vintage-washed cotton.', fit:'Relaxed drop-shoulder silhouette.', print:'Printed vertically across the back.' },
       'wind-sea-tee': { material:'Garment-dyed, vintage-washed cotton.', fit:'Relaxed drop-shoulder silhouette.', print:'Printed vertically across the back.' },
@@ -1691,7 +1674,7 @@ purchase label. Do not enable public submission before those controls exist.
     });
     [...thumbs.querySelectorAll('.thumb')].forEach(t => t.classList.toggle('is-active', t === btn));
     // Counted among only the currently-visible thumbs, so products without
-    // a front shot (currently just the hoodie) correctly show "/ 02".
+    // a third shot correctly show "/ 02".
     const visibleThumbs = [...thumbs.querySelectorAll('.thumb')].filter(t => t.style.display !== 'none');
     const idx = visibleThumbs.indexOf(btn) + 1;
     counter.textContent = `0${idx} / 0${visibleThumbs.length}`;
@@ -1733,9 +1716,9 @@ purchase label. Do not enable public submission before those controls exist.
     { title:'Venezia', garment:'Tee', price:'$64', slug:'tee', model:'venezia tee white model.png', colors:['White','Black'] },
     { title:'Venezia', garment:'Crewneck', price:'$84', slug:'crew', model:'venezia crew model front.png', colors:['White','Black'] },
     { title:'Århus, The Old Town', garment:'Tee', price:'$64', slug:'arhus-old-town-tee', model:'the old town model.png', colors:['Black'] },
-    { title:'Århus, The Old Town', garment:'Crewneck', price:'$84', slug:'arhus-old-town-crew', model:'arhus the old town crew.png', colors:['Black'] },
+    { title:'Århus, The Old Town', garment:'Crewneck', price:'$84', slug:'arhus-old-town-crew', model:'arhus the old town crew model.png', colors:['Black'] },
     { title:'Wind & Sea', garment:'Tee', price:'$64', slug:'wind-sea-tee', model:'wind & sea tee model.png', colors:['Black'] },
-    { title:'Wind & Sea', garment:'Crewneck', price:'$84', slug:'wind-sea-crew', model:'wind & sea crew.png', colors:['Black'] },
+    { title:'Wind & Sea', garment:'Crewneck', price:'$84', slug:'wind-sea-crew', model:'wind & sea crew model.png', colors:['Black'] },
     { title:'Waves of Life', garment:'Tee', price:'$64', slug:'waves-of-life-tee', model:'waves of life tee model.png', colors:['White','Black'] },
     { title:'Waves of Life', garment:'Crewneck', price:'$84', slug:'waves-of-life-crew', model:'waves of life white crew model.png', colors:['White','Black'] },
     { title:'Villa d\'Este', garment:'Tee', price:'$64', slug:'villa-d-este-tee', model:'villa-d-este model.png', colors:['Black'] },

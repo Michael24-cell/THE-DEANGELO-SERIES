@@ -6,14 +6,18 @@
 // Audited against product.html / collection.html / index.html on 2026-07-25 —
 // all three prices agree everywhere on the site (no conflicting values found):
 //   Venezia Tee       $64.00 base / $68.00 at 2XL
-//   Venezia Hoodie     $84.00 base / $88.00 at 2XL
 //   Venezia Crewneck   $84.00 base / $88.00 at 2XL, 3XL
+//
+// Venezia Hoodie was removed from the catalog and the site entirely on
+// 2026-09-08 (owner: "we only have tees and crews right now") — it had
+// been unmapped/unsellable since its Printify product was deleted
+// 2026-08-20 anyway. Do not re-add a `hoodie` entry without the owner
+// first confirming a real, live Printify product for it.
 //
 // Printify mapping confirmed live via GET /v1/shops/26931439/products.json on
 // 2026-07-31 and re-confirmed 2026-08-03 after the Printify product rename:
 //   crew   -> "Venezia Crewneck"                       (superseded 2026-09-08,
 //     see `crew` below — owner switched to a different crew blank)
-//   hoodie -> "Three-Panel Fleece Hoodie"               (unchanged)
 //   arhus-old-town-tee -> "Arhus, The Old Town - Tee"   (renamed in Printify
 //     from "Anhor The Old Town Tee" — same product ID 6a3cab048606da46840fa2e7,
 //     same print provider (74), same 5 enabled Black variant IDs/SKUs. This
@@ -23,9 +27,8 @@
 //
 // `tee` (Venezia Tee) was incorrectly mapped to the Arhus Printify product
 // in an earlier version of this file, then went unmapped entirely once that
-// was caught — it briefly could not be fulfilled at all (hoodie is
-// currently in that same unmapped state; see below). A real "Venezia Tee"
-// product now exists in Printify (White + Black) — confirmed live via
+// was caught — it briefly could not be fulfilled at all. A real "Venezia
+// Tee" product now exists in Printify (White + Black) — confirmed live via
 // GET /v1/shops/26931439/products/6a9e5512d4f10211ae0c5568.json on
 // 2026-09-08, blueprint 1723 / print provider 99 — a different provider
 // from the standalone artwork tees' 74, and (as of the same day) from
@@ -33,23 +36,16 @@
 // other product's fulfillment mapping for `tee` going forward.
 //
 // Only the Printify variants the owner confirmed as final are mapped below.
-// The Three-Panel Fleece Hoodie also has enabled XS and 3XL variants in
-// Printify that are NOT included here, because the site's own sizes/pricing
-// (product.html, collection.html, index.html) only ever offered S-2XL for
-// the hoodie and no upcharge price exists for a 3XL/XS tier — adding them
-// would mean inventing a retail price, which is not this pass's job. Flag
-// for the owner: if XS/3XL hoodie should be sellable, decide pricing first,
-// then extend `sizes` and the price fields below together.
 //
-// 2026-09-08: owner added four more crewnecks in Printify, all on the same
-// blank as the new `crew` (blueprint 6992 / print provider 217, confirmed
-// live per-product below). `waves-of-life-crew`, `villa-d-este-crew`, and
-// `palatine-hill-crew` are mapped using the $84/$88 crew price point (no
-// separate pricing decision communicated, so it follows the one established
-// crew price like every new tee has followed the established tee price).
-// `wind-sea-crew` is NOT mapped — its Printify product only has Black/Army
-// enabled, but the one photo provided isn't labeled by color and has no
-// model shot; flagged for the owner rather than guessed at.
+// 2026-09-08: owner added several more crewnecks in Printify, all on the
+// same blank as the new `crew` (blueprint 6992 / print provider 217,
+// confirmed live per-product below): `waves-of-life-crew`,
+// `villa-d-este-crew`, `palatine-hill-crew`, `wind-sea-crew`,
+// `arhus-old-town-crew`, and `new-york-crew` (a new artwork — Chrysler
+// Building + Empire State Building dual-panel print). All mapped using the
+// $84/$88 crew price point (no separate pricing decision communicated, so
+// each follows the one established crew price, like every new tee has
+// followed the established tee price).
 
 export const CATALOG = {
   tee: {
@@ -467,28 +463,6 @@ export const CATALOG = {
       },
     },
   },
-  hoodie: {
-    name: 'Venezia — Hoodie',
-    image: 'https://thedeangeloseries.com/Venezia-Hoodie-m.png',
-    currency: 'usd',
-    sizes: ['S', 'M', 'L', 'XL', '2XL'],
-    colors: ['White'],
-    basePrice: 8400,
-    upchargePrice: 8800,
-    upchargeSizes: ['2XL'],
-    stripeTaxCode: 'txcd_30011000',
-    // The Printify product this used to map to ("Three-Panel Fleece
-    // Hoodie", 6a220095de5d2b9583031b16) was deleted from Printify —
-    // confirmed 404 via GET /v1/shops/26931439/products/
-    // 6a220095de5d2b9583031b16.json on 2026-08-20. hasCompletePrintifyMapping
-    // now correctly refuses to quote/ship this product (matches `tee`'s
-    // existing unmapped state below) until it's relinked to a real
-    // Printify product and re-confirmed. Do not restore the old IDs
-    // below without re-verifying them live — they may no longer exist.
-    // Last known mapping, for reference only:
-    //   printProviderId: 99, variantIdBySize: { S:68051, M:68052, L:68053, XL:68054, '2XL':68055 }
-    printify: null,
-  },
   crew: {
     name: 'Venezia — Crewneck',
     image: 'https://thedeangeloseries.com/venezia%20crew%20model%20front.png',
@@ -673,7 +647,7 @@ export const CATALOG = {
   },
   'arhus-old-town-crew': {
     name: 'Århus, The Old Town — Crewneck',
-    image: 'https://thedeangeloseries.com/arhus%20the%20old%20town%20crew.png',
+    image: 'https://thedeangeloseries.com/arhus%20the%20old%20town%20crew%20model.png',
     currency: 'usd',
     sizes: ['S', 'M', 'L', 'XL', '2XL', '3XL'],
     colors: ['Black'],
@@ -736,7 +710,7 @@ export const CATALOG = {
   },
   'wind-sea-crew': {
     name: 'Wind & Sea — Crewneck',
-    image: 'https://thedeangeloseries.com/wind%20%26%20sea%20crew.png',
+    image: 'https://thedeangeloseries.com/wind%20%26%20sea%20crew%20model.png',
     currency: 'usd',
     sizes: ['S', 'M', 'L', 'XL', '2XL', '3XL'],
     colors: ['Black'],

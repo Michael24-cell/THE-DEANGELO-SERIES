@@ -1,13 +1,18 @@
-// Proves the live storefront cannot complete a purchase of a product with no
-// confirmed Printify mapping (currently: Venezia Hoodie, `hoodie` in
-// functions/_lib/catalog.js — `printify: null`, pulled from the site after
-// its Printify product was deleted; see catalog.js for the full story).
-// Shipping is mandatory (functions/api/create-checkout-session.js) and the
-// shipping quote path (functions/_lib/printify.js's getShippingRates)
-// refuses any cart containing an unmapped item — so the request fails before
-// a Stripe Checkout Session is ever created. This test exercises the REAL
-// onRequest() end-to-end with a stubbed fetch, and asserts Stripe's API was
-// never called at all.
+// Proves the live storefront cannot complete a purchase of a product that
+// isn't in the trusted catalog at all — e.g. `hoodie`, removed from
+// functions/_lib/catalog.js entirely on 2026-09-08 (we only sell tees and
+// crews now; see catalog.js for the full story). Shipping is mandatory
+// (functions/api/create-checkout-session.js) and validateCartItems() rejects
+// any unknown slug before a shipping quote or Stripe Checkout Session is
+// ever attempted. This test exercises the REAL onRequest() end-to-end with a
+// stubbed fetch, and asserts Stripe's API was never called at all.
+//
+// Note: this no longer exercises the `printify: null` (known product,
+// incomplete mapping) guard specifically — there is currently no live
+// catalog entry in that state to test against. Every mapped product should
+// have a real Printify mapping or not exist in the catalog at all; if a
+// product is ever added back in an unmapped state, prefer testing that
+// scenario directly against that product's slug instead of reusing this file.
 //
 // Run: node tests/checkout-unmapped-product.test.mjs (or `npm test`)
 
@@ -55,7 +60,7 @@ async function run() {
       printifyShippingCalled = true;
       // Real getShippingRates() throws PrintifyConfigError BEFORE this fetch
       // ever fires (it checks item.printify.productId/variantId first) — if
-      // this stub is ever hit for the unmapped-product case, that's itself a
+      // this stub is ever hit for the unknown-product case, that's itself a
       // regression, so it intentionally returns something that would look
       // like a valid quote if the guard were bypassed.
       return { ok: true, json: async () => ({ standard: 500 }) };
@@ -63,7 +68,7 @@ async function run() {
     throw new Error('Unexpected fetch in unmapped-product test: ' + u);
   };
 
-  console.log('--- Venezia Hoodie (unmapped): checkout session creation is refused ---');
+  console.log('--- Venezia Hoodie (removed from the catalog): checkout session creation is refused ---');
   {
     const body = {
       items: [{ slug: 'hoodie', size: 'M', color: 'White', quantity: 1 }],
