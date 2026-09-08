@@ -965,8 +965,11 @@
         /* ── MOBILE ────────────────────────────────────────────── */
         @media (max-width: 1024px) {
             /* Stacked hero must never clip the CTA: release the fixed height
-               and let content size the section. */
-            .hero { flex-direction: column; height: auto; min-height: 100vh; overflow: visible; }
+               and let content size the section. min-height:100vh fought this
+               — hero-text + hero-visual are naturally shorter than 100vh on
+               most phones, so it left a band of the body's black background
+               showing between the hero photo and the next section. */
+            .hero { flex-direction: column; height: auto; overflow: visible; }
             .hero-text { padding: 72px 48px 88px; order: 1; flex: none; }
             .hero-visual { order: 2; height: 38vh; min-height: 220px; flex: none; }
             .hero h1 { font-size: clamp(3.6rem, 13vw, 6rem); margin-bottom: 36px; }
@@ -1011,7 +1014,16 @@
 
         @media (max-width: 768px) {
             .footer-grid { grid-template-columns: 1fr; gap: 40px; }
-            nav { padding: 20px 24px; }
+            /* column-gap: even after the font-size fix below, "Menu" and
+               the cart icons sit exactly flush against the brand wordmark
+               (0px between them) at this width with no gap — reads as
+               "MENUTHE DEANGELO SERIES" with no breathing room. */
+            nav { padding: 20px 24px; column-gap: 12px; }
+            /* Without this, "THE DEANGELO SERIES" wraps onto 2 lines at
+               the desktop size (13px/.4em), making the fixed nav taller
+               than the 72px top padding .hero-text reserves for it below
+               — the hero eyebrow ends up partly hidden underneath. */
+            .nav-brand { font-size: 11px; letter-spacing: .3em; }
             .nav-cart { gap: 20px; }
             .nav-label-text { display: none; }
             .nav-label-icon { display: inline-block; }
