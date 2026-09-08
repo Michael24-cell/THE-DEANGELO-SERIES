@@ -951,16 +951,22 @@ purchase label. Do not enable public submission before those controls exist.
       Cream: 'deangelo series front white.png',
       Oatmeal: 'deangelo series front white.png',
     };
-    var CREW_BACK_IMAGE = 'venezia crew model back.png';
+    var CREW_BACK_IMAGE_BY_COLOR = {
+      White: 'venezia crew model back.png',
+      Black: 'venezia black crew model.png',
+    };
     var CREW_FRONT_IMAGE = {
       'wind-sea-crew': 'black crew gold type front.png',
       'villa-d-este-crew': 'black crew gold type front.png',
       'arhus-old-town-crew': 'black crew white type.png',
-      'waves-of-life-crew': { White: 'white crew black text.png' },
+      'waves-of-life-crew': { White: 'white crew black text.png', Black: 'black crew white type.png' },
       'palatine-hill-crew': { White: 'white crew black text.png' },
     };
     function thirdImageFor(p, colorName, slug) {
-      if (p.garment === 'Crewneck' && p.title === 'Venezia') return { src: CREW_BACK_IMAGE, label: 'Back' };
+      if (p.garment === 'Crewneck' && p.title === 'Venezia') {
+        var backSrc = CREW_BACK_IMAGE_BY_COLOR[colorName] || CREW_BACK_IMAGE_BY_COLOR.White;
+        return { src: backSrc, label: 'Back' };
+      }
       if (p.garment === 'Crewneck') {
         var frontSpec = CREW_FRONT_IMAGE[slug];
         var frontSrc = typeof frontSpec === 'string' ? frontSpec : (frontSpec && frontSpec[colorName]);
@@ -978,7 +984,7 @@ purchase label. Do not enable public submission before those controls exist.
       crew:   { title:'Venezia', artwork:'Artwork 01', plate:'03', garment:'Crewneck', price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'venezia crew model front.png',   flat:'venezia crewneck.png',   sizes:['S','M','L','XL','2XL','3XL'],
         colors: [
           { name:'White', model:'venezia crew model front.png', flat:'venezia crewneck.png' },
-          { name:'Black', model:'venezia black crew model.png', flat:'venezia black crew.png' }
+          { name:'Black', model:'black crew gold type front.png', flat:'black crew gold type front.png' }
         ] },
       'arhus-old-town-tee': { title:'Århus, The Old Town', artwork:'Artwork 02', plate:'04', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'the old town model.png', flat:'arhus the old town tee.png', sizes:['S','M','L','XL','2XL'], frontColor:'Black' },
       'wind-sea-tee': { title:'Wind & Sea', artwork:'Artwork 03', plate:'05', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'wind & sea tee model.png', flat:'wind & sea tee.png', sizes:['S','M','L','XL','2XL'], frontColor:'Black' },

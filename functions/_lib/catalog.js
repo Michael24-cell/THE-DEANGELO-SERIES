@@ -470,7 +470,7 @@ export const CATALOG = {
     // color is known (see resolveProductImage / validateCartItems below).
     imagesByColor: {
       White: 'https://thedeangeloseries.com/venezia%20crew%20model%20front.png',
-      Black: 'https://thedeangeloseries.com/venezia%20black%20crew%20model.png',
+      Black: 'https://thedeangeloseries.com/black%20crew%20gold%20type%20front.png',
     },
     currency: 'usd',
     sizes: ['S', 'M', 'L', 'XL', '2XL', '3XL'],
