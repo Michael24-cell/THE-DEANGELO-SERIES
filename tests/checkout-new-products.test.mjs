@@ -74,6 +74,12 @@ async function run() {
       email: 'buyer@example.com',
       shippingOptionId: 'standard',
       shippingAddress: VALID_ADDRESS,
+      attribution: {
+        utm_source: 'facebook',
+        utm_medium: 'social',
+        utm_campaign: 'series_01_launch',
+        fbclid: 'must-not-reach-stripe',
+      },
     };
     const res = await onRequest({ request: makeRequest(body), env: makeEnv() });
     const responseBody = await res.json();
@@ -101,6 +107,13 @@ async function run() {
       'Stripe line item price came from CATALOG, not the request body (unit_amount = basePrice for a non-upcharge size)',
       typeof stripeRequestBody === 'string' && stripeRequestBody.includes(`unit_amount%5D=${entry.basePrice}`),
     );
+    ok(
+      'allowlisted campaign attribution reaches Stripe Session metadata',
+      stripeRequestBody.includes('metadata%5Butm_source%5D=facebook') &&
+        stripeRequestBody.includes('metadata%5Butm_campaign%5D=series_01_launch'),
+      stripeRequestBody,
+    );
+    ok('Facebook click IDs are not forwarded to Stripe', !stripeRequestBody.includes('fbclid'), stripeRequestBody);
   }
 
   console.log(`\n${pass} passed, ${fail} failed`);

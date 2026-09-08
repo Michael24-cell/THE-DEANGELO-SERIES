@@ -40,6 +40,8 @@ function makeSession({ id, paymentStatus = 'paid', paymentIntentId }) {
     metadata: {
       shipping_option_id: 'standard',
       shipping_quote_country: 'US', shipping_quote_region: 'CA', shipping_quote_zip: '95014',
+      utm_source: 'facebook', utm_medium: 'social', utm_campaign: 'series_01_launch',
+      order_source: 'thedeangeloseries.com',
     },
     customer_details: { email: 'buyer@example.com', name: 'Test Buyer' },
     shipping_details: {
@@ -118,6 +120,15 @@ async function run() {
     ok('order_confirmed email sent', db._tables.email_events.some((e) => e.email_type === 'order_confirmed'));
     ok('estimated_margin_amount still null (Printify costs unknown)', order.estimated_margin_amount === null, order.estimated_margin_amount);
     ok('financials_updated_at stamped even though margin is null', typeof order.financials_updated_at === 'string');
+    const completedEvent = db._tables.status_events.find((event) => event.event_type === 'checkout.session.completed');
+    const completedSummary = completedEvent ? JSON.parse(completedEvent.safe_summary_json) : {};
+    ok(
+      'completed-order D1 event stores allowlisted campaign attribution',
+      completedSummary.attribution?.utm_source === 'facebook' &&
+        completedSummary.attribution?.utm_campaign === 'series_01_launch' &&
+        !('order_source' in completedSummary.attribution),
+      completedSummary,
+    );
   }
 
   console.log('\n--- Unpaid Stripe Session: Printify order is NOT created, no confirmation email ---');

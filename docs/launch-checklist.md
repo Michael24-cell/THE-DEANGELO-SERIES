@@ -103,9 +103,27 @@ REPLY_TO_EMAIL=                                 # Optional — overrides SUPPORT
 
 ## Analytics & Tracking
 
-- [ ] **Google Analytics or Plausible** — Add tracking before launch
-- [ ] **Meta Pixel** — Add if running paid social ads
-- [ ] **Update Privacy Policy** — Add analytics tool names once confirmed
+- [x] **Cloudflare Web Analytics** — Enabled for the Pages project on September 7, 2026. Cloudflare provides aggregate, privacy-first traffic/performance reporting; it does not provide campaign conversion attribution. Cloudflare will inject the analytics beacon beginning with the next deployment.
+- [x] **First-party campaign attribution** — Allowlisted `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, and `utm_term` values plus referring hostname and landing path are retained in the browser for up to 30 days, copied into Stripe Checkout metadata, and recorded in the completed order's D1 status-event summary. Raw referrer URLs and `fbclid` are not stored.
+- [x] **Privacy Policy updated** — Cloudflare Web Analytics and first-party campaign attribution are disclosed. Google Analytics and Meta Pixel are explicitly not installed.
+- [ ] **Use tagged campaign links** — Example Facebook launch URL: `https://thedeangeloseries.com/?utm_source=facebook&utm_medium=social&utm_campaign=series_01_launch&utm_content=tony_post`
+- [ ] **Meta Pixel (optional)** — Install only if paid-ad retargeting is needed; update consent/privacy handling before enabling it.
+
+Completed-order attribution can be summarized from D1 without a schema change:
+
+```sql
+SELECT
+  json_extract(se.safe_summary_json, '$.attribution.utm_source') AS source,
+  json_extract(se.safe_summary_json, '$.attribution.utm_campaign') AS campaign,
+  COUNT(*) AS orders,
+  SUM(o.total_amount) AS revenue_cents
+FROM status_events se
+JOIN orders o ON o.id = se.order_id
+WHERE se.source = 'stripe'
+  AND se.event_type = 'checkout.session.completed'
+  AND o.payment_status = 'paid'
+GROUP BY source, campaign;
+```
 
 ## Pre-Launch QA
 

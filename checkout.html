@@ -943,6 +943,15 @@
         return;
       }
       var shippingOptionId = selectedShippingOptionId;
+      var attribution;
+      try {
+        var savedAttribution = JSON.parse(localStorage.getItem('deangelo_attribution_v1') || 'null');
+        if (savedAttribution && savedAttribution.data && Number(savedAttribution.expiresAt) > Date.now()) {
+          attribution = savedAttribution.data;
+        }
+      } catch (e) {
+        attribution = undefined;
+      }
 
       submitBtn.disabled = true;
       document.getElementById('checkoutSubmitLabel').textContent = 'Redirecting to Stripe…';
@@ -950,7 +959,7 @@
       fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: items, email: email || undefined, shippingOptionId: shippingOptionId, shippingAddress: shippingAddress }),
+        body: JSON.stringify({ items: items, email: email || undefined, shippingOptionId: shippingOptionId, shippingAddress: shippingAddress, attribution: attribution }),
       })
         .then(function (res) {
           return res.json().then(function (data) { return { ok: res.ok, data: data }; });

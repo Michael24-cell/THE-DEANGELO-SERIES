@@ -57,6 +57,7 @@ import { createPrintifyOrder, PrintifyConfigError, PrintifyApiError } from '../_
 import { fetchExpandedCheckoutSession, fetchStripeFeeAndNet } from '../_lib/stripe.js';
 import { orderConfirmedTemplate, printifyFailureAlertTemplate } from '../_lib/email-templates.js';
 import { tryNormalizeUSState } from '../_lib/address.js';
+import { attributionFromStripeMetadata } from '../_lib/attribution.js';
 import {
   claimWebhookEvent, findOrderByStripeSession, insertOrder, insertOrderItems,
   updateOrder, updateOrderFinancials, recordStatusEvent, sendOrderEmailOnce, orderNumberFromSession,
@@ -138,6 +139,7 @@ export async function onRequest({ request, env }) {
   }
 
   const orderNumber = orderNumberFromSession(session.id);
+  const attribution = attributionFromStripeMetadata(fullSession.metadata);
   let order = await findOrderByStripeSession(env, session.id);
 
   if (!order) {
@@ -197,7 +199,12 @@ export async function onRequest({ request, env }) {
     await recordStatusEvent(env, {
       orderId: newOrder.id, source: 'stripe', externalEventId: event.id,
       eventType: event.type,
-      safeSummary: { orderNumber, amountTotal: newOrder.totalAmount, itemCount: lineItems.length },
+      safeSummary: {
+        orderNumber,
+        amountTotal: newOrder.totalAmount,
+        itemCount: lineItems.length,
+        ...(Object.keys(attribution).length ? { attribution } : {}),
+      },
     });
 
     order = await findOrderByStripeSession(env, session.id);

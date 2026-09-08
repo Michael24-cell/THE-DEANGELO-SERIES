@@ -56,6 +56,7 @@
 import { validateCartItems, CatalogValidationError } from '../_lib/catalog.js';
 import { validateAddress, AddressValidationError } from '../_lib/address.js';
 import { getShippingRates } from '../_lib/printify.js';
+import { sanitizeAttribution } from '../_lib/attribution.js';
 
 const ALLOWED_SHIP_COUNTRIES = ['US'];
 const SHIPPING_LABELS = { standard: 'Standard shipping', economy: 'Economy shipping' };
@@ -123,6 +124,7 @@ export async function onRequest({ request, env }) {
 
   // ── Build the Stripe Checkout Session payload ──────────────────────────────────
   const taxEnabled = env.STRIPE_TAX_ENABLED === 'true';
+  const attribution = sanitizeAttribution(body.attribution);
 
   const payload = {
     mode: 'payment',
@@ -157,6 +159,7 @@ export async function onRequest({ request, env }) {
       shipping_quote_country: shippingAddress.country,
       shipping_quote_region: shippingAddress.region,
       shipping_quote_zip: shippingAddress.zip,
+      ...attribution,
     },
     shipping_options: [{
       shipping_rate_data: {

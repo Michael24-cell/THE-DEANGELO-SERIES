@@ -30,6 +30,64 @@
     sans: "'Inter',sans-serif"
   };
 
+  /* ---- first-party campaign attribution ---------------------------------
+     Stores only campaign labels, the landing path, and an external referring
+     hostname for up to 30 days. Raw referrer URLs and click IDs (including
+     fbclid) are deliberately not retained. A newly tagged visit replaces the
+     previous attribution, giving us a simple last-campaign view. */
+  var ATTRIBUTION_KEY = "deangelo_attribution_v1";
+  var ATTRIBUTION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+  var ATTRIBUTION_FIELDS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
+
+  function cleanAttributionValue(value, maxLength) {
+    return String(value || "").replace(/[\u0000-\u001f\u007f]/g, "").trim().slice(0, maxLength || 100);
+  }
+
+  function readAttribution() {
+    try {
+      var saved = JSON.parse(localStorage.getItem(ATTRIBUTION_KEY) || "null");
+      if (!saved || !saved.data || Number(saved.expiresAt) <= Date.now()) {
+        localStorage.removeItem(ATTRIBUTION_KEY);
+        return null;
+      }
+      return saved.data;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function captureAttribution() {
+    try {
+      var params = new URLSearchParams(window.location.search);
+      var data = {};
+      ATTRIBUTION_FIELDS.forEach(function (field) {
+        var value = cleanAttributionValue(params.get(field), 100);
+        if (value) data[field] = value;
+      });
+
+      if (document.referrer) {
+        var referrer = new URL(document.referrer);
+        if (referrer.hostname && referrer.hostname !== window.location.hostname) {
+          data.referrer_host = cleanAttributionValue(referrer.hostname, 253);
+        }
+      }
+
+      if (Object.keys(data).length) {
+        data.landing_path = cleanAttributionValue(window.location.pathname || "/", 255);
+        localStorage.setItem(ATTRIBUTION_KEY, JSON.stringify({
+          data: data,
+          capturedAt: Date.now(),
+          expiresAt: Date.now() + ATTRIBUTION_TTL_MS
+        }));
+      }
+    } catch (e) {
+      // Attribution must never interfere with shopping or checkout.
+    }
+  }
+
+  captureAttribution();
+  window.DeangeloAttribution = { get: readAttribution };
+
   /* ---- menu information architecture (expandable dropdown groups) ------- */
   var MENU_GROUPS = [
     { label: "Shop", items: [
