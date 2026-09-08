@@ -310,6 +310,7 @@
     font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-mute);
   }
   .source-sign .name{color:var(--ink);letter-spacing:.25em}
+  .source-sign .sign-img{height:32px;width:auto;display:block;align-self:center}
 
   /* ── PROVENANCE STRIP (black) ──────────────────────────────── */
   .provenance{
@@ -717,23 +718,22 @@
     <div>
       <div class="source-art"><img id="sourceArtImg" src="Venezia-Original.png" alt="Venezia — Original Artwork, Tony DeAngelo, 1979"></div>
       <div class="source-art-caption">
-        <span id="sourceCaptionMedium">Venezia · Watercolor</span>
+        <span id="sourceCaptionMedium">Venezia · No. 01</span>
         <span id="sourceCaptionYear">1979</span>
       </div>
     </div>
 
     <div class="source-copy">
       <span class="eyebrow" id="sourceEyebrow">The Source &nbsp;/&nbsp; Artwork 01</span>
-      <h2 class="source-title" id="sourceTitle">Watercolor, <em>1979</em></h2>
-      <p class="source-medium" id="sourceMedium">Venezia — Artwork No. 01</p>
-      <p class="source-pull" id="sourcePull">"The source image becomes the garment."</p>
+      <h2 class="source-title" id="sourceTitle">Venezia <em>1979</em></h2>
+      <p class="source-medium" id="sourceMedium">Isola di San Giorgio Maggiore, Venice Italy</p>
+      <p class="source-pull" id="sourcePull">Water Color on Textured Paper.</p>
       <div class="source-body" id="sourceBody">
-        <p>Isola di San Giorgio Maggiore, Venice. Artwork 01 is translated onto heavyweight cotton, documented, and archived.</p>
+        <p>Artwork 01 is translated onto heavyweight cotton, documented, and archived.</p>
       </div>
       <div class="source-sign" id="sourceSign">
         <span>By</span>
-        <span class="name">Tony DeAngelo</span>
-        <span>· Watercolor · 1979</span>
+        <img class="sign-img" src="tony-deangelo-signature.png" alt="Tony DeAngelo signature">
       </div>
     </div>
   </div>
@@ -745,7 +745,7 @@
     <div class="prov-item">
       <div class="prov-label">Artwork</div>
       <div class="prov-value" id="provArtworkValue">No. <em>01</em></div>
-      <div class="prov-aside" id="provArtworkAside">Venezia — watercolor, 1979.</div>
+      <div class="prov-aside" id="provArtworkAside">Venezia — water color on textured paper, 1979.</div>
     </div>
     <div class="prov-item">
       <div class="prov-label">Printed</div>
@@ -1029,21 +1029,22 @@
     var VENEZIA_SOURCE = {
       artImg: 'Venezia-Original.png',
       artAlt: 'Venezia — Original Artwork, Tony DeAngelo, 1979',
-      captionMedium: 'Venezia · Water Color on Textured Paper',
+      captionMedium: 'Venezia · No. 01',
       captionYear: '1979',
       eyebrow: 'The Source · Artwork 01',
-      titleHtml: 'Watercolor, <em>1979</em>',
-      medium: 'Venezia — Artwork No. 01',
-      pull: '"Isola di San Giorgio Maggiore, Venice."',
-      bodyHtml: '<p>Isola di San Giorgio Maggiore, Venice. Artwork 01 is translated onto heavyweight cotton, documented, and archived.</p>',
+      titleHtml: 'Venezia <em>1979</em>',
+      medium: 'Isola di San Giorgio Maggiore, Venice Italy',
+      pull: 'Water Color on Textured Paper.',
+      bodyHtml: '<p>Artwork 01 is translated onto heavyweight cotton, documented, and archived.</p>',
       signName: 'Tony DeAngelo',
-      signMeta: '· Watercolor · 1979',
+      signatureImg: 'tony-deangelo-signature.png',
       provArtworkValueHtml: 'No. <em>01</em>',
-      provArtworkAside: 'Venezia — watercolor, 1979.',
+      provArtworkAside: 'Venezia — water color on textured paper, 1979.',
       provPrintedAside: 'Direct-to-garment print. Water-based inks.'
     };
+    var VENEZIA_SOURCE_HOODIE = Object.assign({}, VENEZIA_SOURCE, { signatureImg: '' });
     var SOURCE = {
-      tee: VENEZIA_SOURCE, hoodie: VENEZIA_SOURCE, crew: VENEZIA_SOURCE,
+      tee: VENEZIA_SOURCE, crew: VENEZIA_SOURCE, hoodie: VENEZIA_SOURCE_HOODIE,
       'arhus-old-town-tee': {
         artImg: 'Arhus, The Old Town.png',
         artAlt: 'Århus, The Old Town — Original Photograph',
@@ -1055,8 +1056,8 @@
         pull: 'A quiet corner of Denmark, held on film since 1980.',
         bodyHtml: '<p>A 1980 vintage Kodak slide from Århus, Denmark — a quiet, narrow passage opening onto sunlit tiled rooftops and timbered buildings in the city\'s old town.</p>' +
           '<p>Printed vertically across the back of a garment-dyed drop-shoulder tee, the photograph is paired with a relaxed silhouette and vintage-washed cotton.</p>',
-        signName: '',
-        signMeta: '',
+        signName: 'Tony DeAngelo',
+        signatureImg: '',
         provArtworkValueHtml: 'No. <em>02</em>',
         provArtworkAside: 'Århus, The Old Town, 1980.',
         provPrintedAside: ''
@@ -1072,8 +1073,8 @@
         pull: '"Valley Vista to the Ocean."',
         bodyHtml: '<p>Wind & Sea holds a valley vista opening toward the ocean — painted by Tony DeAngelo in water-based latex on canvas, New York, 1999.</p>' +
           '<p>Printed vertically across the back of a garment-dyed drop-shoulder tee, the artwork is paired with a relaxed silhouette and vintage-washed cotton.</p>',
-        signName: '',
-        signMeta: '',
+        signName: 'Tony DeAngelo',
+        signatureImg: '',
         provArtworkValueHtml: 'No. <em>03</em>',
         provArtworkAside: 'Wind & Sea, 1999.',
         provPrintedAside: ''
@@ -1089,8 +1090,8 @@
         pull: '"Crashing waves of life."',
         bodyHtml: '<p>Waves of Life holds crashing waves rendered in pastel on textured paper — painted by Tony DeAngelo in New York, 1990.</p>' +
           '<p>Printed vertically across the back of a garment-dyed drop-shoulder tee, the artwork is paired with a relaxed silhouette and vintage-washed cotton.</p>',
-        signName: '',
-        signMeta: '',
+        signName: 'Tony DeAngelo',
+        signatureImg: '',
         provArtworkValueHtml: 'No. <em>04</em>',
         provArtworkAside: 'Waves of Life, 1990.',
         provPrintedAside: ''
@@ -1106,8 +1107,8 @@
         pull: 'A thousand fountains, caught mid-fall.',
         bodyHtml: '<p>A 1980 vintage Kodak slide of the terraced fountains at Villa d\'Este, Tivoli, Italy — water caught mid-cascade down a dim stone stairway, framed by dense garden shadow.</p>' +
           '<p>Printed vertically across the back of a garment-dyed drop-shoulder tee, the photograph is paired with a relaxed silhouette and vintage-washed cotton.</p>',
-        signName: '',
-        signMeta: '',
+        signName: 'Tony DeAngelo',
+        signatureImg: '',
         provArtworkValueHtml: 'No. <em>05</em>',
         provArtworkAside: 'Villa d\'Este, 1980.',
         provPrintedAside: ''
@@ -1123,8 +1124,8 @@
         pull: '"By Water or By Air."',
         bodyHtml: '<p>The Wedge holds a scene titled "By Water or By Air" — painted by Tony DeAngelo in watercolor on textured paper, New York, 1990.</p>' +
           '<p>Printed vertically across the back of a garment-dyed drop-shoulder tee, the artwork is paired with a relaxed silhouette and vintage-washed cotton.</p>',
-        signName: '',
-        signMeta: '',
+        signName: 'Tony DeAngelo',
+        signatureImg: '',
         provArtworkValueHtml: 'No. <em>06</em>',
         provArtworkAside: 'The Wedge, 1990.',
         provPrintedAside: ''
@@ -1140,8 +1141,8 @@
         pull: 'Eight centuries off balance, and still standing.',
         bodyHtml: '<p>A 1980 vintage Kodak slide of Pisa\'s cathedral square — the bell tower caught leaning against a low, overcast sky, its marble tiers stacked slightly off true, a flaw the centuries turned into its signature.</p>' +
           '<p>Printed vertically across the back of a garment-dyed drop-shoulder tee, the photograph is paired with a relaxed silhouette and vintage-washed cotton.</p>',
-        signName: '',
-        signMeta: '',
+        signName: 'Tony DeAngelo',
+        signatureImg: '',
         provArtworkValueHtml: 'No. <em>07</em>',
         provArtworkAside: 'Leaning Tower of Pisa, 1980.',
         provPrintedAside: ''
@@ -1157,8 +1158,8 @@
         pull: 'The square empties, and the basilica remains.',
         bodyHtml: '<p>A 1980 vintage Kodak slide of Venice\'s central square — the domes and arches of St. Mark\'s Basilica rising above a scattering of figures crossing the stone at midday.</p>' +
           '<p>Printed vertically across the back of a garment-dyed drop-shoulder tee, the photograph is paired with a relaxed silhouette and vintage-washed cotton.</p>',
-        signName: '',
-        signMeta: '',
+        signName: 'Tony DeAngelo',
+        signatureImg: '',
         provArtworkValueHtml: 'No. <em>08</em>',
         provArtworkAside: 'Piazza San Marco, 1980.',
         provPrintedAside: ''
@@ -1174,8 +1175,8 @@
         pull: 'Rome\'s oldest quarter, still standing at the edge of itself.',
         bodyHtml: '<p>A 1980 vintage Kodak slide of Palatine Hill, Rome — a brick retaining wall curves through the ruins, columns and overgrowth framing the path where Rome is said to have begun.</p>' +
           '<p>Printed vertically across the back of a garment-dyed drop-shoulder tee, the photograph is paired with a relaxed silhouette and vintage-washed cotton.</p>',
-        signName: '',
-        signMeta: '',
+        signName: 'Tony DeAngelo',
+        signatureImg: '',
         provArtworkValueHtml: 'No. <em>09</em>',
         provArtworkAside: 'Palatine Hill, 1980.',
         provPrintedAside: ''
@@ -1191,8 +1192,8 @@
         pull: 'Rome\'s ancient port, quiet now beneath the pines.',
         bodyHtml: '<p>A 1980 vintage Kodak slide of Ostia Antica, the excavated Roman port city — sun-bleached brick and columns rising from the grass where Rome once met the sea.</p>' +
           '<p>Printed vertically across the back of a garment-dyed drop-shoulder tee, the photograph is paired with a relaxed silhouette and vintage-washed cotton.</p>',
-        signName: '',
-        signMeta: '',
+        signName: 'Tony DeAngelo',
+        signatureImg: '',
         provArtworkValueHtml: 'No. <em>10</em>',
         provArtworkAside: 'Ostia Antica, 1980.',
         provPrintedAside: ''
@@ -1223,7 +1224,9 @@
     if (sourceSign) {
       sourceSign.style.display = src.signName ? '' : 'none';
       if (src.signName) {
-        sourceSign.innerHTML = '<span>By</span><span class="name">' + src.signName + '</span><span>' + src.signMeta + '</span>';
+        sourceSign.innerHTML = src.signatureImg
+          ? '<span>By</span><img class="sign-img" src="' + src.signatureImg + '" alt="' + src.signName + ' signature">'
+          : '<span>By</span><span class="name">' + src.signName + '</span>';
       }
     }
     var provArtworkValue = document.getElementById('provArtworkValue');
