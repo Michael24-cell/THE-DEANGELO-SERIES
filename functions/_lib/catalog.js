@@ -40,6 +40,16 @@
 // would mean inventing a retail price, which is not this pass's job. Flag
 // for the owner: if XS/3XL hoodie should be sellable, decide pricing first,
 // then extend `sizes` and the price fields below together.
+//
+// 2026-09-08: owner added four more crewnecks in Printify, all on the same
+// blank as the new `crew` (blueprint 6992 / print provider 217, confirmed
+// live per-product below). `waves-of-life-crew`, `villa-d-este-crew`, and
+// `palatine-hill-crew` are mapped using the $84/$88 crew price point (no
+// separate pricing decision communicated, so it follows the one established
+// crew price like every new tee has followed the established tee price).
+// `wind-sea-crew` is NOT mapped — its Printify product only has Black/Army
+// enabled, but the one photo provided isn't labeled by color and has no
+// model shot; flagged for the owner rather than guessed at.
 
 export const CATALOG = {
   tee: {
@@ -482,6 +492,12 @@ export const CATALOG = {
   crew: {
     name: 'Venezia — Crewneck',
     image: 'https://thedeangeloseries.com/venezia%20crew%20model%20front.png',
+    // Multi-color product — imagesByColor overrides `image` above once a
+    // color is known (see resolveProductImage / validateCartItems below).
+    imagesByColor: {
+      White: 'https://thedeangeloseries.com/venezia%20crew%20model%20front.png',
+      Black: 'https://thedeangeloseries.com/venezia%20black%20crew%20model.png',
+    },
     currency: 'usd',
     sizes: ['S', 'M', 'L', 'XL', '2XL', '3XL'],
     // Owner switched to a different crew blank in Printify — a new "Venezia
@@ -491,34 +507,175 @@ export const CATALOG = {
     // "Venezia Crewneck" product (6a3372e03f9ce13ae30dad09, blueprint 1296,
     // provider 99) below for fulfillment going forward; the old product is
     // still live in Printify but should no longer be used for new orders.
-    // The new blank also has an enabled Black variant, but the owner has no
-    // product photo for it yet — so `colors` stays White-only here until a
-    // Black photo exists to add it (Black's variant IDs/SKUs, for when that
-    // day comes: XS 302561/19904676273536124822, S 302545/30182333857985978858,
-    // M 302531/88905436260879305175, L 302589/17141653211059328898,
-    // XL 302574/32631943490500188808, 2XL 302567/28218533546371128973,
-    // 3XL 302591/46653753990831510091).
-    colors: ['White'],
+    // Black photography arrived 2026-09-08 too, so Black is now sellable
+    // alongside White.
+    colors: ['White', 'Black'],
     basePrice: 8400,
     upchargePrice: 8800,
     upchargeSizes: ['2XL', '3XL'],
     stripeTaxCode: 'txcd_30011000',
     printify: {
-      productId: '6a9fe5355f7ad524a40565b1', // Venezia - Crew (new blank)
-      printProviderId: 217,
-      variantIdBySize: {
-        S: 302521, M: 302513, L: 302520, XL: 302515, '2XL': 302523, '3XL': 302524,
+      White: {
+        productId: '6a9fe5355f7ad524a40565b1', // Venezia - Crew (new blank)
+        printProviderId: 217,
+        variantIdBySize: {
+          S: 302521, M: 302513, L: 302520, XL: 302515, '2XL': 302523, '3XL': 302524,
+        },
+        skuBySize: {
+          S: '91012257067515697560',
+          M: '25757851784377805035',
+          L: '32726095027082297765',
+          XL: '32107334401092782977',
+          '2XL': '13170274534679742688',
+          '3XL': '29660179369702066481',
+        },
       },
-      skuBySize: {
-        S: '91012257067515697560',
-        M: '25757851784377805035',
-        L: '32726095027082297765',
-        XL: '32107334401092782977',
-        '2XL': '13170274534679742688',
-        '3XL': '29660179369702066481',
+      Black: {
+        productId: '6a9fe5355f7ad524a40565b1',
+        printProviderId: 217,
+        variantIdBySize: {
+          S: 302545, M: 302531, L: 302589, XL: 302574, '2XL': 302567, '3XL': 302591,
+        },
+        skuBySize: {
+          S: '30182333857985978858',
+          M: '88905436260879305175',
+          L: '17141653211059328898',
+          XL: '32631943490500188808',
+          '2XL': '28218533546371128973',
+          '3XL': '46653753990831510091',
+        },
       },
     },
   },
+  // The following three crewnecks share their artwork with an existing tee
+  // but are new, separate Printify products on the same blank as `crew`
+  // (blueprint 6992 / print provider 217) — confirmed live via GET
+  // /v1/shops/26931439/products/<id>.json on 2026-09-08.
+  'waves-of-life-crew': {
+    name: 'Waves of Life — Crewneck',
+    image: 'https://thedeangeloseries.com/waves%20of%20life%20white%20crew%20model.png',
+    imagesByColor: {
+      White: 'https://thedeangeloseries.com/waves%20of%20life%20white%20crew%20model.png',
+      Black: 'https://thedeangeloseries.com/waves%20of%20life%20black%20crew%20model.png',
+    },
+    currency: 'usd',
+    sizes: ['S', 'M', 'L', 'XL', '2XL', '3XL'],
+    colors: ['White', 'Black'],
+    basePrice: 8400,
+    upchargePrice: 8800,
+    upchargeSizes: ['2XL', '3XL'],
+    stripeTaxCode: 'txcd_30011000',
+    printify: {
+      White: {
+        productId: '6a9fe605bc34f118ec0c0dcf', // Waves of Life - Crew
+        printProviderId: 217,
+        variantIdBySize: {
+          S: 302521, M: 302513, L: 302520, XL: 302515, '2XL': 302523, '3XL': 302524,
+        },
+        skuBySize: {
+          S: '29119757201151975291',
+          M: '57692161196383247295',
+          L: '15464678002865028802',
+          XL: '44180192412178348671',
+          '2XL': '29242422410352700449',
+          '3XL': '22687787694258549930',
+        },
+      },
+      Black: {
+        productId: '6a9fe605bc34f118ec0c0dcf',
+        printProviderId: 217,
+        variantIdBySize: {
+          S: 302545, M: 302531, L: 302589, XL: 302574, '2XL': 302567, '3XL': 302591,
+        },
+        skuBySize: {
+          S: '22736343838288129172',
+          M: '37699821672057282530',
+          L: '21024423051152749955',
+          XL: '28862464186417954905',
+          '2XL': '26396439374364675711',
+          '3XL': '32017588879662978040',
+        },
+      },
+    },
+  },
+  'villa-d-este-crew': {
+    name: 'Villa d\'Este — Crewneck',
+    image: 'https://thedeangeloseries.com/villa%20de%20este%20crew%20model.png',
+    currency: 'usd',
+    sizes: ['S', 'M', 'L', 'XL', '2XL', '3XL'],
+    colors: ['Black'],
+    basePrice: 8400,
+    upchargePrice: 8800,
+    upchargeSizes: ['2XL', '3XL'],
+    stripeTaxCode: 'txcd_30011000',
+    printify: {
+      productId: '6a9fe9c8d56a26f23102ba12', // Villa d'Este - Crew
+      printProviderId: 217,
+      variantIdBySize: {
+        S: 302545, M: 302531, L: 302589, XL: 302574, '2XL': 302567, '3XL': 302591,
+      },
+      skuBySize: {
+        S: '40394226663133073671',
+        M: '69383662554205481552',
+        L: '25964686052420482088',
+        XL: '15422456814516688819',
+        '2XL': '10048003294752558143',
+        '3XL': '72477095391136231976',
+      },
+    },
+  },
+  'palatine-hill-crew': {
+    name: 'Palatine Hill — Crewneck',
+    image: 'https://thedeangeloseries.com/palatine%20hill%20crew%20bone%20model.png',
+    imagesByColor: {
+      Bone: 'https://thedeangeloseries.com/palatine%20hill%20crew%20bone%20model.png',
+      White: 'https://thedeangeloseries.com/palatine%20hill%20crew%20white%20model.png',
+    },
+    currency: 'usd',
+    sizes: ['S', 'M', 'L', 'XL', '2XL', '3XL'],
+    colors: ['Bone', 'White'],
+    basePrice: 8400,
+    upchargePrice: 8800,
+    upchargeSizes: ['2XL', '3XL'],
+    stripeTaxCode: 'txcd_30011000',
+    printify: {
+      Bone: {
+        productId: '6a9febc85f7ad524a4056bf1', // Palatine Hill - Crew
+        printProviderId: 217,
+        variantIdBySize: {
+          S: 302562, M: 302556, L: 302606, XL: 302616, '2XL': 302595, '3XL': 302611,
+        },
+        skuBySize: {
+          S: '10780123537964188804',
+          M: '12603913763236409896',
+          L: '18297422357316383269',
+          XL: '29710740351753515270',
+          '2XL': '68135581867638654352',
+          '3XL': '49870724194002749117',
+        },
+      },
+      White: {
+        productId: '6a9febc85f7ad524a4056bf1',
+        printProviderId: 217,
+        variantIdBySize: {
+          S: 302521, M: 302513, L: 302520, XL: 302515, '2XL': 302523, '3XL': 302524,
+        },
+        skuBySize: {
+          S: '10457376986952169679',
+          M: '90789715234040162726',
+          L: '32029417296947443872',
+          XL: '13680404561100117113',
+          '2XL': '16077978525983830138',
+          '3XL': '33239454707610930947',
+        },
+      },
+    },
+  },
+  // Wind & Sea also got a new Crew product in Printify (6a9feaf3bc34f118e
+  // c0c1230, same blueprint/provider), but it's deliberately NOT mapped
+  // yet: its enabled colors are Black and Army, and the only photo the
+  // owner provided ("wind & sea crew.png") isn't labeled by color and has
+  // no matching model shot — see the flag raised in chat 2026-09-08.
 };
 
 export const MAX_LINE_ITEMS = 20;

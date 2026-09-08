@@ -929,6 +929,7 @@ purchase label. Do not enable public submission before those controls exist.
       Black: '#141414',
       Cream: '#EFE6D2',
       Oatmeal: '#DDD0B4',
+      Bone: '#E4DCC8',
     };
 
     // Third gallery image/thumb, alongside the existing Model/Flat shots.
@@ -937,9 +938,11 @@ purchase label. Do not enable public submission before those controls exist.
     //    ("Front"). Cream/Oatmeal have no front photography of their own
     //    yet, so they reuse White (same pattern as their back-print
     //    model/flat shots).
-    //  - Venezia Crewneck: Model/Flat above show the FRONT of the garment
-    //    (wordmark) by default and its flat lay — this third slot instead
-    //    shows the back-print model shot ("Back").
+    //  - Venezia Crewneck specifically: Model/Flat above show the FRONT of
+    //    the garment (wordmark) by default and its flat lay — this third
+    //    slot instead shows the back-print model shot ("Back"). The other
+    //    artworks' crewnecks have no back-shot photography yet, so they
+    //    fall through to the Hoodie case below (null) until they do.
     //  - Hoodie: no third photo exists — thirdImageFor() returns null and
     //    the caller hides that frame entirely.
     var FRONT_IMAGE_BY_COLOR = {
@@ -950,7 +953,8 @@ purchase label. Do not enable public submission before those controls exist.
     };
     var CREW_BACK_IMAGE = 'venezia crew model back.png';
     function thirdImageFor(p, colorName) {
-      if (p.garment === 'Crewneck') return { src: CREW_BACK_IMAGE, label: 'Back' };
+      if (p.garment === 'Crewneck' && p.title === 'Venezia') return { src: CREW_BACK_IMAGE, label: 'Back' };
+      if (p.garment === 'Crewneck') return null;
       if (p.garment === 'Hoodie') return null;
       return { src: FRONT_IMAGE_BY_COLOR[colorName] || FRONT_IMAGE_BY_COLOR.White, label: 'Front' };
     }
@@ -965,7 +969,11 @@ purchase label. Do not enable public submission before those controls exist.
       // see functions/_lib/catalog.js. Piece stays documented/viewable,
       // just not purchasable, until it's relinked on Printify's side.
       hoodie: { title:'Venezia', artwork:'Artwork 01', plate:'02', garment:'Hoodie',   price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'Venezia-Hoodie-m.png', flat:'Venezia-hoodie.png', sizes:['S','M','L','XL','2XL'], unavailable:true },
-      crew:   { title:'Venezia', artwork:'Artwork 01', plate:'03', garment:'Crewneck', price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'venezia crew model front.png',   flat:'venezia crewneck.png',   sizes:['S','M','L','XL','2XL','3XL'] },
+      crew:   { title:'Venezia', artwork:'Artwork 01', plate:'03', garment:'Crewneck', price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'venezia crew model front.png',   flat:'venezia crewneck.png',   sizes:['S','M','L','XL','2XL','3XL'],
+        colors: [
+          { name:'White', model:'venezia crew model front.png', flat:'venezia crewneck.png' },
+          { name:'Black', model:'venezia black crew model.png', flat:'venezia black crew.png' }
+        ] },
       'arhus-old-town-tee': { title:'Århus, The Old Town', artwork:'Artwork 02', plate:'04', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'the old town model.png', flat:'arhus the old town tee.png', sizes:['S','M','L','XL','2XL'], frontColor:'Black' },
       'wind-sea-tee': { title:'Wind & Sea', artwork:'Artwork 03', plate:'05', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'wind & sea tee model.png', flat:'wind & sea tee.png', sizes:['S','M','L','XL','2XL'], frontColor:'Black' },
       'waves-of-life-tee': { title:'Waves of Life', artwork:'Artwork 04', plate:'06', garment:'Tee', price:'$64', priceNum:64, price2xl:'$68', priceNum2xl:68, model:'waves of life tee model.png', flat:'waves of life tee.png', sizes:['S','M','L','XL','2XL'],
@@ -999,6 +1007,17 @@ purchase label. Do not enable public submission before those controls exist.
         colors: [
           { name:'White', model:'ostia antica tee model.png', flat:'ostia antica tee.png' },
           { name:'Cream', model:'ostia antica tee model.png', flat:'ostia antica tee.png' }
+        ] },
+      'waves-of-life-crew': { title:'Waves of Life', artwork:'Artwork 04', plate:'13', garment:'Crewneck', price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'waves of life white crew model.png', flat:'waves of life white crew.png', sizes:['S','M','L','XL','2XL','3XL'],
+        colors: [
+          { name:'White', model:'waves of life white crew model.png', flat:'waves of life white crew.png' },
+          { name:'Black', model:'waves of life black crew model.png', flat:'waves of life black crew.png' }
+        ] },
+      'villa-d-este-crew': { title:'Villa d\'Este', artwork:'Artwork 05', plate:'14', garment:'Crewneck', price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'villa de este crew model.png', flat:'villa de este crew.png', sizes:['S','M','L','XL','2XL','3XL'] },
+      'palatine-hill-crew': { title:'Palatine Hill', artwork:'Artwork 09', plate:'15', garment:'Crewneck', price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'palatine hill crew bone model.png', flat:'palatine hill crew bone.png', sizes:['S','M','L','XL','2XL','3XL'],
+        colors: [
+          { name:'Bone', model:'palatine hill crew bone model.png', flat:'palatine hill crew bone.png' },
+          { name:'White', model:'palatine hill crew white model.png', flat:'palatine hill crew white.png' }
         ] }
     };
     var p = PRODS[key] || PRODS.tee;
@@ -1015,7 +1034,10 @@ purchase label. Do not enable public submission before those controls exist.
       'leaning-tower-of-pisa-tee': 'Series 01 — Leaning Tower of Pisa Tee. A 1980 vintage Kodak slide of Pisa, Italy.',
       'piazza-san-marco-tee': 'Series 01 — Piazza San Marco Tee. A 1980 vintage Kodak slide of Venice, Italy.',
       'palatine-hill-tee': 'Series 01 — Palatine Hill Tee. A 1980 vintage Kodak slide of Rome, Italy.',
-      'ostia-antica-tee': 'Series 01 — Ostia Antica Tee. A 1980 vintage Kodak slide of Ostia Antica, Italy.'
+      'ostia-antica-tee': 'Series 01 — Ostia Antica Tee. A 1980 vintage Kodak slide of Ostia Antica, Italy.',
+      'waves-of-life-crew': 'Series 01 — Waves of Life Crewneck. "Crashing waves of life," painted by Tony DeAngelo in New York, 1990.',
+      'villa-d-este-crew': 'Series 01 — Villa d\'Este Crewneck. A 1980 vintage Kodak slide of Tivoli, Italy.',
+      'palatine-hill-crew': 'Series 01 — Palatine Hill Crewneck. A 1980 vintage Kodak slide of Rome, Italy.'
     };
     var editionEl = document.getElementById('editionDesc');
     if (editionEl) editionEl.textContent = EDITION_DESC[key] || EDITION_DESC.tee;
@@ -1193,6 +1215,57 @@ purchase label. Do not enable public submission before those controls exist.
         signatureImg: '',
         provArtworkValueHtml: 'No. <em>10</em>',
         provArtworkAside: 'Ostia Antica, 1980.',
+        provPrintedAside: ''
+      },
+      'waves-of-life-crew': {
+        artImg: 'wavesoflife-mock.png',
+        artAlt: 'Waves of Life — Original Artwork',
+        captionMedium: 'Waves of Life · Pastel on Textured Paper',
+        captionYear: '1990',
+        eyebrow: 'The Source · Artwork 04',
+        titleHtml: 'Waves of <em>Life</em>',
+        medium: '',
+        pull: '"Crashing waves of life."',
+        bodyHtml: '<p>Waves of Life holds crashing waves rendered in pastel on textured paper — painted by Tony DeAngelo in New York, 1990.</p>' +
+          '<p>Printed across the back of a heavyweight fleece crewneck, the artwork is paired with a relaxed, generous fit and ribbed cuffs and waistband.</p>',
+        signName: 'Tony DeAngelo',
+        signatureImg: '',
+        provArtworkValueHtml: 'No. <em>04</em>',
+        provArtworkAside: 'Waves of Life, 1990.',
+        provPrintedAside: ''
+      },
+      'villa-d-este-crew': {
+        artImg: 'villa-d-este-source.jpg',
+        artAlt: 'Villa d\'Este — Original Photograph',
+        captionMedium: 'Villa d\'Este · Vintage European Kodak Slide',
+        captionYear: '1980',
+        eyebrow: 'The Source · Artwork 05',
+        titleHtml: 'Villa d\'<em>Este</em>',
+        medium: '',
+        pull: 'A thousand fountains, caught mid-fall.',
+        bodyHtml: '<p>A 1980 vintage Kodak slide of the terraced fountains at Villa d\'Este, Tivoli, Italy — water caught mid-cascade down a dim stone stairway, framed by dense garden shadow.</p>' +
+          '<p>Printed across the back of a heavyweight fleece crewneck, the photograph is paired with a relaxed, generous fit and ribbed cuffs and waistband.</p>',
+        signName: 'Tony DeAngelo',
+        signatureImg: '',
+        provArtworkValueHtml: 'No. <em>05</em>',
+        provArtworkAside: 'Villa d\'Este, 1980.',
+        provPrintedAside: ''
+      },
+      'palatine-hill-crew': {
+        artImg: 'palatine hill tee.png',
+        artAlt: 'Palatine Hill — Original Photograph',
+        captionMedium: 'Palatine Hill · Vintage European Kodak Slide',
+        captionYear: '1980',
+        eyebrow: 'The Source · Artwork 09',
+        titleHtml: 'Palatine <em>Hill</em>',
+        medium: '',
+        pull: 'Rome\'s oldest quarter, still standing at the edge of itself.',
+        bodyHtml: '<p>A 1980 vintage Kodak slide of Palatine Hill, Rome — a brick retaining wall curves through the ruins, columns and overgrowth framing the path where Rome is said to have begun.</p>' +
+          '<p>Printed across the back of a heavyweight fleece crewneck, the photograph is paired with a relaxed, generous fit and ribbed cuffs and waistband.</p>',
+        signName: 'Tony DeAngelo',
+        signatureImg: '',
+        provArtworkValueHtml: 'No. <em>09</em>',
+        provArtworkAside: 'Palatine Hill, 1980.',
         provPrintedAside: ''
       }
     };
@@ -1383,7 +1456,7 @@ purchase label. Do not enable public submission before those controls exist.
       var el = document.getElementById(id);
       if (el) el.style.display = 'none';
     });
-    var SIZE_CHART_ID = { tee:'sgTee', hoodie:'sgHoodie', crew:'sgCrew', 'arhus-old-town-tee':'sgTee', 'wind-sea-tee':'sgTee', 'waves-of-life-tee':'sgTee', 'villa-d-este-tee':'sgTee', 'the-wedge-tee':'sgTee', 'leaning-tower-of-pisa-tee':'sgTee', 'piazza-san-marco-tee':'sgTee', 'palatine-hill-tee':'sgTee', 'ostia-antica-tee':'sgTee' };
+    var SIZE_CHART_ID = { tee:'sgTee', hoodie:'sgHoodie', crew:'sgCrew', 'arhus-old-town-tee':'sgTee', 'wind-sea-tee':'sgTee', 'waves-of-life-tee':'sgTee', 'villa-d-este-tee':'sgTee', 'the-wedge-tee':'sgTee', 'leaning-tower-of-pisa-tee':'sgTee', 'piazza-san-marco-tee':'sgTee', 'palatine-hill-tee':'sgTee', 'ostia-antica-tee':'sgTee', 'waves-of-life-crew':'sgCrew', 'villa-d-este-crew':'sgCrew', 'palatine-hill-crew':'sgCrew' };
     var chartEl = document.getElementById(SIZE_CHART_ID[key]);
     if (chartEl) chartEl.style.display = '';
 
@@ -1416,7 +1489,10 @@ purchase label. Do not enable public submission before those controls exist.
       'leaning-tower-of-pisa-tee': { material:'Garment-dyed, vintage-washed cotton.', fit:'Relaxed drop-shoulder silhouette.', print:'Printed vertically across the back.' },
       'piazza-san-marco-tee': { material:'Garment-dyed, vintage-washed cotton.', fit:'Relaxed drop-shoulder silhouette.', print:'Printed vertically across the back.' },
       'palatine-hill-tee': { material:'Garment-dyed, vintage-washed cotton.', fit:'Relaxed drop-shoulder silhouette.', print:'Printed vertically across the back.' },
-      'ostia-antica-tee': { material:'Garment-dyed, vintage-washed cotton.', fit:'Relaxed drop-shoulder silhouette.', print:'Printed vertically across the back.' }
+      'ostia-antica-tee': { material:'Garment-dyed, vintage-washed cotton.', fit:'Relaxed drop-shoulder silhouette.', print:'Printed vertically across the back.' },
+      'waves-of-life-crew': { material:'70% ring-spun cotton, 30% polyester, heavyweight fleece (10oz/yd²), 100% cotton face.', fit:'Generous, relaxed crewneck fit. Double-needle stitched seams, twill neck tape, 1x1 ribbed cuff and waistband.', print:'Direct-to-garment print, water-based inks. Back placement.' },
+      'villa-d-este-crew': { material:'70% ring-spun cotton, 30% polyester, heavyweight fleece (10oz/yd²), 100% cotton face.', fit:'Generous, relaxed crewneck fit. Double-needle stitched seams, twill neck tape, 1x1 ribbed cuff and waistband.', print:'Direct-to-garment print, water-based inks. Back placement.' },
+      'palatine-hill-crew': { material:'70% ring-spun cotton, 30% polyester, heavyweight fleece (10oz/yd²), 100% cotton face.', fit:'Generous, relaxed crewneck fit. Double-needle stitched seams, twill neck tape, 1x1 ribbed cuff and waistband.', print:'Direct-to-garment print, water-based inks. Back placement.' }
     };
     var d = DETAILS[key] || DETAILS.tee;
     document.getElementById('detailMaterial').textContent = d.material;
@@ -1591,15 +1667,18 @@ purchase label. Do not enable public submission before those controls exist.
 (function() {
   var PLATES = [
     { title:'Venezia', garment:'Tee', price:'$64', slug:'tee', model:'venezia tee white model.png', colors:['White','Black'] },
-    { title:'Venezia', garment:'Crewneck', price:'$84', slug:'crew', model:'venezia crew model front.png', colors:['White'] },
+    { title:'Venezia', garment:'Crewneck', price:'$84', slug:'crew', model:'venezia crew model front.png', colors:['White','Black'] },
     { title:'Århus, The Old Town', garment:'Tee', price:'$64', slug:'arhus-old-town-tee', model:'the old town model.png', colors:['Black'] },
     { title:'Wind & Sea', garment:'Tee', price:'$64', slug:'wind-sea-tee', model:'wind & sea tee model.png', colors:['Black'] },
     { title:'Waves of Life', garment:'Tee', price:'$64', slug:'waves-of-life-tee', model:'waves of life tee model.png', colors:['White','Black'] },
+    { title:'Waves of Life', garment:'Crewneck', price:'$84', slug:'waves-of-life-crew', model:'waves of life white crew model.png', colors:['White','Black'] },
     { title:'Villa d\'Este', garment:'Tee', price:'$64', slug:'villa-d-este-tee', model:'villa-d-este model.png', colors:['Black'] },
+    { title:'Villa d\'Este', garment:'Crewneck', price:'$84', slug:'villa-d-este-crew', model:'villa de este crew model.png', colors:['Black'] },
     { title:'The Wedge', garment:'Tee', price:'$64', slug:'the-wedge-tee', model:'the wedge tee model.png', colors:['White','Cream','Oatmeal'] },
     { title:'Leaning Tower of Pisa', garment:'Tee', price:'$64', slug:'leaning-tower-of-pisa-tee', model:'leaningtowerofpisa tee model.png', colors:['White'] },
     { title:'Piazza San Marco', garment:'Tee', price:'$64', slug:'piazza-san-marco-tee', model:'piazza san marco tee model.png', colors:['White'] },
     { title:'Palatine Hill', garment:'Tee', price:'$64', slug:'palatine-hill-tee', model:'palatine hill tee model.png', colors:['White','Cream','Oatmeal'] },
+    { title:'Palatine Hill', garment:'Crewneck', price:'$84', slug:'palatine-hill-crew', model:'palatine hill crew bone model.png', colors:['Bone','White'] },
     { title:'Ostia Antica', garment:'Tee', price:'$64', slug:'ostia-antica-tee', model:'ostia antica tee model.png', colors:['White','Cream'] },
     { title:'New York Chrysler', price:'—', soon:true, model:'New york chystler hoodie.png' }
   ];

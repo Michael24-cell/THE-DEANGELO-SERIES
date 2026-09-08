@@ -17,6 +17,13 @@ const NEW_PRODUCTS = [
   { slug: 'wind-sea-tee', color: 'Black' },
   { slug: 'waves-of-life-tee', color: 'White' },
   { slug: 'waves-of-life-tee', color: 'Black' },
+  { slug: 'crew', color: 'White' },
+  { slug: 'crew', color: 'Black' },
+  { slug: 'waves-of-life-crew', color: 'White' },
+  { slug: 'waves-of-life-crew', color: 'Black' },
+  { slug: 'villa-d-este-crew', color: 'Black' },
+  { slug: 'palatine-hill-crew', color: 'Bone' },
+  { slug: 'palatine-hill-crew', color: 'White' },
 ];
 
 console.log('--- New products: every enabled size has a valid Printify variant ID + SKU ---');
@@ -69,6 +76,15 @@ console.log('\n--- New products: distinct products, not accidentally aliased to 
   ok('Wind & Sea and Waves of Life have different Printify product IDs', windSea.printify.productId !== wavesOfLife.productId);
   ok('Wind & Sea has a different Printify product ID than Arhus', windSea.printify.productId !== arhus.printify.productId);
   ok('Waves of Life has a different Printify product ID than Arhus', wavesOfLife.productId !== arhus.printify.productId);
+
+  const crewWhite = printifyMappingForColor(CATALOG.crew, 'White');
+  const wavesOfLifeCrew = printifyMappingForColor(CATALOG['waves-of-life-crew'], 'White');
+  const villaDEsteCrew = CATALOG['villa-d-este-crew'];
+  const palatineHillCrew = printifyMappingForColor(CATALOG['palatine-hill-crew'], 'Bone');
+  const crewProductIds = new Set([
+    crewWhite.productId, wavesOfLifeCrew.productId, villaDEsteCrew.printify.productId, palatineHillCrew.productId,
+  ]);
+  ok('The four new/relinked crewnecks each have a distinct Printify product ID', crewProductIds.size === 4);
 }
 
 console.log('\n--- Regression: existing products unchanged by this addition ---');
@@ -76,7 +92,7 @@ console.log('\n--- Regression: existing products unchanged by this addition ---'
   ok('Venezia Tee now maps to its confirmed Printify product ID', printifyMappingForColor(CATALOG.tee, 'White').productId === '6a9e5512d4f10211ae0c5568');
   ok('Arhus Old Town Tee still maps to its known Printify product ID', CATALOG['arhus-old-town-tee'].printify.productId === '6a3cab048606da46840fa2e7');
   ok('Hoodie is unmapped (its Printify product was deleted — printify: null)', CATALOG.hoodie.printify === null);
-  ok('Crew maps to its confirmed Printify product ID (new crew blank)', CATALOG.crew.printify.productId === '6a9fe5355f7ad524a40565b1');
+  ok('Crew maps to its confirmed Printify product ID (new crew blank)', printifyMappingForColor(CATALOG.crew, 'White').productId === '6a9fe5355f7ad524a40565b1');
   ok('Venezia Tee base price unchanged ($64.00)', CATALOG.tee.basePrice === 6400);
   ok('Hoodie base price unchanged ($84.00)', CATALOG.hoodie.basePrice === 8400);
   ok('Crew base price unchanged ($84.00)', CATALOG.crew.basePrice === 8400);
