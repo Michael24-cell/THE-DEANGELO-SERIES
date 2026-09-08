@@ -938,10 +938,13 @@ purchase label. Do not enable public submission before those controls exist.
     //    model/flat shots).
     //  - Venezia Crewneck specifically: Model/Flat above show the FRONT of
     //    the garment (wordmark) by default and its flat lay — this third
-    //    slot instead shows the back-print model shot ("Back"). The other
-    //    artworks' crewnecks have no back-shot photography yet, so they
-    //    return null (no third photo — the caller hides that frame
-    //    entirely) until they do.
+    //    slot instead shows the back-print model shot ("Back").
+    //  - The other artworks' crewnecks show a front-of-garment wordmark
+    //    shot ("Front") where one has been photographed — see
+    //    CREW_FRONT_IMAGE below, keyed by slug (and by color for products
+    //    where only one color has a front shot so far). Everything else
+    //    returns null (no third photo — the caller hides that frame
+    //    entirely) until one exists.
     var FRONT_IMAGE_BY_COLOR = {
       White: 'deangelo series front white.png',
       Black: 'deangelo series front black.png',
@@ -949,9 +952,20 @@ purchase label. Do not enable public submission before those controls exist.
       Oatmeal: 'deangelo series front white.png',
     };
     var CREW_BACK_IMAGE = 'venezia crew model back.png';
-    function thirdImageFor(p, colorName) {
+    var CREW_FRONT_IMAGE = {
+      'wind-sea-crew': 'black crew gold type front.png',
+      'villa-d-este-crew': 'black crew gold type front.png',
+      'arhus-old-town-crew': 'black crew white type.png',
+      'waves-of-life-crew': { White: 'white crew black text.png' },
+      'palatine-hill-crew': { White: 'white crew black text.png' },
+    };
+    function thirdImageFor(p, colorName, slug) {
       if (p.garment === 'Crewneck' && p.title === 'Venezia') return { src: CREW_BACK_IMAGE, label: 'Back' };
-      if (p.garment === 'Crewneck') return null;
+      if (p.garment === 'Crewneck') {
+        var frontSpec = CREW_FRONT_IMAGE[slug];
+        var frontSrc = typeof frontSpec === 'string' ? frontSpec : (frontSpec && frontSpec[colorName]);
+        return frontSrc ? { src: frontSrc, label: 'Front' } : null;
+      }
       return { src: FRONT_IMAGE_BY_COLOR[colorName] || FRONT_IMAGE_BY_COLOR.White, label: 'Front' };
     }
 
@@ -1396,14 +1410,14 @@ purchase label. Do not enable public submission before those controls exist.
     tFlat.style.backgroundImage = "url('" + p.flat + "')";
 
     // Third gallery image — hidden entirely for products with none
-    // available (every crewneck except Venezia's, until back-shot
-    // photography exists for them).
+    // available (see CREW_FRONT_IMAGE/thirdImageFor above for which
+    // crewnecks currently have one).
     var frameFrontWrap = document.getElementById('frameFrontWrap');
     var frontImg = document.getElementById('frameFront');
     var tFront = document.getElementById('thumbFront');
     var tFrontLabel = tFront.querySelector('.thumb-label');
     var initialColorName = (p.colors && p.colors.length > 1) ? p.colors[0].name : p.frontColor;
-    var third = thirdImageFor(p, initialColorName);
+    var third = thirdImageFor(p, initialColorName, key);
     var counterEl = document.getElementById('counter');
     if (third) {
       frameFrontWrap.style.display = '';
@@ -1464,12 +1478,23 @@ purchase label. Do not enable public submission before those controls exist.
         fImg.alt = p.title + ' ' + p.garment + ' — ' + chosen.name + ' — Flat';
         tModel.style.backgroundImage = "url('" + chosen.model + "')";
         tFlat.style.backgroundImage = "url('" + chosen.flat + "')";
-        var chosenThird = thirdImageFor(p, chosen.name);
+        var chosenThird = thirdImageFor(p, chosen.name, key);
         if (chosenThird) {
+          frameFrontWrap.style.display = '';
+          tFront.style.display = '';
           frontImg.src = chosenThird.src;
           frontImg.alt = p.title + ' ' + p.garment + ' — ' + chosen.name + ' — ' + chosenThird.label;
           tFront.style.backgroundImage = "url('" + chosenThird.src + "')";
           if (tFrontLabel) tFrontLabel.textContent = chosenThird.label;
+          if (counterEl) counterEl.textContent = '01 / 03';
+        } else {
+          // If the now-hidden "Front" shot was the active gallery frame,
+          // fall back to the model shot rather than leaving the stage on
+          // a frame that no longer displays anything.
+          if (tFront.classList.contains('is-active')) tModel.click();
+          frameFrontWrap.style.display = 'none';
+          tFront.style.display = 'none';
+          if (counterEl) counterEl.textContent = '01 / 02';
         }
         syncBuyNow(cta);
       }
