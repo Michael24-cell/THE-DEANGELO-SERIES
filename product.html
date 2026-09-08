@@ -612,15 +612,15 @@
           <dl>
             <div class="meta-pair">
               <dt>Material</dt>
-              <dd id="detailMaterial">10.5oz organic heavyweight cotton. Soft-hand, garment-dyed in small lots.</dd>
+              <dd id="detailMaterial">100% USA cotton, medium-weight (7.5oz/yd²). Garment-dyed for a soft, vintage, worn-in look.</dd>
             </div>
             <div class="meta-pair">
               <dt>Fit</dt>
-              <dd id="detailFit">Oversized editorial. Boxy crew, dropped shoulder, slightly cropped hem.</dd>
+              <dd id="detailFit">Oversized drop-shoulder silhouette. Double-needle stitched collar, forward-thrusted shoulder seam.</dd>
             </div>
             <div class="meta-pair">
               <dt>Print</dt>
-              <dd id="detailPrint">Six-colour water-based screen print, hand-pulled. Front placement.</dd>
+              <dd id="detailPrint">Direct-to-garment print, water-based inks. Back placement.</dd>
             </div>
           </dl>
         </div></div>
@@ -750,7 +750,7 @@
     <div class="prov-item">
       <div class="prov-label">Printed</div>
       <div class="prov-value">U.S. Production</div>
-      <div class="prov-aside" id="provPrintedAside">Small-batch screen print. Water-based inks.</div>
+      <div class="prov-aside" id="provPrintedAside">Direct-to-garment print. Water-based inks.</div>
     </div>
     <div class="prov-item">
       <div class="prov-label">Series</div>
@@ -1040,7 +1040,7 @@
       signMeta: '· Watercolor · 1979',
       provArtworkValueHtml: 'No. <em>01</em>',
       provArtworkAside: 'Venezia — watercolor, 1979.',
-      provPrintedAside: 'Small-batch screen print. Water-based inks.'
+      provPrintedAside: 'Direct-to-garment print. Water-based inks.'
     };
     var SOURCE = {
       tee: VENEZIA_SOURCE, hoodie: VENEZIA_SOURCE, crew: VENEZIA_SOURCE,
@@ -1390,9 +1390,18 @@
 
     // Per-product details
     var DETAILS = {
-      tee:    { material:'10.5oz organic heavyweight cotton. Soft-hand, garment-dyed in small lots.', fit:'Oversized editorial. Boxy crew, dropped shoulder, slightly cropped hem.', print:'Six-colour water-based screen print, hand-pulled. Front placement.' },
-      hoodie: { material:'18oz heavyweight fleece. Brushed cotton interior, structured hood, kangaroo pocket.', fit:'Relaxed pullover silhouette. Extended body, ribbed cuffs and hem, dropped shoulder.', print:'Six-colour water-based screen print, hand-pulled. Chest placement.' },
-      crew:   { material:'18oz heavyweight fleece. Brushed cotton interior, reinforced ribbed collar.', fit:'Boxy crew silhouette. Dropped shoulder, ribbed cuffs and waistband, slightly cropped.', print:'Six-colour water-based screen print, hand-pulled. Chest placement.' },
+      // Material/fit/print confirmed against Printify's own blueprint specs
+      // (GET /v1/catalog/blueprints/1723.json for tee, /1296.json for crew)
+      // and print_providers.json for the blueprint, which lists "dtg" as the
+      // only decoration method for every provider on this account (Ink
+      // Blot/74, Printify Choice/99) -- there is no screen-printing option
+      // at all, so "hand-pulled screen print" was never accurate. Hoodie is
+      // currently unmapped (no live Printify product), so its material/fit
+      // are left non-specific rather than inventing numbers with nothing to
+      // verify them against.
+      tee:    { material:'100% USA cotton, medium-weight (7.5oz/yd²). Garment-dyed for a soft, vintage, worn-in look.', fit:'Oversized drop-shoulder silhouette. Double-needle stitched collar, forward-thrusted shoulder seam.', print:'Direct-to-garment print, water-based inks. Back placement.' },
+      hoodie: { material:'Garment-dyed fleece.', fit:'Relaxed pullover silhouette, dropped shoulder.', print:'Direct-to-garment print, water-based inks. Back placement.' },
+      crew:   { material:'80% ring-spun cotton, 20% polyester, medium-heavy fabric (9.5oz/yd²). OEKO-TEX® certified low-impact dyes.', fit:'Relaxed crewneck silhouette, sewn-in twill label.', print:'Direct-to-garment print, water-based inks. Back placement.' },
       'arhus-old-town-tee': { material:'Garment-dyed, vintage-washed cotton.', fit:'Relaxed drop-shoulder silhouette.', print:'Printed vertically across the back.' },
       'wind-sea-tee': { material:'Garment-dyed, vintage-washed cotton.', fit:'Relaxed drop-shoulder silhouette.', print:'Printed vertically across the back.' },
       'waves-of-life-tee': { material:'Garment-dyed, vintage-washed cotton.', fit:'Relaxed drop-shoulder silhouette.', print:'Printed vertically across the back.' },
