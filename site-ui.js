@@ -328,11 +328,21 @@
     ".du-acc-inner{padding:0 0 28px}",
 
     /* responsive */
-    "@media (max-width:640px){",
+    /* "Shop The Series" + "Art" start wrapping onto multiple lines
+       somewhere around 830-850px (measured against the nav's actual
+       column width, not a round device-size guess) once the centered
+       wordmark and cart controls are sharing the row with them, so the
+       hamburger-only mode needs to kick in well before the phone-sized
+       640px breakpoint below — otherwise tablets and small laptop
+       windows get a nav that wraps to two/three lines instead of hiding
+       the text links. 900px covers that with margin to spare. */
+    "@media (max-width:900px){",
     /* keep the hamburger visible on mobile even where the page hides .nav-links */
     ".nav-links{display:flex !important;gap:0 !important}",
     ".nav-links>a{display:none !important}",
     ".du-ham{display:inline-flex !important}",
+    "}",
+    "@media (max-width:640px){",
     ".du-menu .du-panel-head{padding:24px 26px}",
     ".du-menu nav{padding:30px 26px}",
     ".du-mlink{font-size:1.8rem}",

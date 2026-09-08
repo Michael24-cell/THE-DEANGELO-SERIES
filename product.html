@@ -88,6 +88,11 @@
     display:grid;grid-template-columns:1.35fr 1fr;gap:96px;
     align-items:start;
   }
+  /* Grid items default to a min-width based on their content's min-content
+     size, which can exceed the track width and push the whole grid (and
+     the page) wider than the viewport — most visible on mobile where the
+     single-column layout has the least room to spare. */
+  .product>*{min-width:0}
 
   .gallery{display:flex;flex-direction:column;gap:24px;position:relative}
   .gallery-stage{
@@ -447,9 +452,17 @@
   body[data-sticky="off"] .info{position:static}
   body[data-cta="outline"] .cta-primary{background:transparent;color:var(--ink)}
   body[data-cta="outline"] .cta-primary:hover{background:var(--ink);color:var(--bone)}
-  body[data-source-align="reverse"] .source-inner{grid-template-columns:1fr 1.2fr}
-  body[data-source-align="reverse"] .source-art{order:2}
-  body[data-source-align="reverse"] .source-copy{order:1}
+  /* Scoped to the same width the 2-column .source-inner layout itself
+     requires (see the max-width:1024px collapse to a single column
+     below) — unscoped, this outranked that collapse on specificity
+     alone (body[attr] .class beats .class, media query or not) and
+     squeezed the source image into a ~35%-width column on every
+     product page at every viewport down to mobile. */
+  @media (min-width:1025px){
+    body[data-source-align="reverse"] .source-inner{grid-template-columns:1fr 1.2fr}
+    body[data-source-align="reverse"] .source-art{order:2}
+    body[data-source-align="reverse"] .source-copy{order:1}
+  }
   body[data-meta-style="serif"] .prov-item .prov-value{font-family:var(--font-serif)}
   body[data-meta-style="sans"]  .prov-item .prov-value{font-family:var(--font-sans);font-weight:500;font-size:1.6rem;letter-spacing:-.005em}
 

@@ -78,6 +78,11 @@
     display:grid;grid-template-columns:1.4fr 1fr;
     min-height:calc(100vh - 80px);
   }
+  /* Grid items default to a min-width based on their content's min-content
+     size, which can exceed the track width and push the whole grid (and
+     the page) wider than the viewport — most visible on mobile where the
+     single-column layout has the least room to spare. */
+  .checkout>*{min-width:0}
 
   /* ── Left: form column ─────────────────────────────────────── */
   .form-col{
@@ -127,6 +132,10 @@
   .field-row.two{grid-template-columns:1fr 1fr}
   .field-row.three{grid-template-columns:1.4fr .8fr .8fr}
   .field-row.split{grid-template-columns:2fr 1fr 1fr}
+  /* Inputs/selects have their own default min-content width, which can
+     exceed a narrow grid track and overflow the row (same issue as the
+     top-level .checkout grid above). */
+  .field-row>*{min-width:0}
 
   .field{display:flex;flex-direction:column;gap:8px}
   .field label{
