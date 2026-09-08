@@ -671,11 +671,36 @@ export const CATALOG = {
       },
     },
   },
-  // Wind & Sea also got a new Crew product in Printify (6a9feaf3bc34f118e
-  // c0c1230, same blueprint/provider), but it's deliberately NOT mapped
-  // yet: its enabled colors are Black and Army, and the only photo the
-  // owner provided ("wind & sea crew.png") isn't labeled by color and has
-  // no matching model shot — see the flag raised in chat 2026-09-08.
+  'wind-sea-crew': {
+    name: 'Wind & Sea — Crewneck',
+    image: 'https://thedeangeloseries.com/wind%20%26%20sea%20crew.png',
+    currency: 'usd',
+    sizes: ['S', 'M', 'L', 'XL', '2XL', '3XL'],
+    colors: ['Black'],
+    basePrice: 8400,
+    upchargePrice: 8800,
+    upchargeSizes: ['2XL', '3XL'],
+    stripeTaxCode: 'txcd_30011000',
+    // Owner confirmed 2026-09-08: this is Black (not the also-enabled Army
+    // variant). Printify product "Wind & Sea - Crew" (6a9feaf3bc34f118ec0c1230),
+    // blueprint 6992 / print provider 217, same blank as the other new
+    // crewnecks.
+    printify: {
+      productId: '6a9feaf3bc34f118ec0c1230',
+      printProviderId: 217,
+      variantIdBySize: {
+        S: 302545, M: 302531, L: 302589, XL: 302574, '2XL': 302567, '3XL': 302591,
+      },
+      skuBySize: {
+        S: '21488046551503248285',
+        M: '16622908470564321674',
+        L: '16437059867879109785',
+        XL: '19658214598169757021',
+        '2XL': '11451182233302643537',
+        '3XL': '19051048998019634788',
+      },
+    },
+  },
 };
 
 export const MAX_LINE_ITEMS = 20;

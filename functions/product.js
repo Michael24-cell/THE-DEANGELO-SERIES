@@ -34,6 +34,7 @@ const DESCRIPTIONS = {
   'waves-of-life-crew': 'Series 01 — Waves of Life Crewneck. "Crashing waves of life," painted by Tony DeAngelo in New York, 1990, printed on a heavyweight fleece crewneck.',
   'villa-d-este-crew': 'Series 01 — Villa d\'Este Crewneck. A 1980 vintage Kodak slide of Tivoli, Italy, printed on a heavyweight fleece crewneck.',
   'palatine-hill-crew': 'Series 01 — Palatine Hill Crewneck. A 1980 vintage Kodak slide of Rome, Italy, printed on a heavyweight fleece crewneck.',
+  'wind-sea-crew': 'Series 01 — Wind & Sea Crewneck. "Valley Vista to the Ocean," painted by Tony DeAngelo in New York, 1999, printed on a heavyweight fleece crewneck.',
 };
 
 class SetAttribute {

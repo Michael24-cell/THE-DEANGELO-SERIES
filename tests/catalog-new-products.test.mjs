@@ -24,6 +24,7 @@ const NEW_PRODUCTS = [
   { slug: 'villa-d-este-crew', color: 'Black' },
   { slug: 'palatine-hill-crew', color: 'Bone' },
   { slug: 'palatine-hill-crew', color: 'White' },
+  { slug: 'wind-sea-crew', color: 'Black' },
 ];
 
 console.log('--- New products: every enabled size has a valid Printify variant ID + SKU ---');
@@ -81,10 +82,11 @@ console.log('\n--- New products: distinct products, not accidentally aliased to 
   const wavesOfLifeCrew = printifyMappingForColor(CATALOG['waves-of-life-crew'], 'White');
   const villaDEsteCrew = CATALOG['villa-d-este-crew'];
   const palatineHillCrew = printifyMappingForColor(CATALOG['palatine-hill-crew'], 'Bone');
+  const windSeaCrew = CATALOG['wind-sea-crew'];
   const crewProductIds = new Set([
-    crewWhite.productId, wavesOfLifeCrew.productId, villaDEsteCrew.printify.productId, palatineHillCrew.productId,
+    crewWhite.productId, wavesOfLifeCrew.productId, villaDEsteCrew.printify.productId, palatineHillCrew.productId, windSeaCrew.printify.productId,
   ]);
-  ok('The four new/relinked crewnecks each have a distinct Printify product ID', crewProductIds.size === 4);
+  ok('The five new/relinked crewnecks each have a distinct Printify product ID', crewProductIds.size === 5);
 }
 
 console.log('\n--- Regression: existing products unchanged by this addition ---');

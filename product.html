@@ -1018,7 +1018,10 @@ purchase label. Do not enable public submission before those controls exist.
         colors: [
           { name:'Bone', model:'palatine hill crew bone model.png', flat:'palatine hill crew bone.png' },
           { name:'White', model:'palatine hill crew white model.png', flat:'palatine hill crew white.png' }
-        ] }
+        ] },
+      // Only a flat lay exists for this one — no model (person) shot yet.
+      // Reusing the flat for both slots until one is photographed.
+      'wind-sea-crew': { title:'Wind & Sea', artwork:'Artwork 03', plate:'16', garment:'Crewneck', price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'wind & sea crew.png', flat:'wind & sea crew.png', sizes:['S','M','L','XL','2XL','3XL'] }
     };
     var p = PRODS[key] || PRODS.tee;
 
@@ -1037,7 +1040,8 @@ purchase label. Do not enable public submission before those controls exist.
       'ostia-antica-tee': 'Series 01 — Ostia Antica Tee. A 1980 vintage Kodak slide of Ostia Antica, Italy.',
       'waves-of-life-crew': 'Series 01 — Waves of Life Crewneck. "Crashing waves of life," painted by Tony DeAngelo in New York, 1990.',
       'villa-d-este-crew': 'Series 01 — Villa d\'Este Crewneck. A 1980 vintage Kodak slide of Tivoli, Italy.',
-      'palatine-hill-crew': 'Series 01 — Palatine Hill Crewneck. A 1980 vintage Kodak slide of Rome, Italy.'
+      'palatine-hill-crew': 'Series 01 — Palatine Hill Crewneck. A 1980 vintage Kodak slide of Rome, Italy.',
+      'wind-sea-crew': 'Series 01 — Wind & Sea Crewneck. "Valley Vista to the Ocean," painted by Tony DeAngelo in New York, 1999.'
     };
     var editionEl = document.getElementById('editionDesc');
     if (editionEl) editionEl.textContent = EDITION_DESC[key] || EDITION_DESC.tee;
@@ -1267,6 +1271,23 @@ purchase label. Do not enable public submission before those controls exist.
         provArtworkValueHtml: 'No. <em>09</em>',
         provArtworkAside: 'Palatine Hill, 1980.',
         provPrintedAside: ''
+      },
+      'wind-sea-crew': {
+        artImg: 'wind-sea.png',
+        artAlt: 'Wind & Sea — Original Artwork',
+        captionMedium: 'Wind & Sea · Water Based Latex on Canvas',
+        captionYear: '1999',
+        eyebrow: 'The Source · Artwork 03',
+        titleHtml: 'Wind &amp; <em>Sea</em>',
+        medium: '',
+        pull: '"Valley Vista to the Ocean."',
+        bodyHtml: '<p>Wind & Sea holds a valley vista opening toward the ocean — painted by Tony DeAngelo in water-based latex on canvas, New York, 1999.</p>' +
+          '<p>Printed across the back of a heavyweight fleece crewneck, the artwork is paired with a relaxed, generous fit and ribbed cuffs and waistband.</p>',
+        signName: 'Tony DeAngelo',
+        signatureImg: '',
+        provArtworkValueHtml: 'No. <em>03</em>',
+        provArtworkAside: 'Wind & Sea, 1999.',
+        provPrintedAside: ''
       }
     };
     var src = SOURCE[key] || VENEZIA_SOURCE;
@@ -1456,7 +1477,7 @@ purchase label. Do not enable public submission before those controls exist.
       var el = document.getElementById(id);
       if (el) el.style.display = 'none';
     });
-    var SIZE_CHART_ID = { tee:'sgTee', hoodie:'sgHoodie', crew:'sgCrew', 'arhus-old-town-tee':'sgTee', 'wind-sea-tee':'sgTee', 'waves-of-life-tee':'sgTee', 'villa-d-este-tee':'sgTee', 'the-wedge-tee':'sgTee', 'leaning-tower-of-pisa-tee':'sgTee', 'piazza-san-marco-tee':'sgTee', 'palatine-hill-tee':'sgTee', 'ostia-antica-tee':'sgTee', 'waves-of-life-crew':'sgCrew', 'villa-d-este-crew':'sgCrew', 'palatine-hill-crew':'sgCrew' };
+    var SIZE_CHART_ID = { tee:'sgTee', hoodie:'sgHoodie', crew:'sgCrew', 'arhus-old-town-tee':'sgTee', 'wind-sea-tee':'sgTee', 'waves-of-life-tee':'sgTee', 'villa-d-este-tee':'sgTee', 'the-wedge-tee':'sgTee', 'leaning-tower-of-pisa-tee':'sgTee', 'piazza-san-marco-tee':'sgTee', 'palatine-hill-tee':'sgTee', 'ostia-antica-tee':'sgTee', 'waves-of-life-crew':'sgCrew', 'villa-d-este-crew':'sgCrew', 'palatine-hill-crew':'sgCrew', 'wind-sea-crew':'sgCrew' };
     var chartEl = document.getElementById(SIZE_CHART_ID[key]);
     if (chartEl) chartEl.style.display = '';
 
@@ -1492,7 +1513,8 @@ purchase label. Do not enable public submission before those controls exist.
       'ostia-antica-tee': { material:'Garment-dyed, vintage-washed cotton.', fit:'Relaxed drop-shoulder silhouette.', print:'Printed vertically across the back.' },
       'waves-of-life-crew': { material:'70% ring-spun cotton, 30% polyester, heavyweight fleece (10oz/yd²), 100% cotton face.', fit:'Generous, relaxed crewneck fit. Double-needle stitched seams, twill neck tape, 1x1 ribbed cuff and waistband.', print:'Direct-to-garment print, water-based inks. Back placement.' },
       'villa-d-este-crew': { material:'70% ring-spun cotton, 30% polyester, heavyweight fleece (10oz/yd²), 100% cotton face.', fit:'Generous, relaxed crewneck fit. Double-needle stitched seams, twill neck tape, 1x1 ribbed cuff and waistband.', print:'Direct-to-garment print, water-based inks. Back placement.' },
-      'palatine-hill-crew': { material:'70% ring-spun cotton, 30% polyester, heavyweight fleece (10oz/yd²), 100% cotton face.', fit:'Generous, relaxed crewneck fit. Double-needle stitched seams, twill neck tape, 1x1 ribbed cuff and waistband.', print:'Direct-to-garment print, water-based inks. Back placement.' }
+      'palatine-hill-crew': { material:'70% ring-spun cotton, 30% polyester, heavyweight fleece (10oz/yd²), 100% cotton face.', fit:'Generous, relaxed crewneck fit. Double-needle stitched seams, twill neck tape, 1x1 ribbed cuff and waistband.', print:'Direct-to-garment print, water-based inks. Back placement.' },
+      'wind-sea-crew': { material:'70% ring-spun cotton, 30% polyester, heavyweight fleece (10oz/yd²), 100% cotton face.', fit:'Generous, relaxed crewneck fit. Double-needle stitched seams, twill neck tape, 1x1 ribbed cuff and waistband.', print:'Direct-to-garment print, water-based inks. Back placement.' }
     };
     var d = DETAILS[key] || DETAILS.tee;
     document.getElementById('detailMaterial').textContent = d.material;
@@ -1670,6 +1692,7 @@ purchase label. Do not enable public submission before those controls exist.
     { title:'Venezia', garment:'Crewneck', price:'$84', slug:'crew', model:'venezia crew model front.png', colors:['White','Black'] },
     { title:'Århus, The Old Town', garment:'Tee', price:'$64', slug:'arhus-old-town-tee', model:'the old town model.png', colors:['Black'] },
     { title:'Wind & Sea', garment:'Tee', price:'$64', slug:'wind-sea-tee', model:'wind & sea tee model.png', colors:['Black'] },
+    { title:'Wind & Sea', garment:'Crewneck', price:'$84', slug:'wind-sea-crew', model:'wind & sea crew.png', colors:['Black'] },
     { title:'Waves of Life', garment:'Tee', price:'$64', slug:'waves-of-life-tee', model:'waves of life tee model.png', colors:['White','Black'] },
     { title:'Waves of Life', garment:'Crewneck', price:'$84', slug:'waves-of-life-crew', model:'waves of life white crew model.png', colors:['White','Black'] },
     { title:'Villa d\'Este', garment:'Tee', price:'$64', slug:'villa-d-este-tee', model:'villa-d-este model.png', colors:['Black'] },
