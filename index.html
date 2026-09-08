@@ -134,14 +134,16 @@
         .btn {
             width: fit-content;
             padding: 18px 56px;
-            border: 1px solid var(--white);
+            background: var(--bone);
+            border: 1px solid var(--bone);
+            color: var(--black);
             font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 0.3em;
-            transition: background 150ms ease;
+            transition: opacity 150ms ease;
         }
 
-        .btn:hover { background: rgba(255,255,255,0.08); }
+        .btn:hover { opacity: 0.85; }
 
         .hero-visual {
             flex: 0.9;
