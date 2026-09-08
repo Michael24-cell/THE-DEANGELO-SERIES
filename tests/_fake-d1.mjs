@@ -9,6 +9,7 @@ export function createFakeD1() {
     status_events: [],
     email_events: [],
     shipments: [],
+    subscribers: [],
   };
 
   function prepare(sql) {
@@ -37,7 +38,7 @@ export function createFakeD1() {
               return { meta: { changes: row ? 1 : 0 } };
             }
             if (sql.startsWith('INSERT INTO orders')) {
-              const cols = ['id','public_order_number','stripe_checkout_session_id','stripe_payment_intent_id','customer_email','customer_name','shipping_name','shipping_address_line1','shipping_address_line2','shipping_city','shipping_state','shipping_postal_code','shipping_country','currency','subtotal_amount','shipping_amount','tax_amount','total_amount','payment_status','fulfillment_status','created_at','updated_at'];
+              const cols = ['id','public_order_number','stripe_checkout_session_id','stripe_payment_intent_id','customer_email','customer_name','shipping_name','shipping_address_line1','shipping_address_line2','shipping_city','shipping_state','shipping_postal_code','shipping_country','currency','subtotal_amount','shipping_amount','tax_amount','total_amount','payment_status','fulfillment_status','marketing_opt_in','created_at','updated_at'];
               const row = Object.fromEntries(cols.map((c, i) => [c, args[i]]));
               row.printify_order_id = null; row.production_status = null; row.carrier = null; row.tracking_number = null; row.tracking_url = null; row.fulfillment_error = null;
               // migrations/0003_add_financial_ledger_fields.sql — all nullable, unset at insert.
@@ -77,6 +78,25 @@ export function createFakeD1() {
               tables.shipments.push(Object.fromEntries(cols.map((c, i) => [c, args[i]])));
               return { meta: { changes: 1 } };
             }
+            if (sql.startsWith('INSERT INTO subscribers')) {
+              const [email, unsubscribe_token, source_order_id, created_at, updated_at] = args;
+              const existing = tables.subscribers.find((r) => r.email === email);
+              if (existing) {
+                // ON CONFLICT(email) DO UPDATE SET subscribed = 1, updated_at = excluded.updated_at
+                // — token and created_at/source_order_id are deliberately untouched.
+                existing.subscribed = 1;
+                existing.updated_at = updated_at;
+              } else {
+                tables.subscribers.push({ email, subscribed: 1, unsubscribe_token, source_order_id, created_at, updated_at });
+              }
+              return { meta: { changes: 1 } };
+            }
+            if (sql.startsWith('UPDATE subscribers SET subscribed = 0')) {
+              const [updated_at, email, token] = args;
+              const row = tables.subscribers.find((r) => r.email === email && r.unsubscribe_token === token && r.subscribed === 1);
+              if (row) { row.subscribed = 0; row.updated_at = updated_at; }
+              return { meta: { changes: row ? 1 : 0 } };
+            }
             throw new Error('Unrecognized run() SQL: ' + sql.slice(0, 80));
           },
           async first() {
@@ -96,6 +116,13 @@ export function createFakeD1() {
             if (sql.includes('FROM email_events WHERE order_id') && sql.includes('email_type')) {
               const [order_id, email_type] = args;
               return tables.email_events.find((r) => r.order_id === order_id && r.email_type === email_type) || null;
+            }
+            if (sql.startsWith('SELECT unsubscribe_token FROM subscribers WHERE email')) {
+              return tables.subscribers.find((r) => r.email === args[0]) || null;
+            }
+            if (sql.startsWith('SELECT subscribed FROM subscribers WHERE email') && sql.includes('unsubscribe_token')) {
+              const [email, token] = args;
+              return tables.subscribers.find((r) => r.email === email && r.unsubscribe_token === token) || null;
             }
             throw new Error('Unrecognized first() SQL: ' + sql.slice(0, 80));
           },
@@ -117,6 +144,9 @@ export function createFakeD1() {
                   customer_name: r.customer_name, printify_order_id: r.printify_order_id, fulfillment_status: r.fulfillment_status,
                 }));
               return { results };
+            }
+            if (sql.startsWith('SELECT email, unsubscribe_token FROM subscribers WHERE subscribed = 1')) {
+              return { results: tables.subscribers.filter((r) => r.subscribed === 1).map((r) => ({ email: r.email, unsubscribe_token: r.unsubscribe_token })) };
             }
             throw new Error('Unrecognized all() SQL: ' + sql.slice(0, 80));
           },

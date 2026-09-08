@@ -21,7 +21,7 @@ const BRAND = {
   siteUrl: 'https://thedeangeloseries.com',
 };
 
-function layout({ preheader, bodyHtml }) {
+function layout({ preheader, bodyHtml, footerExtraHtml }) {
   return `<!doctype html>
 <html>
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
@@ -39,6 +39,7 @@ function layout({ preheader, bodyHtml }) {
         <tr><td style="padding:20px 32px;border-top:1px solid #e5e4dd;color:${BRAND.muted};font-size:12px;">
           Questions? Reply to this email or contact support.<br>
           <a href="${BRAND.siteUrl}" style="color:${BRAND.muted};">${BRAND.siteUrl.replace('https://', '')}</a>
+          ${footerExtraHtml || ''}
         </td></tr>
       </table>
     </td></tr>
@@ -164,5 +165,34 @@ export function deliveredTemplate(order) {
     subject: `Delivered — ${order.orderNumber}`,
     html: layout({ preheader: `Order ${order.orderNumber} delivered`, bodyHtml }),
     text: `${greeting}\n\nYour order ${order.orderNumber} has been delivered.\n\nAll sales are final. Damage, manufacturing-defect, or incorrect-item claims must be submitted within 7 days of delivery and are subject to review — just reply to this email.`,
+  };
+}
+
+/**
+ * New-release announcement — the ONLY marketing (non-transactional) email
+ * template in this file. Every other template here is tied to a purchase
+ * the recipient already made; this one goes to everyone in `subscribers`
+ * who opted in at checkout (see migrations/0005, orders-db.js's
+ * getSubscribedEmails), which is why it's the only one that needs — and
+ * always must carry — a real unsubscribe link. Built once per recipient by
+ * scripts/send-release-email.mjs, never sent from a browser-facing route.
+ *
+ * @param {{title:string, blurb:string, imageUrl:string, url:string, unsubscribeUrl:string}} piece
+ */
+export function newReleaseTemplate(piece) {
+  const bodyHtml = `
+    <p style="margin:0 0 20px;">A new piece just joined Series 01.</p>
+    ${piece.imageUrl ? `<img src="${escapeHtml(piece.imageUrl)}" alt="${escapeHtml(piece.title)}" width="456" style="display:block;width:100%;max-width:456px;height:auto;margin:0 0 20px;border:1px solid #e5e4dd;">` : ''}
+    <p style="margin:0 0 8px;font-size:20px;font-weight:600;">${escapeHtml(piece.title)}</p>
+    <p style="margin:0 0 24px;color:${BRAND.muted};">${escapeHtml(piece.blurb)}</p>
+    <p style="margin:0;">
+      <a href="${escapeHtml(piece.url)}" style="display:inline-block;background:${BRAND.black};color:${BRAND.bone};padding:12px 24px;text-decoration:none;font-size:13px;letter-spacing:.1em;">Shop ${escapeHtml(piece.title)}</a>
+    </p>
+  `;
+  const footerExtraHtml = `<br><br><a href="${escapeHtml(piece.unsubscribeUrl)}" style="color:${BRAND.muted};">Unsubscribe from release announcements</a>`;
+  return {
+    subject: `New piece: ${piece.title}`,
+    html: layout({ preheader: `${piece.title} just dropped.`, bodyHtml, footerExtraHtml }),
+    text: `A new piece just joined Series 01.\n\n${piece.title}\n${piece.blurb}\n\n${piece.url}\n\n---\nUnsubscribe from release announcements: ${piece.unsubscribeUrl}`,
   };
 }

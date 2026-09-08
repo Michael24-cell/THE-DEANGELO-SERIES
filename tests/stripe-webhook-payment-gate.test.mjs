@@ -231,6 +231,42 @@ async function run() {
     ok('RESEND_API_KEY never appears in logs', !joined.includes(RESEND_SECRET));
   }
 
+  console.log('\n--- marketing_opt_in: subscriber row created only when the Session metadata says true ---');
+  {
+    const db = createFakeD1();
+    const env = makeEnv(db);
+    const session = makeSession({ id: 'cs_optin_true', paymentStatus: 'paid' });
+    session.metadata.marketing_opt_in = 'true';
+    session.customer_details.email = 'optedin@example.com';
+    stubFetch({ session, balanceTransactionMode: 'known' });
+    await post(env, session, 'evt_optin_true');
+    ok('marketing_opt_in:"true" creates a subscribed subscriber row for that order\'s email', db._tables.subscribers.some((r) => r.email === 'optedin@example.com' && r.subscribed === 1), db._tables.subscribers);
+    ok('orders.marketing_opt_in is stored as 1, not left NULL', db._tables.orders.find((o) => o.stripe_checkout_session_id === 'cs_optin_true')?.marketing_opt_in === 1);
+  }
+  {
+    const db = createFakeD1();
+    const env = makeEnv(db);
+    const session = makeSession({ id: 'cs_optin_false', paymentStatus: 'paid' });
+    session.metadata.marketing_opt_in = 'false';
+    session.customer_details.email = 'optedout@example.com';
+    stubFetch({ session, balanceTransactionMode: 'known' });
+    await post(env, session, 'evt_optin_false');
+    ok('marketing_opt_in:"false" creates NO subscriber row', db._tables.subscribers.length === 0, db._tables.subscribers);
+    ok('orders.marketing_opt_in is stored as 0, not left NULL', db._tables.orders.find((o) => o.stripe_checkout_session_id === 'cs_optin_false')?.marketing_opt_in === 0);
+  }
+  {
+    const db = createFakeD1();
+    const env = makeEnv(db);
+    // An older/legacy session with no marketing_opt_in metadata key at all —
+    // must never be silently treated as consent.
+    const session = makeSession({ id: 'cs_optin_legacy', paymentStatus: 'paid' });
+    delete session.metadata.marketing_opt_in;
+    stubFetch({ session, balanceTransactionMode: 'known' });
+    await post(env, session, 'evt_optin_legacy');
+    ok('Missing marketing_opt_in metadata creates NO subscriber row', db._tables.subscribers.length === 0, db._tables.subscribers);
+    ok('orders.marketing_opt_in is left NULL for a legacy session, not defaulted to 0/1', db._tables.orders.find((o) => o.stripe_checkout_session_id === 'cs_optin_legacy')?.marketing_opt_in === null);
+  }
+
   console.log('\n--- Structural: sendPrintifyOrderToProduction is never called from live fulfillment code ---');
   {
     const fs = await import('node:fs');

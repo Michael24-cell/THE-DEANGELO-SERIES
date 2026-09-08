@@ -340,3 +340,79 @@ export async function sendOrderEmailOnce(env, { orderId, emailType, to, buildTem
 export function orderNumberFromSession(sessionId) {
   return 'DS-' + sessionId.replace(/[^a-zA-Z0-9]/g, '').slice(-8).toUpperCase();
 }
+
+// ─────────────────────────────────────────────────────────────────────────
+// Marketing subscribers (migrations/0005) — see that file for the full
+// rationale. Only called from stripe-webhook.js (upsertSubscriber, and only
+// when that order's marketing_opt_in is true) and functions/api/
+// unsubscribe.js (unsubscribeByToken). Nothing here sends email — this is
+// storage only; see scripts/send-release-email.mjs for the actual send.
+// ─────────────────────────────────────────────────────────────────────────
+
+/**
+ * Records that `email` consented to release-announcement email, or renews
+ * an existing (previously-unsubscribed) row's consent. Idempotent and safe
+ * to call on every order that has marketing_opt_in = true, including
+ * repeat orders from the same address.
+ *
+ * Deliberately does NOT touch unsubscribe_token on conflict — the token in
+ * a previously-sent email must keep working for the lifetime of the row,
+ * not just until the next order.
+ *
+ * @returns {Promise<string>} the row's unsubscribe_token (freshly generated
+ *   for a new subscriber, or the existing one for a renewed subscription)
+ */
+export async function upsertSubscriber(env, { email, orderId }) {
+  const normalizedEmail = String(email).trim().toLowerCase();
+  const now = new Date().toISOString();
+  const newToken = crypto.randomUUID();
+
+  await env.DB.prepare(
+    `INSERT INTO subscribers (email, subscribed, unsubscribe_token, source_order_id, created_at, updated_at)
+     VALUES (?, 1, ?, ?, ?, ?)
+     ON CONFLICT(email) DO UPDATE SET subscribed = 1, updated_at = excluded.updated_at`,
+  ).bind(normalizedEmail, newToken, orderId ?? null, now, now).run();
+
+  const row = await env.DB.prepare(
+    `SELECT unsubscribe_token FROM subscribers WHERE email = ?`,
+  ).bind(normalizedEmail).first();
+  return row.unsubscribe_token;
+}
+
+/**
+ * Unsubscribes exactly the (email, token) pair the caller presents — never
+ * "the email regardless of token," which would let anyone unsubscribe a
+ * stranger's address by guessing it. Returns a status the caller can turn
+ * into a human message without leaking whether an email exists at all for
+ * a wrong/tampered token.
+ *
+ * @returns {Promise<'unsubscribed' | 'already_unsubscribed' | 'not_found'>}
+ */
+export async function unsubscribeByToken(env, { email, token }) {
+  const normalizedEmail = String(email || '').trim().toLowerCase();
+  if (!normalizedEmail || !token) return 'not_found';
+
+  const result = await env.DB.prepare(
+    `UPDATE subscribers SET subscribed = 0, updated_at = ? WHERE email = ? AND unsubscribe_token = ? AND subscribed = 1`,
+  ).bind(new Date().toISOString(), normalizedEmail, token).run();
+  if (result.meta.changes === 1) return 'unsubscribed';
+
+  const row = await env.DB.prepare(
+    `SELECT subscribed FROM subscribers WHERE email = ? AND unsubscribe_token = ?`,
+  ).bind(normalizedEmail, token).first();
+  if (!row) return 'not_found';
+  return 'already_unsubscribed';
+}
+
+/**
+ * Every currently-subscribed email + its unsubscribe token, for
+ * scripts/send-release-email.mjs to mail out. Never used from a browser-
+ * facing route — this is local-script-only, same as the reconciliation
+ * scripts' D1 access.
+ */
+export async function getSubscribedEmails(env) {
+  const result = await env.DB.prepare(
+    `SELECT email, unsubscribe_token FROM subscribers WHERE subscribed = 1 ORDER BY created_at ASC`,
+  ).bind().all();
+  return result.results ?? [];
+}

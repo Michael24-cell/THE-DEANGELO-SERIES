@@ -61,6 +61,7 @@ import { attributionFromStripeMetadata } from '../_lib/attribution.js';
 import {
   claimWebhookEvent, findOrderByStripeSession, insertOrder, insertOrderItems,
   updateOrder, updateOrderFinancials, recordStatusEvent, sendOrderEmailOnce, orderNumberFromSession,
+  upsertSubscriber,
 } from '../_lib/orders-db.js';
 
 export async function onRequest({ request, env }) {
@@ -208,6 +209,12 @@ export async function onRequest({ request, env }) {
 
     await insertOrder(env, newOrder);
     await insertOrderItems(env, newOrder.id, lineItems);
+    // Only ever grants/renews consent — never touches subscribers on
+    // marketingOptIn === false or undefined. Unsubscribing only ever
+    // happens via the token link (functions/api/unsubscribe.js).
+    if (newOrder.marketingOptIn === true && newOrder.customerEmail) {
+      await upsertSubscriber(env, { email: newOrder.customerEmail, orderId: newOrder.id });
+    }
     await recordStatusEvent(env, {
       orderId: newOrder.id, source: 'stripe', externalEventId: event.id,
       eventType: event.type,
