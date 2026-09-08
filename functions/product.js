@@ -35,6 +35,8 @@ const DESCRIPTIONS = {
   'villa-d-este-crew': 'Series 01 — Villa d\'Este Crewneck. A 1980 vintage Kodak slide of Tivoli, Italy, printed on a heavyweight fleece crewneck.',
   'palatine-hill-crew': 'Series 01 — Palatine Hill Crewneck. A 1980 vintage Kodak slide of Rome, Italy, printed on a heavyweight fleece crewneck.',
   'wind-sea-crew': 'Series 01 — Wind & Sea Crewneck. "Valley Vista to the Ocean," painted by Tony DeAngelo in New York, 1999, printed on a heavyweight fleece crewneck.',
+  'arhus-old-town-crew': 'Series 01 — Århus, The Old Town Crewneck. A 1980 vintage Kodak slide from Århus, Denmark, printed on a heavyweight fleece crewneck.',
+  'new-york-crew': 'Series 01 — New York Crewneck. The Chrysler Building and Empire State Building, painted by Tony DeAngelo in New York, 2019, printed on a heavyweight fleece crewneck.',
 };
 
 class SetAttribute {

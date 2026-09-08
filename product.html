@@ -1021,7 +1021,11 @@ purchase label. Do not enable public submission before those controls exist.
         ] },
       // Only a flat lay exists for this one — no model (person) shot yet.
       // Reusing the flat for both slots until one is photographed.
-      'wind-sea-crew': { title:'Wind & Sea', artwork:'Artwork 03', plate:'16', garment:'Crewneck', price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'wind & sea crew.png', flat:'wind & sea crew.png', sizes:['S','M','L','XL','2XL','3XL'] }
+      'wind-sea-crew': { title:'Wind & Sea', artwork:'Artwork 03', plate:'16', garment:'Crewneck', price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'wind & sea crew.png', flat:'wind & sea crew.png', sizes:['S','M','L','XL','2XL','3XL'] },
+      // Only a flat lay exists for this one — no model (person) shot yet.
+      // Reusing the flat for both slots until one is photographed.
+      'arhus-old-town-crew': { title:'Århus, The Old Town', artwork:'Artwork 02', plate:'17', garment:'Crewneck', price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'arhus the old town crew.png', flat:'arhus the old town crew.png', sizes:['S','M','L','XL','2XL','3XL'] },
+      'new-york-crew': { title:'New York', artwork:'Artwork 11', plate:'18', garment:'Crewneck', price:'$84', priceNum:84, price2xl:'$88', priceNum2xl:88, model:'new york crew model.png', flat:'new york crew.png', sizes:['S','M','L','XL','2XL','3XL'] }
     };
     var p = PRODS[key] || PRODS.tee;
 
@@ -1041,7 +1045,9 @@ purchase label. Do not enable public submission before those controls exist.
       'waves-of-life-crew': 'Series 01 — Waves of Life Crewneck. "Crashing waves of life," painted by Tony DeAngelo in New York, 1990.',
       'villa-d-este-crew': 'Series 01 — Villa d\'Este Crewneck. A 1980 vintage Kodak slide of Tivoli, Italy.',
       'palatine-hill-crew': 'Series 01 — Palatine Hill Crewneck. A 1980 vintage Kodak slide of Rome, Italy.',
-      'wind-sea-crew': 'Series 01 — Wind & Sea Crewneck. "Valley Vista to the Ocean," painted by Tony DeAngelo in New York, 1999.'
+      'wind-sea-crew': 'Series 01 — Wind & Sea Crewneck. "Valley Vista to the Ocean," painted by Tony DeAngelo in New York, 1999.',
+      'arhus-old-town-crew': 'Series 01 — Århus, The Old Town Crewneck. A 1980 vintage Kodak slide from Århus, Denmark.',
+      'new-york-crew': 'Series 01 — New York Crewneck. The Chrysler Building and Empire State Building, painted by Tony DeAngelo in New York, 2019.'
     };
     var editionEl = document.getElementById('editionDesc');
     if (editionEl) editionEl.textContent = EDITION_DESC[key] || EDITION_DESC.tee;
@@ -1288,6 +1294,40 @@ purchase label. Do not enable public submission before those controls exist.
         provArtworkValueHtml: 'No. <em>03</em>',
         provArtworkAside: 'Wind & Sea, 1999.',
         provPrintedAside: ''
+      },
+      'arhus-old-town-crew': {
+        artImg: 'arhus-source.jpg',
+        artAlt: 'Århus, The Old Town — Original Photograph',
+        captionMedium: 'Århus, The Old Town · Vintage European Kodak Slide',
+        captionYear: '1980',
+        eyebrow: 'The Source · Artwork 02',
+        titleHtml: 'Århus, <em>The Old Town</em>',
+        medium: '',
+        pull: 'A quiet corner of Denmark, held on film since 1980.',
+        bodyHtml: '<p>A 1980 vintage Kodak slide from Århus, Denmark — a quiet, narrow passage opening onto sunlit tiled rooftops and timbered buildings in the city\'s old town.</p>' +
+          '<p>Printed across the back of a heavyweight fleece crewneck, the photograph is paired with a relaxed, generous fit and ribbed cuffs and waistband.</p>',
+        signName: 'Tony DeAngelo',
+        signatureImg: '',
+        provArtworkValueHtml: 'No. <em>02</em>',
+        provArtworkAside: 'Århus, The Old Town, 1980.',
+        provPrintedAside: ''
+      },
+      'new-york-crew': {
+        artImg: 'new york crew.png',
+        artAlt: 'New York — Original Artwork',
+        captionMedium: 'New York · Acrylic on Canvas',
+        captionYear: '2019',
+        eyebrow: 'The Source · Artwork 11',
+        titleHtml: 'New <em>York</em>',
+        medium: '',
+        pull: 'Chrysler Building and Empire State Building, side by side.',
+        bodyHtml: '<p>New York holds the Chrysler Building and Empire State Building side by side — painted by Tony DeAngelo in acrylic on canvas, New York, 2019.</p>' +
+          '<p>Printed across the back of a heavyweight fleece crewneck, the artwork is paired with a relaxed, generous fit and ribbed cuffs and waistband.</p>',
+        signName: 'Tony DeAngelo',
+        signatureImg: '',
+        provArtworkValueHtml: 'No. <em>11</em>',
+        provArtworkAside: 'New York, 2019.',
+        provPrintedAside: ''
       }
     };
     var src = SOURCE[key] || VENEZIA_SOURCE;
@@ -1477,7 +1517,7 @@ purchase label. Do not enable public submission before those controls exist.
       var el = document.getElementById(id);
       if (el) el.style.display = 'none';
     });
-    var SIZE_CHART_ID = { tee:'sgTee', hoodie:'sgHoodie', crew:'sgCrew', 'arhus-old-town-tee':'sgTee', 'wind-sea-tee':'sgTee', 'waves-of-life-tee':'sgTee', 'villa-d-este-tee':'sgTee', 'the-wedge-tee':'sgTee', 'leaning-tower-of-pisa-tee':'sgTee', 'piazza-san-marco-tee':'sgTee', 'palatine-hill-tee':'sgTee', 'ostia-antica-tee':'sgTee', 'waves-of-life-crew':'sgCrew', 'villa-d-este-crew':'sgCrew', 'palatine-hill-crew':'sgCrew', 'wind-sea-crew':'sgCrew' };
+    var SIZE_CHART_ID = { tee:'sgTee', hoodie:'sgHoodie', crew:'sgCrew', 'arhus-old-town-tee':'sgTee', 'wind-sea-tee':'sgTee', 'waves-of-life-tee':'sgTee', 'villa-d-este-tee':'sgTee', 'the-wedge-tee':'sgTee', 'leaning-tower-of-pisa-tee':'sgTee', 'piazza-san-marco-tee':'sgTee', 'palatine-hill-tee':'sgTee', 'ostia-antica-tee':'sgTee', 'waves-of-life-crew':'sgCrew', 'villa-d-este-crew':'sgCrew', 'palatine-hill-crew':'sgCrew', 'wind-sea-crew':'sgCrew', 'arhus-old-town-crew':'sgCrew', 'new-york-crew':'sgCrew' };
     var chartEl = document.getElementById(SIZE_CHART_ID[key]);
     if (chartEl) chartEl.style.display = '';
 
@@ -1514,7 +1554,9 @@ purchase label. Do not enable public submission before those controls exist.
       'waves-of-life-crew': { material:'70% ring-spun cotton, 30% polyester, heavyweight fleece (10oz/yd²), 100% cotton face.', fit:'Generous, relaxed crewneck fit. Double-needle stitched seams, twill neck tape, 1x1 ribbed cuff and waistband.', print:'Direct-to-garment print, water-based inks. Back placement.' },
       'villa-d-este-crew': { material:'70% ring-spun cotton, 30% polyester, heavyweight fleece (10oz/yd²), 100% cotton face.', fit:'Generous, relaxed crewneck fit. Double-needle stitched seams, twill neck tape, 1x1 ribbed cuff and waistband.', print:'Direct-to-garment print, water-based inks. Back placement.' },
       'palatine-hill-crew': { material:'70% ring-spun cotton, 30% polyester, heavyweight fleece (10oz/yd²), 100% cotton face.', fit:'Generous, relaxed crewneck fit. Double-needle stitched seams, twill neck tape, 1x1 ribbed cuff and waistband.', print:'Direct-to-garment print, water-based inks. Back placement.' },
-      'wind-sea-crew': { material:'70% ring-spun cotton, 30% polyester, heavyweight fleece (10oz/yd²), 100% cotton face.', fit:'Generous, relaxed crewneck fit. Double-needle stitched seams, twill neck tape, 1x1 ribbed cuff and waistband.', print:'Direct-to-garment print, water-based inks. Back placement.' }
+      'wind-sea-crew': { material:'70% ring-spun cotton, 30% polyester, heavyweight fleece (10oz/yd²), 100% cotton face.', fit:'Generous, relaxed crewneck fit. Double-needle stitched seams, twill neck tape, 1x1 ribbed cuff and waistband.', print:'Direct-to-garment print, water-based inks. Back placement.' },
+      'arhus-old-town-crew': { material:'70% ring-spun cotton, 30% polyester, heavyweight fleece (10oz/yd²), 100% cotton face.', fit:'Generous, relaxed crewneck fit. Double-needle stitched seams, twill neck tape, 1x1 ribbed cuff and waistband.', print:'Direct-to-garment print, water-based inks. Back placement.' },
+      'new-york-crew': { material:'70% ring-spun cotton, 30% polyester, heavyweight fleece (10oz/yd²), 100% cotton face.', fit:'Generous, relaxed crewneck fit. Double-needle stitched seams, twill neck tape, 1x1 ribbed cuff and waistband.', print:'Direct-to-garment print, water-based inks. Back placement.' }
     };
     var d = DETAILS[key] || DETAILS.tee;
     document.getElementById('detailMaterial').textContent = d.material;
@@ -1691,6 +1733,7 @@ purchase label. Do not enable public submission before those controls exist.
     { title:'Venezia', garment:'Tee', price:'$64', slug:'tee', model:'venezia tee white model.png', colors:['White','Black'] },
     { title:'Venezia', garment:'Crewneck', price:'$84', slug:'crew', model:'venezia crew model front.png', colors:['White','Black'] },
     { title:'Århus, The Old Town', garment:'Tee', price:'$64', slug:'arhus-old-town-tee', model:'the old town model.png', colors:['Black'] },
+    { title:'Århus, The Old Town', garment:'Crewneck', price:'$84', slug:'arhus-old-town-crew', model:'arhus the old town crew.png', colors:['Black'] },
     { title:'Wind & Sea', garment:'Tee', price:'$64', slug:'wind-sea-tee', model:'wind & sea tee model.png', colors:['Black'] },
     { title:'Wind & Sea', garment:'Crewneck', price:'$84', slug:'wind-sea-crew', model:'wind & sea crew.png', colors:['Black'] },
     { title:'Waves of Life', garment:'Tee', price:'$64', slug:'waves-of-life-tee', model:'waves of life tee model.png', colors:['White','Black'] },
@@ -1703,6 +1746,7 @@ purchase label. Do not enable public submission before those controls exist.
     { title:'Palatine Hill', garment:'Tee', price:'$64', slug:'palatine-hill-tee', model:'palatine hill tee model.png', colors:['White','Cream','Oatmeal'] },
     { title:'Palatine Hill', garment:'Crewneck', price:'$84', slug:'palatine-hill-crew', model:'palatine hill crew bone model.png', colors:['Bone','White'] },
     { title:'Ostia Antica', garment:'Tee', price:'$64', slug:'ostia-antica-tee', model:'ostia antica tee model.png', colors:['White','Cream'] },
+    { title:'New York', garment:'Crewneck', price:'$84', slug:'new-york-crew', model:'new york crew model.png', colors:['White'] },
     { title:'New York Chrysler', price:'—', soon:true, model:'New york chystler hoodie.png' }
   ];
   var drop  = document.getElementById('searchDrop');

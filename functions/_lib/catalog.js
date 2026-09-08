@@ -671,6 +671,69 @@ export const CATALOG = {
       },
     },
   },
+  'arhus-old-town-crew': {
+    name: 'Århus, The Old Town — Crewneck',
+    image: 'https://thedeangeloseries.com/arhus%20the%20old%20town%20crew.png',
+    currency: 'usd',
+    sizes: ['S', 'M', 'L', 'XL', '2XL', '3XL'],
+    colors: ['Black'],
+    basePrice: 8400,
+    upchargePrice: 8800,
+    upchargeSizes: ['2XL', '3XL'],
+    stripeTaxCode: 'txcd_30011000',
+    // "Arhus the old town - Crew" (6a9fe2335f7ad524a4056309), confirmed live
+    // via GET /v1/shops/26931439/products/6a9fe2335f7ad524a4056309.json on
+    // 2026-09-08 — blueprint 6992 / print provider 217, same blank as the
+    // other new crewnecks. Black only.
+    printify: {
+      productId: '6a9fe2335f7ad524a4056309',
+      printProviderId: 217,
+      variantIdBySize: {
+        S: 302545, M: 302531, L: 302589, XL: 302574, '2XL': 302567, '3XL': 302591,
+      },
+      skuBySize: {
+        S: '26569892817531419744',
+        M: '24866161266756792056',
+        L: '27802823526160612722',
+        XL: '92457814209711643277',
+        '2XL': '14559314409208600655',
+        '3XL': '26151421326045617558',
+      },
+    },
+  },
+  'new-york-crew': {
+    name: 'New York — Crewneck',
+    image: 'https://thedeangeloseries.com/new%20york%20crew%20model.png',
+    currency: 'usd',
+    sizes: ['S', 'M', 'L', 'XL', '2XL', '3XL'],
+    colors: ['White'],
+    basePrice: 8400,
+    upchargePrice: 8800,
+    upchargeSizes: ['2XL', '3XL'],
+    stripeTaxCode: 'txcd_30011000',
+    // New artwork — a dual-panel print pairing the Chrysler Building and
+    // Empire State Building. Product still carries Printify's generic
+    // default title ("Unisex Heavyweight Crewneck Sweatshirt",
+    // 6a9ff8185f7ad524a4057837) but its print image was confirmed to match
+    // the owner's "new york crew.png"/"new york crew model.png" exactly via
+    // GET /v1/shops/26931439/products/6a9ff8185f7ad524a4057837.json on
+    // 2026-09-08 — blueprint 6992 / print provider 217. White only.
+    printify: {
+      productId: '6a9ff8185f7ad524a4057837',
+      printProviderId: 217,
+      variantIdBySize: {
+        S: 302521, M: 302513, L: 302520, XL: 302515, '2XL': 302523, '3XL': 302524,
+      },
+      skuBySize: {
+        S: '11468590761802427817',
+        M: '12105579651762685373',
+        L: '38442363310152832799',
+        XL: '22102533115824912063',
+        '2XL': '11633831691690924458',
+        '3XL': '18760429472063095847',
+      },
+    },
+  },
   'wind-sea-crew': {
     name: 'Wind & Sea — Crewneck',
     image: 'https://thedeangeloseries.com/wind%20%26%20sea%20crew.png',

@@ -25,6 +25,8 @@ const NEW_PRODUCTS = [
   { slug: 'palatine-hill-crew', color: 'Bone' },
   { slug: 'palatine-hill-crew', color: 'White' },
   { slug: 'wind-sea-crew', color: 'Black' },
+  { slug: 'arhus-old-town-crew', color: 'Black' },
+  { slug: 'new-york-crew', color: 'White' },
 ];
 
 console.log('--- New products: every enabled size has a valid Printify variant ID + SKU ---');
@@ -83,10 +85,13 @@ console.log('\n--- New products: distinct products, not accidentally aliased to 
   const villaDEsteCrew = CATALOG['villa-d-este-crew'];
   const palatineHillCrew = printifyMappingForColor(CATALOG['palatine-hill-crew'], 'Bone');
   const windSeaCrew = CATALOG['wind-sea-crew'];
+  const arhusCrew = CATALOG['arhus-old-town-crew'];
+  const newYorkCrew = CATALOG['new-york-crew'];
   const crewProductIds = new Set([
-    crewWhite.productId, wavesOfLifeCrew.productId, villaDEsteCrew.printify.productId, palatineHillCrew.productId, windSeaCrew.printify.productId,
+    crewWhite.productId, wavesOfLifeCrew.productId, villaDEsteCrew.printify.productId, palatineHillCrew.productId,
+    windSeaCrew.printify.productId, arhusCrew.printify.productId, newYorkCrew.printify.productId,
   ]);
-  ok('The five new/relinked crewnecks each have a distinct Printify product ID', crewProductIds.size === 5);
+  ok('The seven new/relinked crewnecks each have a distinct Printify product ID', crewProductIds.size === 7);
 }
 
 console.log('\n--- Regression: existing products unchanged by this addition ---');
