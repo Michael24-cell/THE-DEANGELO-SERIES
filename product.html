@@ -292,8 +292,8 @@
   }
   .source-title em{font-style:italic;font-weight:300}
   .source-medium{
-    font-family:var(--font-serif);font-style:italic;font-weight:300;
-    font-size:1.3rem;color:var(--ink-dim);margin-bottom:48px;
+    font-family:var(--font-serif);font-style:normal;font-weight:400;
+    font-size:1.3rem;color:var(--ink);margin-bottom:48px;
   }
   .source-pull{
     font-family:var(--font-serif);font-style:italic;font-weight:300;
@@ -728,11 +728,8 @@
       <h2 class="source-title" id="sourceTitle">Venezia <em>1979</em></h2>
       <p class="source-medium" id="sourceMedium">Isola di San Giorgio Maggiore, Venice Italy</p>
       <p class="source-pull" id="sourcePull">Water Color on Textured Paper.</p>
-      <div class="source-body" id="sourceBody">
-        <p>Artwork 01 is translated onto heavyweight cotton, documented, and archived.</p>
-      </div>
+      <div class="source-body" id="sourceBody" style="display:none"></div>
       <div class="source-sign" id="sourceSign">
-        <span>By</span>
         <img class="sign-img" src="tony-deangelo-signature.png" alt="Tony DeAngelo signature">
       </div>
     </div>
@@ -1035,7 +1032,7 @@
       titleHtml: 'Venezia <em>1979</em>',
       medium: 'Isola di San Giorgio Maggiore, Venice Italy',
       pull: 'Water Color on Textured Paper.',
-      bodyHtml: '<p>Artwork 01 is translated onto heavyweight cotton, documented, and archived.</p>',
+      bodyHtml: '',
       signName: 'Tony DeAngelo',
       signatureImg: 'tony-deangelo-signature.png',
       provArtworkValueHtml: 'No. <em>01</em>',
@@ -1219,13 +1216,16 @@
     var sourcePull = document.getElementById('sourcePull');
     if (sourcePull) sourcePull.textContent = src.pull;
     var sourceBody = document.getElementById('sourceBody');
-    if (sourceBody) sourceBody.innerHTML = src.bodyHtml;
+    if (sourceBody) {
+      sourceBody.innerHTML = src.bodyHtml;
+      sourceBody.style.display = src.bodyHtml ? '' : 'none';
+    }
     var sourceSign = document.getElementById('sourceSign');
     if (sourceSign) {
       sourceSign.style.display = src.signName ? '' : 'none';
       if (src.signName) {
         sourceSign.innerHTML = src.signatureImg
-          ? '<span>By</span><img class="sign-img" src="' + src.signatureImg + '" alt="' + src.signName + ' signature">'
+          ? '<img class="sign-img" src="' + src.signatureImg + '" alt="' + src.signName + ' signature">'
           : '<span>By</span><span class="name">' + src.signName + '</span>';
       }
     }
