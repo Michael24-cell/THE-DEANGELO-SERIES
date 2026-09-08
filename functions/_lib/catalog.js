@@ -11,7 +11,8 @@
 //
 // Printify mapping confirmed live via GET /v1/shops/26931439/products.json on
 // 2026-07-31 and re-confirmed 2026-08-03 after the Printify product rename:
-//   crew   -> "Venezia Crewneck"                       (unchanged)
+//   crew   -> "Venezia Crewneck"                       (superseded 2026-09-08,
+//     see `crew` below — owner switched to a different crew blank)
 //   hoodie -> "Three-Panel Fleece Hoodie"               (unchanged)
 //   arhus-old-town-tee -> "Arhus, The Old Town - Tee"   (renamed in Printify
 //     from "Anhor The Old Town Tee" — same product ID 6a3cab048606da46840fa2e7,
@@ -26,10 +27,10 @@
 // currently in that same unmapped state; see below). A real "Venezia Tee"
 // product now exists in Printify (White + Black) — confirmed live via
 // GET /v1/shops/26931439/products/6a9e5512d4f10211ae0c5568.json on
-// 2026-09-08, blueprint 1723 / print provider 99 (same provider as the
-// Venezia Crewneck — a different provider from the standalone artwork
-// tees' 74). Do not reuse Arhus's or any other product's fulfillment
-// mapping for `tee` going forward.
+// 2026-09-08, blueprint 1723 / print provider 99 — a different provider
+// from the standalone artwork tees' 74, and (as of the same day) from
+// `crew`'s new blank on provider 217 too. Do not reuse Arhus's or any
+// other product's fulfillment mapping for `tee` going forward.
 //
 // Only the Printify variants the owner confirmed as final are mapped below.
 // The Three-Panel Fleece Hoodie also has enabled XS and 3XL variants in
@@ -483,24 +484,38 @@ export const CATALOG = {
     image: 'https://thedeangeloseries.com/venezia%20crew%20model%20front.png',
     currency: 'usd',
     sizes: ['S', 'M', 'L', 'XL', '2XL', '3XL'],
+    // Owner switched to a different crew blank in Printify — a new "Venezia
+    // - Crew" product (6a9fe5355f7ad524a40565b1, blueprint 6992, print
+    // provider 217), confirmed live via GET /v1/shops/26931439/products/
+    // 6a9fe5355f7ad524a40565b1.json on 2026-09-08. This replaces the old
+    // "Venezia Crewneck" product (6a3372e03f9ce13ae30dad09, blueprint 1296,
+    // provider 99) below for fulfillment going forward; the old product is
+    // still live in Printify but should no longer be used for new orders.
+    // The new blank also has an enabled Black variant, but the owner has no
+    // product photo for it yet — so `colors` stays White-only here until a
+    // Black photo exists to add it (Black's variant IDs/SKUs, for when that
+    // day comes: XS 302561/19904676273536124822, S 302545/30182333857985978858,
+    // M 302531/88905436260879305175, L 302589/17141653211059328898,
+    // XL 302574/32631943490500188808, 2XL 302567/28218533546371128973,
+    // 3XL 302591/46653753990831510091).
     colors: ['White'],
     basePrice: 8400,
     upchargePrice: 8800,
     upchargeSizes: ['2XL', '3XL'],
     stripeTaxCode: 'txcd_30011000',
     printify: {
-      productId: '6a3372e03f9ce13ae30dad09', // Venezia Crewneck
-      printProviderId: 99,
+      productId: '6a9fe5355f7ad524a40565b1', // Venezia - Crew (new blank)
+      printProviderId: 217,
       variantIdBySize: {
-        S: 96919, M: 96920, L: 96921, XL: 96922, '2XL': 96923, '3XL': 102376,
+        S: 302521, M: 302513, L: 302520, XL: 302515, '2XL': 302523, '3XL': 302524,
       },
       skuBySize: {
-        S: '56375788856496942500',
-        M: '14371375033157219416',
-        L: '17361719666430497266',
-        XL: '30828551016315872979',
-        '2XL': '30529974360931354039',
-        '3XL': '21518862049329321690',
+        S: '91012257067515697560',
+        M: '25757851784377805035',
+        L: '32726095027082297765',
+        XL: '32107334401092782977',
+        '2XL': '13170274534679742688',
+        '3XL': '29660179369702066481',
       },
     },
   },

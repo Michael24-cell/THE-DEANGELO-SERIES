@@ -76,7 +76,7 @@ console.log('\n--- Regression: existing products unchanged by this addition ---'
   ok('Venezia Tee now maps to its confirmed Printify product ID', printifyMappingForColor(CATALOG.tee, 'White').productId === '6a9e5512d4f10211ae0c5568');
   ok('Arhus Old Town Tee still maps to its known Printify product ID', CATALOG['arhus-old-town-tee'].printify.productId === '6a3cab048606da46840fa2e7');
   ok('Hoodie is unmapped (its Printify product was deleted — printify: null)', CATALOG.hoodie.printify === null);
-  ok('Crew still maps to its known Printify product ID', CATALOG.crew.printify.productId === '6a3372e03f9ce13ae30dad09');
+  ok('Crew maps to its confirmed Printify product ID (new crew blank)', CATALOG.crew.printify.productId === '6a9fe5355f7ad524a40565b1');
   ok('Venezia Tee base price unchanged ($64.00)', CATALOG.tee.basePrice === 6400);
   ok('Hoodie base price unchanged ($84.00)', CATALOG.hoodie.basePrice === 8400);
   ok('Crew base price unchanged ($84.00)', CATALOG.crew.basePrice === 8400);
