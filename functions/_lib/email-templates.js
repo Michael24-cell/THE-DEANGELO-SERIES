@@ -19,6 +19,11 @@ const BRAND = {
   bone: '#F5F5F1',
   muted: '#6b6b66',
   siteUrl: 'https://thedeangeloseries.com',
+  // Matches wrangler.toml's SUPPORT_EMAIL, which is identical across
+  // [vars]/[env.production.vars]/[env.preview.vars] — safe to hardcode here
+  // rather than threading env through every template function for one
+  // constant that's the same in every environment already.
+  supportEmail: 'support@thedeangeloseries.com',
 };
 
 function layout({ preheader, bodyHtml, footerExtraHtml }) {
@@ -37,7 +42,7 @@ function layout({ preheader, bodyHtml, footerExtraHtml }) {
           ${bodyHtml}
         </td></tr>
         <tr><td style="padding:20px 32px;border-top:1px solid #e5e4dd;color:${BRAND.muted};font-size:12px;">
-          Questions? Reply to this email or contact support.<br>
+          Questions? Reply to this email or contact <a href="mailto:${BRAND.supportEmail}" style="color:${BRAND.muted};">${BRAND.supportEmail}</a>.<br>
           <a href="${BRAND.siteUrl}" style="color:${BRAND.muted};">${BRAND.siteUrl.replace('https://', '')}</a>
           ${footerExtraHtml || ''}
         </td></tr>
