@@ -114,6 +114,51 @@ export function printifyFailureAlertTemplate(info) {
 }
 
 /**
+ * Internal cost report — sent to SUPPORT_EMAIL (not the customer) once
+ * Printify reports real fulfillment costs for an order (see
+ * refreshPrintifyCosts() in functions/api/printify-webhook.js). Every dollar
+ * amount arrives pre-formatted (e.g. "$18.40") — this template does no money
+ * math itself, matching every other template in this file.
+ * @param {{orderNumber:string, customerName?:string, customerEmail?:string,
+ *   items:Array<{name:string,size?:string,color?:string,quantity:number}>,
+ *   subtotal:string, shipping:string, printifyProductCost:string,
+ *   printifyShippingCost:string, printifyTaxCost:string, printifyTotalCost:string,
+ *   margin?:string}} info
+ */
+export function printifyCostReportTemplate(info) {
+  const itemsHtml = (info.items || []).map((it) => `
+    <tr>
+      <td style="padding:8px 0;border-bottom:1px solid #eee;">${escapeHtml(it.name)}${it.size ? ` — Size ${escapeHtml(it.size)}` : ''}${it.color ? ` · ${escapeHtml(it.color)}` : ''}</td>
+      <td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right;">&times;${escapeHtml(it.quantity)}</td>
+    </tr>`).join('');
+  const itemsText = (info.items || [])
+    .map((it) => `- ${it.name}${it.size ? ` — Size ${it.size}` : ''}${it.color ? ` · ${it.color}` : ''} x${it.quantity}`)
+    .join('\n');
+
+  const bodyHtml = `
+    <p style="margin:0 0 16px;">Printify cost is in for order <strong>${escapeHtml(info.orderNumber)}</strong>.</p>
+    ${info.customerName || info.customerEmail ? `<p style="margin:0 0 20px;color:${BRAND.muted};">${escapeHtml(info.customerName || '')}${info.customerName && info.customerEmail ? ' · ' : ''}${escapeHtml(info.customerEmail || '')}</p>` : ''}
+    <table role="presentation" width="100%" style="margin:0 0 20px;font-size:14px;">
+      ${itemsHtml}
+    </table>
+    <table role="presentation" width="100%" style="margin:0 0 8px;font-size:14px;">
+      <tr><td style="padding:4px 0;">Charged — subtotal</td><td style="padding:4px 0;text-align:right;">${escapeHtml(info.subtotal)}</td></tr>
+      <tr><td style="padding:4px 0;">Charged — shipping</td><td style="padding:4px 0;text-align:right;">${escapeHtml(info.shipping)}</td></tr>
+      <tr><td style="padding:4px 0;">Printify — product cost</td><td style="padding:4px 0;text-align:right;">${escapeHtml(info.printifyProductCost)}</td></tr>
+      <tr><td style="padding:4px 0;">Printify — shipping cost</td><td style="padding:4px 0;text-align:right;">${escapeHtml(info.printifyShippingCost)}</td></tr>
+      <tr><td style="padding:4px 0;">Printify — tax</td><td style="padding:4px 0;text-align:right;">${escapeHtml(info.printifyTaxCost)}</td></tr>
+      <tr><td style="padding-top:8px;font-weight:600;">Printify — total cost</td><td style="padding-top:8px;font-weight:600;text-align:right;">${escapeHtml(info.printifyTotalCost)}</td></tr>
+      ${info.margin ? `<tr><td style="padding-top:8px;font-weight:600;">Estimated margin</td><td style="padding-top:8px;font-weight:600;text-align:right;">${escapeHtml(info.margin)}</td></tr>` : `<tr><td colspan="2" style="padding-top:8px;color:${BRAND.muted};">Margin not yet available — Stripe's processing fee hasn't been captured for this order yet.</td></tr>`}
+    </table>
+  `;
+  return {
+    subject: `Printify cost captured — ${info.orderNumber}`,
+    html: layout({ preheader: `Printify cost for ${info.orderNumber}`, bodyHtml }),
+    text: `Printify cost is in for order ${info.orderNumber}.\n${info.customerName || ''} ${info.customerEmail || ''}\n\n${itemsText}\n\nCharged — subtotal: ${info.subtotal}\nCharged — shipping: ${info.shipping}\nPrintify — product cost: ${info.printifyProductCost}\nPrintify — shipping cost: ${info.printifyShippingCost}\nPrintify — tax: ${info.printifyTaxCost}\nPrintify — total cost: ${info.printifyTotalCost}\n${info.margin ? `Estimated margin: ${info.margin}` : `Margin not yet available — Stripe's processing fee hasn't been captured for this order yet.`}`,
+  };
+}
+
+/**
  * In production — sent when Printify (or manual fulfillment) begins making the piece.
  * @param {{orderNumber:string, customerName?:string, estimateNote?:string}} order
  */

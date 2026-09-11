@@ -53,9 +53,9 @@
 
 import {
   claimWebhookEvent, findOrderByPrintifyOrderId, updateOrder, updateOrderFinancials,
-  recordStatusEvent, sendOrderEmailOnce, insertShipment, allShipmentsDelivered,
+  recordStatusEvent, sendOrderEmailOnce, insertShipment, allShipmentsDelivered, getOrderItems,
 } from '../_lib/orders-db.js';
-import { inProductionTemplate, shippedTemplate, deliveredTemplate, printifyFailureAlertTemplate } from '../_lib/email-templates.js';
+import { inProductionTemplate, shippedTemplate, deliveredTemplate, printifyFailureAlertTemplate, printifyCostReportTemplate } from '../_lib/email-templates.js';
 import { getPrintifyOrder, extractPrintifyCosts, deriveShipmentKey } from '../_lib/printify.js';
 
 const HANDLED_EVENTS = new Set([
@@ -302,13 +302,64 @@ async function refreshPrintifyCosts(env, order) {
     return;
   }
 
-  await updateOrderFinancials(env, order.id, {
+  const margin = await updateOrderFinancials(env, order.id, {
     printify_product_cost: costs.productCost,
     printify_shipping_cost: costs.shippingCost,
     printify_tax_amount: costs.taxAmount,
     printify_total_cost: costs.totalCost,
   });
   console.log(`[printify-webhook] Printify costs captured for ${order.public_order_number}: product=${costs.productCost} shipping=${costs.shippingCost} tax=${costs.taxAmount}`);
+
+  await sendCostReport(env, order, costs, margin);
+}
+
+// Internal-only email to SUPPORT_EMAIL, sent exactly once per order the first
+// time refreshPrintifyCosts() above learns real costs (never an estimate).
+// Reuses sendOrderEmailOnce directly (not the emailOnce() wrapper below,
+// which always addresses order.customer_email) since this never goes to the
+// customer. Best-effort: a failure here must never affect cost persistence,
+// which has already happened by the time this runs.
+async function sendCostReport(env, order, costs, margin) {
+  if (!env.SUPPORT_EMAIL) {
+    console.error(`[printify-webhook] Printify costs captured for ${order.public_order_number} but SUPPORT_EMAIL is not configured — no cost report sent`);
+    return;
+  }
+
+  let items = [];
+  try {
+    const rows = await getOrderItems(env, order.id);
+    items = rows.map((r) => ({ name: r.product_name, size: r.size, color: r.color, quantity: r.quantity }));
+  } catch (err) {
+    console.error(`[printify-webhook] Could not load order items for cost report (${order.public_order_number}):`, err.message);
+  }
+
+  const result = await sendOrderEmailOnce(env, {
+    orderId: order.id,
+    emailType: 'printify_cost_report',
+    to: env.SUPPORT_EMAIL,
+    buildTemplate: () => printifyCostReportTemplate({
+      orderNumber: order.public_order_number,
+      customerName: order.customer_name || undefined,
+      customerEmail: order.customer_email || undefined,
+      items,
+      subtotal: money(order.subtotal_amount),
+      shipping: money(order.shipping_amount),
+      printifyProductCost: money(costs.productCost),
+      printifyShippingCost: money(costs.shippingCost),
+      printifyTaxCost: money(costs.taxAmount),
+      printifyTotalCost: money(costs.totalCost),
+      margin: margin == null ? undefined : money(margin),
+    }),
+  });
+  if (result.sent) {
+    console.log(`[printify-webhook] Cost report sent for ${order.public_order_number}`);
+  } else if (result.reason !== 'duplicate') {
+    console.error(`[printify-webhook] Cost report not sent for ${order.public_order_number}: ${result.reason}`);
+  }
+}
+
+function money(cents) {
+  return `$${(Number(cents) / 100).toFixed(2)}`;
 }
 
 async function emailOnce(env, order, emailType, buildTemplate) {
