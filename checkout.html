@@ -468,9 +468,9 @@
 <body data-screen-label="Checkout">
 
 <nav class="checkout-nav">
-  <a href="collection.html" class="nav-back"><span class="arr"></span><span>Continue browsing</span></a>
-  <a href="index.html" class="nav-brand">THE DEANGELO SERIES</a>
-  <a href="contact.html" class="nav-help">Need help? →</a>
+  <a href="collection.html" class="nav-back" target="_blank" rel="noopener"><span class="arr"></span><span>Continue browsing</span></a>
+  <a href="index.html" class="nav-brand" target="_blank" rel="noopener">THE DEANGELO SERIES</a>
+  <a href="contact.html" class="nav-help" target="_blank" rel="noopener">Need help? →</a>
 </nav>
 
 <main class="checkout">
@@ -564,10 +564,10 @@
         </button>
         <p class="submit-fine" id="checkoutError" role="alert" style="display:none;color:#a33"></p>
         <p class="submit-fine">
-          By completing this order you accept the <a href="terms.html">Terms</a> &amp; <a href="privacy-policy.html">Privacy</a>.
+          By completing this order you accept the <a href="terms.html" target="_blank" rel="noopener">Terms</a> &amp; <a href="privacy-policy.html" target="_blank" rel="noopener">Privacy</a>.
         </p>
         <p class="submit-fine">
-          All sales are final. Damage, manufacturing-defect, or incorrect-item claims must be submitted within 7 days of delivery and are subject to review. <a href="refund-policy.html">View policy</a>
+          All sales are final. Damage, manufacturing-defect, or incorrect-item claims must be submitted within 7 days of delivery and are subject to review. <a href="refund-policy.html" target="_blank" rel="noopener">View policy</a>
         </p>
       </div>
 
@@ -603,12 +603,12 @@
 
         <div class="source-mini">
           <div class="source-mini-art">
-            <img src="Venezia-Original.png" alt="Venezia — Original Artwork" style="width:100%;height:100%;object-fit:contain;padding:6px;">
+            <img id="sourceMiniImg" src="Venezia-Original.png" alt="Venezia — Original Artwork" style="width:100%;height:100%;object-fit:contain;padding:6px;">
           </div>
           <div class="source-mini-text">
             <div class="eyebrow-mini">The Source</div>
-            <div class="title">Venezia</div>
-            <div class="meta">Water Color on Textured Paper · 1979 · Tony DeAngelo</div>
+            <div class="title" id="sourceMiniTitle">Venezia</div>
+            <div class="meta" id="sourceMiniMeta">Water Color on Textured Paper · 1979 · Tony DeAngelo</div>
           </div>
         </div>
 
@@ -702,6 +702,38 @@
     var submitBtn = document.getElementById('checkoutSubmit');
     var itemsEl = document.getElementById('summItems');
 
+    // The Source — mirrors product.html's per-artwork SOURCE map (same
+    // images, medium, year, artist) so checkout shows the real source
+    // artwork for whatever's actually in the cart, not a hardcoded one.
+    var VENEZIA_MINI = { img: 'Venezia-Original.png', alt: 'Venezia — Original Artwork', title: 'Venezia', meta: 'Water Color on Textured Paper · 1979 · Tony DeAngelo' };
+    var SOURCE_MINI = {
+      tee: VENEZIA_MINI, crew: VENEZIA_MINI,
+      'arhus-old-town-tee':      { img: 'arhus-source.jpg',       alt: 'Århus, The Old Town — Original Photograph', title: 'Århus, The Old Town', meta: 'Vintage European Kodak Slide · 1980 · Tony DeAngelo' },
+      'arhus-old-town-crew':     { img: 'arhus-source.jpg',       alt: 'Århus, The Old Town — Original Photograph', title: 'Århus, The Old Town', meta: 'Vintage European Kodak Slide · 1980 · Tony DeAngelo' },
+      'wind-sea-tee':            { img: 'wind-sea.png',           alt: 'Wind & Sea — Original Artwork',             title: 'Wind & Sea',           meta: 'Water Based Latex on Canvas · 1999 · Tony DeAngelo' },
+      'wind-sea-crew':           { img: 'wind-sea.png',           alt: 'Wind & Sea — Original Artwork',             title: 'Wind & Sea',           meta: 'Water Based Latex on Canvas · 1999 · Tony DeAngelo' },
+      'waves-of-life-tee':       { img: 'wavesoflife-mock.png',   alt: 'Waves of Life — Original Artwork',          title: 'Waves of Life',        meta: 'Pastel on Textured Paper · 1990 · Tony DeAngelo' },
+      'waves-of-life-crew':      { img: 'wavesoflife-mock.png',   alt: 'Waves of Life — Original Artwork',          title: 'Waves of Life',        meta: 'Pastel on Textured Paper · 1990 · Tony DeAngelo' },
+      'villa-d-este-tee':        { img: 'villa-d-este-source.jpg', alt: 'Villa d\'Este — Original Photograph',      title: 'Villa d\'Este',        meta: 'Vintage European Kodak Slide · 1980 · Tony DeAngelo' },
+      'villa-d-este-crew':       { img: 'villa-d-este-source.jpg', alt: 'Villa d\'Este — Original Photograph',      title: 'Villa d\'Este',        meta: 'Vintage European Kodak Slide · 1980 · Tony DeAngelo' },
+      'the-wedge-tee':           { img: 'the wedge tee.png',      alt: 'The Wedge — Original Artwork',              title: 'The Wedge',            meta: 'Water Color on Textured Paper · 1990 · Tony DeAngelo' },
+      'leaning-tower-of-pisa-tee': { img: 'pisa-source.jpg',      alt: 'Leaning Tower of Pisa — Original Photograph', title: 'Leaning Tower of Pisa', meta: 'Vintage European Kodak Slide · 1980 · Tony DeAngelo' },
+      'piazza-san-marco-tee':    { img: 'piaza san marco tee.png', alt: 'Piazza San Marco — Original Photograph',   title: 'Piazza San Marco',     meta: 'Vintage European Kodak Slide · 1980 · Tony DeAngelo' },
+      'palatine-hill-tee':       { img: 'palatine hill tee.png',  alt: 'Palatine Hill — Original Photograph',       title: 'Palatine Hill',        meta: 'Vintage European Kodak Slide · 1980 · Tony DeAngelo' },
+      'palatine-hill-crew':      { img: 'palatine hill tee.png',  alt: 'Palatine Hill — Original Photograph',       title: 'Palatine Hill',        meta: 'Vintage European Kodak Slide · 1980 · Tony DeAngelo' },
+      'ostia-antica-tee':        { img: 'ostia antica tee.png',   alt: 'Ostia Antica — Original Photograph',        title: 'Ostia Antica',         meta: 'Vintage European Kodak Slide · 1980 · Tony DeAngelo' },
+      'new-york-crew':           { img: 'new york crew.png',      alt: 'New York — Original Artwork',               title: 'New York',             meta: 'Acrylic on Canvas · 2019 · Tony DeAngelo' }
+    };
+    function renderSourceMini() {
+      var src = (cart[0] && SOURCE_MINI[cart[0].slug]) || VENEZIA_MINI;
+      var imgEl = document.getElementById('sourceMiniImg');
+      var titleEl = document.getElementById('sourceMiniTitle');
+      var metaEl = document.getElementById('sourceMiniMeta');
+      if (imgEl) { imgEl.src = src.img; imgEl.alt = src.alt; }
+      if (titleEl) titleEl.textContent = src.title;
+      if (metaEl) metaEl.textContent = src.meta;
+    }
+
     function renderSummary() {
       if (!cart.length) {
         emptyEl.style.display = '';
@@ -720,6 +752,7 @@
 
       var firstImg = document.getElementById('summStageImg');
       if (cart[0].img) { firstImg.src = cart[0].img; firstImg.alt = cart[0].name || ''; }
+      renderSourceMini();
 
       itemsEl.innerHTML = cart.map(function (it, i) {
         var num = String(i + 1).padStart(2, '0');
