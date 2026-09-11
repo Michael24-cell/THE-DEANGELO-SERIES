@@ -95,6 +95,13 @@ export async function insertOrderItems(env, orderId, items) {
   await env.DB.batch(batch);
 }
 
+export async function getOrderItems(env, orderId) {
+  const { results } = await env.DB.prepare(
+    `SELECT product_name, size, color, quantity FROM order_items WHERE order_id = ?`,
+  ).bind(orderId).all();
+  return results;
+}
+
 /**
  * Partial update — pass only the columns being changed. Always stamps
  * updated_at. Column names are from a fixed allow-list, never built from

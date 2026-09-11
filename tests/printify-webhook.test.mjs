@@ -300,6 +300,70 @@ async function run() {
     ok('Exactly one delivered email', db._tables.email_events.filter((e) => e.email_type === 'delivered').length === 1);
   }
 
+  console.log('\n--- Printify cost known: cost report emailed once to SUPPORT_EMAIL, order financials updated ---');
+  {
+    const db = createFakeD1();
+    const order = seedOrder(db);
+    const env = makeEnv(db, { PRINTIFY_API_TOKEN: 'fake-token', PRINTIFY_SHOP_ID: '815256' });
+    let resendCalls = [];
+    global.fetch = async (url, opts) => {
+      const u = String(url);
+      if (u.includes('resend.com')) {
+        resendCalls.push(JSON.parse(opts.body));
+        return { ok: true, json: async () => ({ id: 'r_' + Math.random().toString(36).slice(2) }) };
+      }
+      if (u.includes('api.printify.com') && u.includes(`/orders/${order.printify_order_id}.json`)) {
+        return {
+          ok: true,
+          json: async () => ({
+            status: 'fulfilled',
+            line_items: [{ cost: 1200, shipping_cost: 400 }, { cost: 900, shipping_cost: 0 }],
+            total_tax: 150,
+          }),
+        };
+      }
+      throw new Error('Unexpected fetch in cost-report test: ' + u);
+    };
+
+    await post(env, sentToProductionEvent({ id: 'evt_cost_1', resourceId: order.printify_order_id }));
+
+    ok('printify_product_cost persisted', order.printify_product_cost === 2100, order.printify_product_cost);
+    ok('printify_shipping_cost persisted', order.printify_shipping_cost === 400, order.printify_shipping_cost);
+    ok('printify_tax_amount persisted', order.printify_tax_amount === 150, order.printify_tax_amount);
+    ok('printify_total_cost persisted', order.printify_total_cost === 2650, order.printify_total_cost);
+
+    const costReports = db._tables.email_events.filter((e) => e.email_type === 'printify_cost_report');
+    ok('Exactly one cost-report email claimed', costReports.length === 1, costReports.length);
+
+    const sent = resendCalls.find((c) => c.subject && c.subject.includes('Printify cost captured'));
+    ok('Cost report sent to SUPPORT_EMAIL, not the customer', sent?.to?.[0] === env.SUPPORT_EMAIL || sent?.to === env.SUPPORT_EMAIL, sent);
+    ok('Body names the order number', sent?.html?.includes(order.public_order_number));
+    ok('Body shows the Printify product cost', sent?.html?.includes('$21.00'));
+    ok('Body shows the Printify total cost', sent?.html?.includes('$26.50'));
+
+    stubResendFetch();
+  }
+
+  console.log('\n--- Printify cost still pending (cost-calculation status): no cost report, no financials written ---');
+  {
+    const db = createFakeD1();
+    const order = seedOrder(db);
+    const env = makeEnv(db, { PRINTIFY_API_TOKEN: 'fake-token', PRINTIFY_SHOP_ID: '815256' });
+    global.fetch = async (url) => {
+      const u = String(url);
+      if (u.includes('resend.com')) return { ok: true, json: async () => ({ id: 'r_x' }) };
+      if (u.includes('api.printify.com')) return { ok: true, json: async () => ({ status: 'cost-calculation', line_items: [] }) };
+      throw new Error('Unexpected fetch: ' + u);
+    };
+
+    await post(env, sentToProductionEvent({ id: 'evt_cost_pending', resourceId: order.printify_order_id }));
+
+    ok('printify_product_cost still null (cost not final yet)', order.printify_product_cost == null, order.printify_product_cost);
+    ok('No cost-report email sent while cost is pending', !db._tables.email_events.some((e) => e.email_type === 'printify_cost_report'));
+
+    stubResendFetch();
+  }
+
   console.log(`\n${pass} passed, ${fail} failed`);
   if (fail > 0) process.exitCode = 1;
 }
