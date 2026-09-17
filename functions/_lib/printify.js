@@ -229,6 +229,40 @@ export function extractPrintifyCosts(order) {
 }
 
 // ---------------------------------------------------------------------------
+// Webhook management — Printify has no dashboard UI for this; webhooks are
+// created/listed/updated entirely through this REST API (confirmed directly
+// against developers.printify.com — Webhooks section, not guessed). Used by
+// scripts/register-printify-webhook.mjs, never called from live request
+// handling.
+//
+// Each of these returns whatever Printify's API returns, reshaped only
+// enough to be easy to read (id, topic, url, secret) — never inventing a
+// field Printify didn't actually send back.
+// ---------------------------------------------------------------------------
+
+export async function listPrintifyWebhooks(env) {
+  const data = await printifyRequest(env, 'GET', `/shops/${env.PRINTIFY_SHOP_ID}/webhooks.json`);
+  return Array.isArray(data) ? data : [];
+}
+
+/**
+ * Creates one webhook subscription for a single topic. Printify's API takes
+ * one topic per webhook object (there is no documented "subscribe to
+ * multiple topics in one call") — registering all four events this project
+ * needs means four separate calls, one per topic, all pointing at the same
+ * url. Printify returns { id, topic, url, secret } — secret is only ever
+ * shown here, at creation time.
+ */
+export async function createPrintifyWebhook(env, { topic, url }) {
+  return printifyRequest(env, 'POST', `/shops/${env.PRINTIFY_SHOP_ID}/webhooks.json`, { topic, url });
+}
+
+/** Updates an existing webhook's url (e.g. a stale one from earlier testing). */
+export async function updatePrintifyWebhook(env, webhookId, { url }) {
+  return printifyRequest(env, 'PUT', `/shops/${env.PRINTIFY_SHOP_ID}/webhooks/${webhookId}.json`, { url });
+}
+
+// ---------------------------------------------------------------------------
 // Shared shipment-key derivation — the ONE place this logic lives, imported
 // by both functions/api/printify-webhook.js (the primary, event-driven path)
 // and scripts/reconcile-printify-orders.mjs (the polling fallback), so both
