@@ -262,6 +262,15 @@ export async function updatePrintifyWebhook(env, webhookId, { url }) {
   return printifyRequest(env, 'PUT', `/shops/${env.PRINTIFY_SHOP_ID}/webhooks/${webhookId}.json`, { url });
 }
 
+/**
+ * Deletes a webhook subscription outright. The only way to force Printify to
+ * mint a fresh, known secret for a topic that already has a webhook — it
+ * never re-shows an existing one's secret via GET/list, only at creation.
+ */
+export async function deletePrintifyWebhook(env, webhookId) {
+  return printifyRequest(env, 'DELETE', `/shops/${env.PRINTIFY_SHOP_ID}/webhooks/${webhookId}.json`);
+}
+
 // ---------------------------------------------------------------------------
 // Shared shipment-key derivation — the ONE place this logic lives, imported
 // by both functions/api/printify-webhook.js (the primary, event-driven path)
