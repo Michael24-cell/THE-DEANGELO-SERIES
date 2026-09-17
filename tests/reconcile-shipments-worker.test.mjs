@@ -23,9 +23,7 @@ function ok(label, cond, extra) {
 }
 
 const WEBHOOK_SECRET = 'whsec_test_printify_fake';
-function signBody(bodyStr, secret) {
-  return crypto.createHmac('sha256', secret).update(bodyStr).digest('hex');
-}
+const ENDPOINT_URL = 'https://thedeangeloseries.com/api/printify-webhook';
 
 function makeEnv(db, extra) {
   return {
@@ -82,8 +80,8 @@ function stubFetch(printifyOrdersById, { failFor = new Set() } = {}) {
 
 async function postWebhook(env, bodyObj) {
   const bodyStr = JSON.stringify(bodyObj);
-  const sig = signBody(bodyStr, env.PRINTIFY_WEBHOOK_SECRET);
-  const request = { method: 'POST', headers: { get: (k) => (k.toLowerCase() === 'x-pfy-signature' ? sig : null) }, text: async () => bodyStr };
+  const url = `${ENDPOINT_URL}?key=${encodeURIComponent(env.PRINTIFY_WEBHOOK_SECRET)}`;
+  const request = { method: 'POST', url, headers: { get: () => null }, text: async () => bodyStr };
   return onRequest({ request, env });
 }
 function shipmentCreatedEvent({ id, resourceId, trackingNumber }) {

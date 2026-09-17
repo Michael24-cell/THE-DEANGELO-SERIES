@@ -1,9 +1,13 @@
 // Persistent regression tests for functions/api/printify-webhook.js.
 //
-// Exercises the endpoint exactly as Printify would call it: signed POST
-// bodies matching the *documented* payload shapes (developers.printify.com —
-// Events > Order events), run through the real onRequest() handler against
-// an in-memory D1 mock (tests/_fake-d1.mjs) and a stubbed Resend fetch.
+// Exercises the endpoint exactly as Printify would call it: POST bodies
+// matching the *documented* payload shapes (developers.printify.com —
+// Events > Order events), against a URL carrying the shared `?key=` secret
+// (see the module header comment in printify-webhook.js for why this
+// project verifies a self-chosen URL secret rather than a Printify-issued
+// HMAC signature — Printify's API never exposes one for this shop), run
+// through the real onRequest() handler against an in-memory D1 mock
+// (tests/_fake-d1.mjs) and a stubbed Resend fetch.
 //
 // Run: node tests/printify-webhook.test.mjs  (or `npm test`, via tests/run-all.mjs)
 
@@ -20,10 +24,7 @@ function ok(label, cond, extra) {
 }
 
 const SECRET = 'whsec_test_printify_fake';
-
-function signBody(bodyStr, secret) {
-  return crypto.createHmac('sha256', secret).update(bodyStr).digest('hex');
-}
+const ENDPOINT_URL = 'https://thedeangeloseries.com/api/printify-webhook';
 
 function makeEnv(db, extra) {
   return {
@@ -99,12 +100,14 @@ function shipmentDeliveredEvent({ id, resourceId, trackingNumber, skus }) {
   };
 }
 
-async function post(env, bodyObj, { signatureOverride, omitSignature = false } = {}) {
+async function post(env, bodyObj, { keyOverride, omitKey = false } = {}) {
   const bodyStr = JSON.stringify(bodyObj);
-  const sig = signatureOverride !== undefined ? signatureOverride : signBody(bodyStr, env.PRINTIFY_WEBHOOK_SECRET || SECRET);
+  const key = keyOverride !== undefined ? keyOverride : (env.PRINTIFY_WEBHOOK_SECRET || SECRET);
+  const url = omitKey ? ENDPOINT_URL : `${ENDPOINT_URL}?key=${encodeURIComponent(key)}`;
   const request = {
     method: 'POST',
-    headers: { get: (k) => (k.toLowerCase() === 'x-pfy-signature' && !omitSignature ? sig : null) },
+    url,
+    headers: { get: () => null },
     text: async () => bodyStr,
   };
   const res = await onRequest({ request, env });
@@ -124,17 +127,27 @@ async function run() {
     ok('HTTP 503', res.status === 503, res.status);
   }
 
-  console.log('\n--- Invalid signature => rejected, nothing processed ---');
+  console.log('\n--- Wrong key => rejected, nothing processed ---');
   {
     const db = createFakeD1();
     seedOrder(db);
     const env = makeEnv(db);
-    const { res } = await post(env, sentToProductionEvent({ id: 'evt_2', resourceId: 'pf_order_1' }), { signatureOverride: 'deadbeef'.repeat(8) });
+    const { res } = await post(env, sentToProductionEvent({ id: 'evt_2', resourceId: 'pf_order_1' }), { keyOverride: 'wrong-key-entirely' });
     ok('HTTP 400', res.status === 400);
     ok('Event was NOT claimed', db._tables.processed_webhooks.length === 0);
   }
 
-  console.log('\n--- Valid signature => accepted ---');
+  console.log('\n--- Missing key query param => rejected, nothing processed ---');
+  {
+    const db = createFakeD1();
+    seedOrder(db);
+    const env = makeEnv(db);
+    const { res } = await post(env, sentToProductionEvent({ id: 'evt_2b', resourceId: 'pf_order_1' }), { omitKey: true });
+    ok('HTTP 400', res.status === 400);
+    ok('Event was NOT claimed', db._tables.processed_webhooks.length === 0);
+  }
+
+  console.log('\n--- Valid key => accepted ---');
   {
     const db = createFakeD1();
     seedOrder(db);
