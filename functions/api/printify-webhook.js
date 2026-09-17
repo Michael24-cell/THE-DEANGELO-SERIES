@@ -5,19 +5,28 @@
 //          status=canceled), order:shipment:created, order:shipment:delivered
 //
 // Required env vars:
-//   PRINTIFY_WEBHOOK_SECRET — HMAC-SHA256 signing secret for this endpoint,
-//   from Printify Dashboard > Webhooks > (this endpoint) > Secret.
-//   FAIL-CLOSED: if this is not set, every request is rejected with 503
-//   before the body is even parsed. This endpoint never accepts an unsigned
-//   event — there is no "skip verification" fallback. (An earlier version of
-//   this file did allow unsigned requests when the secret was unset; that
-//   was a safety bug and has been removed.)
-// Also needs D1 (`DB` binding) and the Resend vars (functions/_lib/resend.js).
+//   PRINTIFY_WEBHOOK_SECRET — a shared secret WE choose (not one Printify
+//   issues). Verified via a `?key=` query-string parameter on the webhook's
+//   own registered URL, e.g. https://thedeangeloseries.com/api/printify-webhook?key=<secret>
+//   — see scripts/register-printify-webhook.mjs, which registers exactly
+//   that URL with Printify.
 //
-// The header name and HMAC scheme here follow Printify's documented webhook
-// signing (X-Pfy-Signature: hex HMAC-SHA256 of the raw body) — reconfirm
-// against a real delivery once a webhook is registered, since it hasn't been
-// possible to observe one in this environment (no PRINTIFY_API_TOKEN).
+//   WHY NOT AN HMAC SIGNATURE: an earlier version of this endpoint verified
+//   Printify's own per-webhook signing secret (X-Pfy-Signature header).
+//   Confirmed directly against Printify's live API for this shop
+//   (sales_channel: "custom_integration") that it is NEVER returned —
+//   webhook creation (POST) returns only {id, topic, url, shop_id}; there is
+//   no GET for a single webhook (405, only PUT/DELETE supported); the shop
+//   detail endpoint carries no secret field either. With no way to ever
+//   retrieve or verify a Printify-issued secret, a self-chosen shared secret
+//   embedded in the URL we control is the only reliable option — Printify
+//   just echoes back whatever url we registered on every delivery.
+//
+//   FAIL-CLOSED: if PRINTIFY_WEBHOOK_SECRET is not set, every request is
+//   rejected with 503 before the body is even parsed. A request whose `key`
+//   query param doesn't match (or is missing) is rejected with 400. There is
+//   no "skip verification" fallback.
+// Also needs D1 (`DB` binding) and the Resend vars (functions/_lib/resend.js).
 //
 // Printify's webhook payload shape (per developers.printify.com — Events
 // section, read directly, not guessed):
@@ -83,17 +92,13 @@ export async function onRequest({ request, env }) {
     return json({ error: 'Webhook receiver is not configured.' }, 503);
   }
 
+  const providedKey = new URL(request.url).searchParams.get('key');
+  if (!providedKey || !timingSafeEqualStrings(providedKey, env.PRINTIFY_WEBHOOK_SECRET)) {
+    console.warn('[printify-webhook] Missing or invalid "key" query parameter');
+    return json({ error: 'Invalid or missing key' }, 400);
+  }
+
   const rawBody = await request.text();
-  const signature = request.headers.get('x-pfy-signature') || request.headers.get('X-Pfy-Signature');
-  if (!signature) {
-    console.warn('[printify-webhook] Missing X-Pfy-Signature header');
-    return json({ error: 'Missing signature' }, 400);
-  }
-  const validSig = await verifyPrintifySignature(rawBody, signature, env.PRINTIFY_WEBHOOK_SECRET);
-  if (!validSig) {
-    console.warn('[printify-webhook] Signature verification failed');
-    return json({ error: 'Invalid signature' }, 400);
-  }
 
   let event;
   try {
@@ -421,21 +426,15 @@ function deriveShipmentKeyFromWebhookPayload(data, shipment) {
 }
 
 // ---------------------------------------------------------------------------
-// HMAC-SHA256 signature check, same Web Crypto approach as stripe-webhook.js.
-// Printify's documented scheme signs the raw body and sends the hex digest
-// directly (no timestamp/comma-separated format like Stripe's). Constant-time
-// comparison to avoid a timing side channel.
+// Constant-time string comparison — avoids a timing side channel when
+// checking the `key` query param against PRINTIFY_WEBHOOK_SECRET. Same
+// technique the HMAC digest check this replaced used, just over the raw
+// strings directly since there's no signature to compute anymore.
 // ---------------------------------------------------------------------------
-async function verifyPrintifySignature(rawBody, signatureHeader, secret) {
-  const enc = new TextEncoder();
-  const key = await crypto.subtle.importKey('raw', enc.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
-  const mac = await crypto.subtle.sign('HMAC', key, enc.encode(rawBody));
-  const computed = Array.from(new Uint8Array(mac)).map((b) => b.toString(16).padStart(2, '0')).join('');
-
-  const sig = signatureHeader.trim().toLowerCase();
-  if (sig.length !== computed.length) return false;
+function timingSafeEqualStrings(a, b) {
+  if (typeof a !== 'string' || typeof b !== 'string' || a.length !== b.length) return false;
   let diff = 0;
-  for (let i = 0; i < sig.length; i++) diff |= sig.charCodeAt(i) ^ computed.charCodeAt(i);
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
   return diff === 0;
 }
 

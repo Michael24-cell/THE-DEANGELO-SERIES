@@ -266,9 +266,19 @@ export async function updatePrintifyWebhook(env, webhookId, { url }) {
  * Deletes a webhook subscription outright. The only way to force Printify to
  * mint a fresh, known secret for a topic that already has a webhook — it
  * never re-shows an existing one's secret via GET/list, only at creation.
+ *
+ * `webhookUrl` (that specific webhook's own registered url, from the list
+ * response — NOT necessarily whatever url the caller is about to register
+ * next) is required: confirmed directly against a real 400 response, DELETE
+ * rejects the call with "You must provide the host query parameter" unless
+ * a `?host=` query param is present, and rejects again with "The host
+ * doesn't match the webhook's host" unless it exactly equals that webhook's
+ * own URL hostname. Undocumented in Printify's webhook API reference as of
+ * this pass — discovered live, not guessed.
  */
-export async function deletePrintifyWebhook(env, webhookId) {
-  return printifyRequest(env, 'DELETE', `/shops/${env.PRINTIFY_SHOP_ID}/webhooks/${webhookId}.json`);
+export async function deletePrintifyWebhook(env, webhookId, webhookUrl) {
+  const host = new URL(webhookUrl).host;
+  return printifyRequest(env, 'DELETE', `/shops/${env.PRINTIFY_SHOP_ID}/webhooks/${webhookId}.json?host=${encodeURIComponent(host)}`);
 }
 
 // ---------------------------------------------------------------------------

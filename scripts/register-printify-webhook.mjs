@@ -3,65 +3,67 @@
 // for this; webhooks are managed entirely through their REST API (confirmed
 // directly against developers.printify.com — Webhooks section, not
 // guessed). See functions/_lib/printify.js's listPrintifyWebhooks /
-// createPrintifyWebhook / updatePrintifyWebhook / deletePrintifyWebhook.
+// createPrintifyWebhook / updatePrintifyWebhook.
 //
 // PROTECTED / LOCAL ONLY. Plain Node script, not an HTTP endpoint. Run
-// manually by someone with PRINTIFY_API_TOKEN and PRINTIFY_SHOP_ID.
+// manually by someone with PRINTIFY_API_TOKEN, PRINTIFY_SHOP_ID, and
+// PRINTIFY_WEBHOOK_SECRET.
 //
-// Target URL defaults to production; pass --url=<...> to point at a
-// different one (e.g. a preview deployment) — useful for proving the whole
-// delete/recreate/secret flow works before ever touching production.
+// PRINTIFY_WEBHOOK_SECRET here is a secret WE choose (e.g.
+// `openssl rand -hex 32`) — NOT one Printify issues. Confirmed directly
+// against Printify's live API for this shop (sales_channel:
+// "custom_integration") that no endpoint ever returns a webhook secret:
+// creation (POST) returns only {id, topic, url, shop_id}; there is no GET
+// for a single webhook (405, only PUT/DELETE supported); the shop detail
+// endpoint carries no secret field either. So instead, the secret is
+// embedded directly in the url WE register — Printify just echoes back
+// whatever url we gave it on every delivery — and
+// functions/api/printify-webhook.js checks that url's `key` query param
+// against PRINTIFY_WEBHOOK_SECRET. See that file's header comment for the
+// full rationale.
+//
+// Base URL defaults to production; pass --url=<...> to point at a
+// different one (e.g. a preview deployment).
 //
 // What it does, per required topic (order:sent-to-production, order:updated,
 // order:shipment:created, order:shipment:delivered):
 //   - Lists ALL of Printify's existing webhooks for this shop (a topic can
 //     have more than one entry — e.g. a stale one from earlier testing next
-//     to a correct one; this script checks every entry for a topic, not
-//     just the first it finds).
-//   - Without --recreate:
-//       - An entry already pointing at the target URL: left alone.
-//       - An entry for this topic pointing elsewhere (stale): its url is
-//         updated in place — this does NOT change its secret.
-//       - No entry for this topic at all: creates one.
-//       - Any additional entries beyond the first for the same topic are
-//         reported as extra duplicates, never touched (pass --recreate to
-//         clean them up).
-//   - With --recreate: deletes EVERY existing entry for a topic (regardless
-//     of what url it points at) and creates one fresh in their place. This
-//     is the only way to get a secret we can actually verify — Printify
-//     never re-shows an existing webhook's secret, only at creation.
+//     to the real one).
+//   - An entry whose url already exactly matches ours (base + our key):
+//     left alone.
+//   - An entry at the SAME origin+path but a different or missing `key`
+//     (e.g. an older registration made before this project used a
+//     URL-embedded secret): its url is updated in place, same webhook id.
+//   - An entry at a completely different URL (e.g. a stale preview/test
+//     endpoint): left untouched and reported as a duplicate — this script
+//     never deletes anything.
+//   - No entry for this topic at all: creates one.
 //
 // Printify's API takes one topic per webhook object — there is no
 // documented way to subscribe one webhook to multiple topics — so this
-// makes up to 4 separate calls (times 2 if deleting first), all against the
-// same target url.
-//
-// IMPORTANT — single-secret assumption: functions/api/printify-webhook.js
-// verifies every incoming event against exactly one PRINTIFY_WEBHOOK_SECRET
-// value, regardless of topic. This script checks whether the secrets
-// returned across multiple newly-created webhooks in the same run actually
-// match, and warns loudly if they don't — that would mean the webhook
-// handler needs to accept more than one valid secret before this works for
-// every topic. Never silently assumes they match.
+// makes up to 4 separate calls.
 //
 // Safety:
 //   - Defaults to --dry-run (lists + prints what it WOULD do). Pass --apply
 //     to actually call Printify's API.
-//   - --recreate is never assumed — deleting a live webhook is only ever
-//     done when explicitly requested via that flag.
-//   - Never logs PRINTIFY_API_TOKEN or any Authorization header value.
+//   - Never deletes anything (functions/_lib/printify.js's
+//     deletePrintifyWebhook exists for manual cleanup of stale duplicates,
+//     but this script doesn't call it — nothing here needs a fresh secret
+//     minted by Printify anymore).
+//   - Never logs PRINTIFY_API_TOKEN, PRINTIFY_WEBHOOK_SECRET, or any
+//     Authorization header value.
 //
 // Usage:
-//   PRINTIFY_API_TOKEN=... PRINTIFY_SHOP_ID=... node scripts/register-printify-webhook.mjs
-//   PRINTIFY_API_TOKEN=... PRINTIFY_SHOP_ID=... node scripts/register-printify-webhook.mjs --apply
-//   PRINTIFY_API_TOKEN=... PRINTIFY_SHOP_ID=... node scripts/register-printify-webhook.mjs --url=https://printify-test.the-deangelo-series.pages.dev/api/printify-webhook --recreate --apply
+//   PRINTIFY_API_TOKEN=... PRINTIFY_SHOP_ID=... PRINTIFY_WEBHOOK_SECRET=... node scripts/register-printify-webhook.mjs
+//   PRINTIFY_API_TOKEN=... PRINTIFY_SHOP_ID=... PRINTIFY_WEBHOOK_SECRET=... node scripts/register-printify-webhook.mjs --apply
+//   PRINTIFY_API_TOKEN=... PRINTIFY_SHOP_ID=... PRINTIFY_WEBHOOK_SECRET=... node scripts/register-printify-webhook.mjs --url=https://printify-test.the-deangelo-series.pages.dev/api/printify-webhook --apply
 
-import { listPrintifyWebhooks, createPrintifyWebhook, updatePrintifyWebhook, deletePrintifyWebhook } from '../functions/_lib/printify.js';
+import { listPrintifyWebhooks, createPrintifyWebhook, updatePrintifyWebhook } from '../functions/_lib/printify.js';
 
 const APPLY = process.argv.includes('--apply');
-const RECREATE = process.argv.includes('--recreate');
 const urlArg = process.argv.find((a) => a.startsWith('--url='));
-const WEBHOOK_URL = urlArg ? urlArg.slice('--url='.length) : 'https://thedeangeloseries.com/api/printify-webhook';
+const BASE_URL = urlArg ? urlArg.slice('--url='.length) : 'https://thedeangeloseries.com/api/printify-webhook';
 const REQUIRED_TOPICS = [
   'order:sent-to-production',
   'order:updated',
@@ -69,18 +71,30 @@ const REQUIRED_TOPICS = [
   'order:shipment:delivered',
 ];
 
-async function main() {
-  console.log(`[register-printify-webhook] Mode: ${APPLY ? 'APPLY (will call Printify)' : 'DRY RUN (no changes — pass --apply to execute)'}${RECREATE ? ' + RECREATE (deletes existing entries for these topics first)' : ''}`);
-  console.log(`[register-printify-webhook] Target URL: ${WEBHOOK_URL}\n`);
+function sameEndpoint(url) {
+  try {
+    const u = new URL(url);
+    const b = new URL(BASE_URL);
+    return u.origin === b.origin && u.pathname === b.pathname;
+  } catch {
+    return false;
+  }
+}
 
+async function main() {
   const env = {
     PRINTIFY_API_TOKEN: process.env.PRINTIFY_API_TOKEN,
     PRINTIFY_SHOP_ID: process.env.PRINTIFY_SHOP_ID,
   };
-  if (!env.PRINTIFY_API_TOKEN || !env.PRINTIFY_SHOP_ID) {
-    console.error('[register-printify-webhook] PRINTIFY_API_TOKEN and PRINTIFY_SHOP_ID must both be set in the environment.');
+  const secret = process.env.PRINTIFY_WEBHOOK_SECRET;
+  if (!env.PRINTIFY_API_TOKEN || !env.PRINTIFY_SHOP_ID || !secret) {
+    console.error('[register-printify-webhook] PRINTIFY_API_TOKEN, PRINTIFY_SHOP_ID, and PRINTIFY_WEBHOOK_SECRET must all be set in the environment.');
     process.exit(1);
   }
+  const fullUrl = `${BASE_URL}?key=${encodeURIComponent(secret)}`;
+
+  console.log(`[register-printify-webhook] Mode: ${APPLY ? 'APPLY (will call Printify)' : 'DRY RUN (no changes — pass --apply to execute)'}`);
+  console.log(`[register-printify-webhook] Target URL: ${fullUrl}\n`);
 
   let existing;
   try {
@@ -93,103 +107,50 @@ async function main() {
   for (const w of existing) console.log(`  - ${w.topic} -> ${w.url} (id ${w.id})`);
   console.log('');
 
-  const newSecretsByTopic = {};
-
   for (const topic of REQUIRED_TOPICS) {
     const matches = existing.filter((w) => w.topic === topic);
-    const exactMatch = matches.find((w) => w.url === WEBHOOK_URL);
-    const staleMatches = matches.filter((w) => w !== exactMatch);
-
-    if (RECREATE) {
-      // Only ever deletes entries already pointing at OUR target URL — an
-      // entry for this topic sitting at a different URL is a separate
-      // concern and must never be touched just because --recreate was
-      // passed for a different target.
-      const toDelete = matches.filter((w) => w.url === WEBHOOK_URL);
-      const untouched = matches.filter((w) => w.url !== WEBHOOK_URL);
-
-      if (toDelete.length === 0) {
-        console.log(`[${topic}] Nothing at this URL to recreate. ${APPLY ? 'Creating...' : 'Would create.'}`);
-      } else {
-        console.log(`[${topic}] Recreating — ${APPLY ? 'deleting' : 'would delete'} ${toDelete.length} existing entr${toDelete.length === 1 ? 'y' : 'ies'} at this URL (${toDelete.map((w) => w.id).join(', ')}).`);
-        if (APPLY) {
-          for (const w of toDelete) {
-            try {
-              await deletePrintifyWebhook(env, w.id);
-            } catch (err) {
-              console.error(`[${topic}] Delete of ${w.id} failed:`, err.message);
-            }
-          }
-        }
-      }
-      if (untouched.length > 0) {
-        console.log(`  ${untouched.length} entr${untouched.length === 1 ? 'y' : 'ies'} for this topic at a DIFFERENT url left untouched (${untouched.map((w) => `${w.id} -> ${w.url}`).join(', ')}).`);
-      }
-      if (!APPLY) continue;
-      try {
-        const created = await createPrintifyWebhook(env, { topic, url: WEBHOOK_URL });
-        newSecretsByTopic[topic] = created.secret;
-        console.log(`[${topic}] Created fresh (id ${created.id}).`);
-      } catch (err) {
-        console.error(`[${topic}] Creation failed:`, err.message);
-      }
-      continue;
-    }
+    const exactMatch = matches.find((w) => w.url === fullUrl);
+    const sameEndpointMatches = matches.filter((w) => w !== exactMatch && sameEndpoint(w.url));
+    const unrelatedMatches = matches.filter((w) => w !== exactMatch && !sameEndpoint(w.url));
 
     if (exactMatch) {
-      console.log(`[${topic}] Already registered and points at the right URL. (id ${exactMatch.id}) — no change needed.`);
-      if (staleMatches.length > 0) {
-        console.log(`  Also found ${staleMatches.length} extra duplicate(s) for this topic pointing elsewhere (${staleMatches.map((w) => `${w.id} -> ${w.url}`).join(', ')}) — not touched. Pass --recreate to clean these up.`);
+      console.log(`[${topic}] Already registered with the correct url. (id ${exactMatch.id}) — no change needed.`);
+    } else if (sameEndpointMatches.length > 0) {
+      const [first, ...rest] = sameEndpointMatches;
+      console.log(`[${topic}] Exists at this endpoint but with a different/missing key ("${first.url}"). ${APPLY ? 'Updating url...' : 'Would update url.'}`);
+      if (APPLY) {
+        try {
+          await updatePrintifyWebhook(env, first.id, { url: fullUrl });
+          console.log(`[${topic}] Updated (id ${first.id}).`);
+        } catch (err) {
+          console.error(`[${topic}] Update failed:`, err.message);
+        }
       }
-      continue;
+      if (rest.length > 0) console.log(`  ${rest.length} additional duplicate(s) at this endpoint left untouched (${rest.map((w) => w.id).join(', ')}).`);
+    } else {
+      console.log(`[${topic}] Not registered yet. ${APPLY ? 'Creating...' : 'Would create.'}`);
+      if (APPLY) {
+        try {
+          const created = await createPrintifyWebhook(env, { topic, url: fullUrl });
+          console.log(`[${topic}] Created (id ${created.id}).`);
+        } catch (err) {
+          console.error(`[${topic}] Creation failed:`, err.message);
+        }
+      }
     }
 
-    if (staleMatches.length > 0) {
-      const [first, ...rest] = staleMatches;
-      console.log(`[${topic}] Exists but points at "${first.url}" instead of ours. ${APPLY ? 'Updating url...' : 'Would update url.'}`);
-      if (rest.length > 0) console.log(`  ${rest.length} additional duplicate(s) for this topic left untouched (${rest.map((w) => w.id).join(', ')}).`);
-      if (!APPLY) continue;
-      try {
-        await updatePrintifyWebhook(env, first.id, { url: WEBHOOK_URL });
-        console.log(`[${topic}] Updated. This does NOT change its secret — if you don't already have it, see the note below.`);
-      } catch (err) {
-        console.error(`[${topic}] Update failed:`, err.message);
-      }
-      continue;
-    }
-
-    console.log(`[${topic}] Not registered yet. ${APPLY ? 'Creating...' : 'Would create.'}`);
-    if (!APPLY) continue;
-    try {
-      const created = await createPrintifyWebhook(env, { topic, url: WEBHOOK_URL });
-      newSecretsByTopic[topic] = created.secret;
-      console.log(`[${topic}] Created (id ${created.id}).`);
-    } catch (err) {
-      console.error(`[${topic}] Creation failed:`, err.message);
+    if (unrelatedMatches.length > 0) {
+      console.log(`  ${unrelatedMatches.length} entr${unrelatedMatches.length === 1 ? 'y' : 'ies'} for this topic at a DIFFERENT URL left untouched (${unrelatedMatches.map((w) => `${w.id} -> ${w.url}`).join(', ')}).`);
     }
   }
 
   console.log('\n--- Summary ---');
-  const secretValues = [...new Set(Object.values(newSecretsByTopic).filter(Boolean))];
-
   if (!APPLY) {
-    console.log('Dry run only — nothing was created, deleted, or changed. Re-run with --apply to execute.');
-  } else if (secretValues.length === 0) {
-    console.log('No new webhooks were created this run (everything already existed or only needed a URL update).');
-    console.log('If you do not already have a working PRINTIFY_WEBHOOK_SECRET saved from when these were first created,');
-    console.log('re-run with --recreate --apply to delete and recreate them, which mints a fresh, known secret.');
-  } else if (secretValues.length === 1) {
-    console.log(`New webhook(s) created for ${WEBHOOK_URL}, all sharing the same secret. Set this as PRINTIFY_WEBHOOK_SECRET`);
-    console.log('in the matching Cloudflare environment (Preview for a preview URL, Production for the production URL):\n');
-    console.log(`  ${secretValues[0]}\n`);
+    console.log('Dry run only — nothing was created or changed. Re-run with --apply to execute.');
   } else {
-    console.log('WARNING: the newly-created webhooks returned DIFFERENT secrets per topic:');
-    for (const [topic, secret] of Object.entries(newSecretsByTopic)) console.log(`  ${topic}: ${secret}`);
-    console.log('\nThe current webhook handler (functions/api/printify-webhook.js) only checks incoming requests');
-    console.log('against ONE PRINTIFY_WEBHOOK_SECRET value for every topic — with different secrets per topic, only');
-    console.log('one topic\'s events would ever pass signature verification. This needs a code change (accept multiple');
-    console.log('valid secrets) before registering webhooks this way will fully work. Flag this before setting any one');
-    console.log('of these values in Cloudflare.');
+    console.log(`Done. PRINTIFY_WEBHOOK_SECRET must be set to this exact value in the matching Cloudflare environment`);
+    console.log('(Preview for a preview URL, Production for the production URL) for incoming events to verify:\n');
+    console.log(`  ${secret}\n`);
   }
 }
 
