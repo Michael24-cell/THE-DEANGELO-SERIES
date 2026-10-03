@@ -216,3 +216,64 @@ export function deliveredTemplate(order) {
     text: `${greeting}\n\nYour order ${order.orderNumber} has been delivered.\n\nAll sales are final. Damage, manufacturing-defect, or incorrect-item claims must be submitted within 7 days of delivery and are subject to review — just reply to this email.`,
   };
 }
+
+/**
+ * Review request — sent once per order, only after every shipment on it is
+ * confirmed delivered and the configured wait has elapsed (see
+ * workers/send-review-requests.js). One review link per item purchased,
+ * each carrying its own one-time token (functions/_lib/reviews.js) tied to
+ * that specific order_item — never a single order-level link, so a review
+ * on a multi-item order is correctly attributed to the actual piece it's
+ * about.
+ * @param {{orderNumber:string, customerName?:string, items:Array<{name:string,reviewUrl:string}>}} order
+ */
+export function reviewRequestTemplate(order) {
+  const greeting = order.customerName ? `Hi ${escapeHtml(order.customerName)},` : 'Hi,';
+  const itemsHtml = order.items.map((it) => `
+    <p style="margin:0 0 16px;">
+      <strong>${escapeHtml(it.name)}</strong><br>
+      <a href="${escapeHtml(it.reviewUrl)}" style="display:inline-block;margin-top:8px;background:${BRAND.black};color:${BRAND.bone};padding:12px 24px;text-decoration:none;font-size:13px;letter-spacing:.1em;">Leave a review</a>
+    </p>`).join('');
+  const itemsText = order.items.map((it) => `${it.name}\n${it.reviewUrl}`).join('\n\n');
+  const bodyHtml = `
+    <p style="margin:0 0 16px;">${greeting}</p>
+    <p style="margin:0 0 24px;">Your order <strong>${escapeHtml(order.orderNumber)}</strong> should have arrived by now — we'd love to hear what you think.</p>
+    ${itemsHtml}
+    <p style="margin:0;color:${BRAND.muted};">Each link is unique to you and can only be used once.</p>
+  `;
+  return {
+    subject: `How's your piece? — ${order.orderNumber}`,
+    html: layout({ preheader: `Leave a review for order ${order.orderNumber}`, bodyHtml }),
+    text: `${greeting}\n\nYour order ${order.orderNumber} should have arrived by now — we'd love to hear what you think.\n\n${itemsText}\n\nEach link is unique to you and can only be used once.`,
+  };
+}
+
+/**
+ * Internal moderation alert — sent to SUPPORT_EMAIL (not the customer) the
+ * moment a review is submitted. The Approve/Reject links are signed
+ * (functions/_lib/reviews.js's signModerationAction) and go straight to
+ * functions/api/moderate-review.js — no login, but also no way to approve a
+ * review without this exact link, since the signature is checked there.
+ * @param {{orderNumber:string, productName:string, rating:number, title?:string, body:string, displayName:string, approveUrl:string, rejectUrl:string}} info
+ */
+export function reviewModerationAlertTemplate(info) {
+  const stars = '★'.repeat(info.rating) + '☆'.repeat(5 - info.rating);
+  const bodyHtml = `
+    <p style="margin:0 0 16px;">A new review is waiting for moderation.</p>
+    <p style="margin:0 0 8px;"><strong>Order:</strong> ${escapeHtml(info.orderNumber)}</p>
+    <p style="margin:0 0 8px;"><strong>Product:</strong> ${escapeHtml(info.productName)}</p>
+    <p style="margin:0 0 8px;"><strong>Rating:</strong> ${stars} (${info.rating}/5)</p>
+    <p style="margin:0 0 8px;"><strong>From:</strong> ${escapeHtml(info.displayName)}</p>
+    ${info.title ? `<p style="margin:0 0 8px;"><strong>Title:</strong> ${escapeHtml(info.title)}</p>` : ''}
+    <p style="margin:0 0 20px;padding:16px;background:${BRAND.bone};border:1px solid #e5e4dd;white-space:pre-wrap;">${escapeHtml(info.body)}</p>
+    <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+      <td style="padding-right:12px;"><a href="${escapeHtml(info.approveUrl)}" style="display:inline-block;background:${BRAND.black};color:${BRAND.bone};padding:12px 24px;text-decoration:none;font-size:13px;letter-spacing:.1em;">Approve</a></td>
+      <td><a href="${escapeHtml(info.rejectUrl)}" style="display:inline-block;background:#fff;color:${BRAND.black};border:1px solid ${BRAND.black};padding:11px 23px;text-decoration:none;font-size:13px;letter-spacing:.1em;">Reject</a></td>
+    </tr></table>
+  `;
+  return {
+    subject: `[Review] ${info.rating}★ on ${info.productName} — ${info.orderNumber}`,
+    html: layout({ preheader: `New review awaiting moderation — ${info.orderNumber}`, bodyHtml }),
+    text: `A new review is waiting for moderation.\n\nOrder: ${info.orderNumber}\nProduct: ${info.productName}\nRating: ${info.rating}/5\nFrom: ${info.displayName}\n${info.title ? `Title: ${info.title}\n` : ''}\n${info.body}\n\nApprove: ${info.approveUrl}\nReject: ${info.rejectUrl}`,
+  };
+}

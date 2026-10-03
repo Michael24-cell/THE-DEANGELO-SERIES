@@ -89,6 +89,10 @@ export async function insertOrderItems(env, orderId, items) {
   await env.DB.batch(batch);
 }
 
+export async function findOrderItemById(env, orderItemId) {
+  return env.DB.prepare(`SELECT * FROM order_items WHERE id = ?`).bind(orderItemId).first();
+}
+
 export async function getOrderItems(env, orderId) {
   const { results } = await env.DB.prepare(
     `SELECT product_name, size, color, quantity FROM order_items WHERE order_id = ?`,
@@ -340,4 +344,110 @@ export async function sendOrderEmailOnce(env, { orderId, emailType, to, buildTem
  */
 export function orderNumberFromSession(sessionId) {
   return 'DS-' + sessionId.replace(/[^a-zA-Z0-9]/g, '').slice(-8).toUpperCase();
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Product reviews (migrations/0001 — reviews, review_tokens). Review tokens
+// are mailed to a customer only after their order is confirmed delivered
+// (see workers/send-review-requests.js); submitting one creates a 'pending'
+// review that only shows up publicly once moderated to 'approved' (see
+// functions/api/moderate-review.js). Token hashing/signing lives in
+// functions/_lib/reviews.js — this file only ever sees/stores the hash.
+// ─────────────────────────────────────────────────────────────────────────
+
+/**
+ * Creates one review token for a single order item and returns its id —
+ * callers combine this with functions/_lib/reviews.js's generateReviewToken/
+ * hashToken themselves (this function never generates or hashes; it just
+ * persists the hash it's given) so the raw token only ever exists in memory
+ * long enough to go into an email link, never round-tripping through a
+ * second function call.
+ */
+export async function insertReviewToken(env, { tokenHash, orderId, orderItemId, expiresAt }) {
+  await env.DB.prepare(
+    `INSERT INTO review_tokens (token_hash, order_id, order_item_id, expires_at, created_at) VALUES (?, ?, ?, ?, ?)`,
+  ).bind(tokenHash, orderId, orderItemId ?? null, expiresAt, new Date().toISOString()).run();
+}
+
+/**
+ * Atomically claims a review token: only succeeds if the hash exists, isn't
+ * expired, and hasn't been used yet — the UPDATE's WHERE clause is the whole
+ * safety mechanism (mirrors sendOrderEmailOnce's INSERT-OR-IGNORE claim,
+ * just as an UPDATE instead since the row already exists). Returns the
+ * token's (order_id, order_item_id) on success, or null if the token is
+ * invalid/expired/already used — callers must not distinguish those cases
+ * in what they show the submitter (same reasoning as unsubscribeByToken).
+ */
+export async function claimReviewToken(env, tokenHash) {
+  const now = new Date().toISOString();
+  const result = await env.DB.prepare(
+    `UPDATE review_tokens SET used_at = ? WHERE token_hash = ? AND used_at IS NULL AND expires_at > ?`,
+  ).bind(now, tokenHash, now).run();
+  if (result.meta.changes !== 1) return null;
+
+  return env.DB.prepare(
+    `SELECT order_id, order_item_id FROM review_tokens WHERE token_hash = ?`,
+  ).bind(tokenHash).first();
+}
+
+export async function insertReview(env, { id, orderId, orderItemId, productSlug, rating, title, body, displayName }) {
+  await env.DB.prepare(
+    `INSERT INTO reviews (id, order_id, order_item_id, product_slug, rating, title, body, display_name, verified_purchase, status, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, 'pending', ?)`,
+  ).bind(id, orderId, orderItemId ?? null, productSlug, rating, title ?? null, body, displayName, new Date().toISOString()).run();
+}
+
+export async function findReviewById(env, reviewId) {
+  return env.DB.prepare(`SELECT * FROM reviews WHERE id = ?`).bind(reviewId).first();
+}
+
+/**
+ * Moves a review from 'pending' to 'approved' or 'rejected' — the WHERE
+ * status = 'pending' guard means a moderation link clicked twice (or an
+ * approve and a reject both clicked) only ever applies the first click;
+ * the second is a safe no-op the caller reports back as "already handled."
+ * Returns true if this call is the one that actually changed it.
+ */
+export async function setReviewStatus(env, reviewId, status) {
+  const result = await env.DB.prepare(
+    `UPDATE reviews SET status = ?, approved_at = ? WHERE id = ? AND status = 'pending'`,
+  ).bind(status, status === 'approved' ? new Date().toISOString() : null, reviewId).run();
+  return result.meta.changes === 1;
+}
+
+/** Approved reviews for one product, newest first — the only reviews ever shown publicly. */
+export async function listApprovedReviews(env, productSlug) {
+  const { results } = await env.DB.prepare(
+    `SELECT rating, title, body, display_name, created_at FROM reviews WHERE product_slug = ? AND status = 'approved' ORDER BY created_at DESC`,
+  ).bind(productSlug).all();
+  return results;
+}
+
+/**
+ * Delivered orders due for a review-request email: every shipment on the
+ * order is delivered, the most recent delivery happened at or before
+ * `deliveredBeforeIso` (i.e. at least the configured wait has elapsed — see
+ * REVIEW_REQUEST_DELAY_DAYS in workers/send-review-requests.js), and no
+ * 'review_request' row exists yet for this order (checked against the same
+ * email_events table every other order email uses, so this can run
+ * repeatedly with no risk of a duplicate send — the actual claim still
+ * happens via sendOrderEmailOnce's INSERT OR IGNORE at send time; this
+ * query is just the candidate list, same division of labor as
+ * listActiveReconciliationCandidates above).
+ */
+export async function listOrdersNeedingReviewRequest(env, { deliveredBeforeIso, limit }) {
+  const { results } = await env.DB.prepare(
+    `SELECT o.id, o.public_order_number, o.customer_email, o.customer_name
+     FROM orders o
+     WHERE o.fulfillment_status = 'delivered'
+       AND o.customer_email IS NOT NULL
+       AND NOT EXISTS (SELECT 1 FROM email_events e WHERE e.order_id = o.id AND e.email_type = 'review_request')
+       AND EXISTS (
+         SELECT 1 FROM shipments s WHERE s.order_id = o.id AND s.status = 'delivered'
+         GROUP BY s.order_id HAVING MAX(s.updated_at) <= ?
+       )
+     ORDER BY o.created_at ASC
+     LIMIT ?`,
+  ).bind(deliveredBeforeIso, limit).all();
+  return results;
 }

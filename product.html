@@ -365,6 +365,14 @@
   .reviews-empty{display:grid;grid-template-columns:1fr 2fr;gap:48px;padding:48px 0;border-top:1px solid var(--hairline-soft);border-bottom:1px solid var(--hairline-soft)}
   .reviews-empty-title{font-family:var(--font-serif);font-size:clamp(1.8rem,3vw,2.6rem);font-weight:400;font-style:italic}
   .reviews-empty-copy{max-width:48ch;font-size:.95rem;font-weight:300;color:var(--ink-dim);line-height:1.65}
+  .reviews-avg{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-mute)}
+  .reviews-list{display:grid;gap:0;border-top:1px solid var(--hairline-soft)}
+  .review-card{padding:40px 0;border-bottom:1px solid var(--hairline-soft)}
+  .review-card .stars{font-size:1rem;letter-spacing:.15em;color:var(--ink);margin-bottom:14px}
+  .review-card .stars .dim{opacity:.25}
+  .review-card .review-title{font-family:var(--font-serif);font-style:italic;font-weight:400;font-size:1.3rem;margin-bottom:10px}
+  .review-card .review-body{font-size:.95rem;font-weight:300;color:var(--ink-dim);line-height:1.65;max-width:68ch;margin-bottom:16px}
+  .review-card .review-meta{font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--ink-mute)}
 
   /* plate component */
   .plate{display:flex;flex-direction:column;gap:22px}
@@ -785,25 +793,24 @@
   </div>
 </section>
 
-<!-- Reviews section — hidden for now, per owner request. Re-enable by
-     un-commenting this block.
+<!-- Reviews section — fetches approved reviews for this product from
+     /api/product-reviews (see that endpoint + functions/_lib/orders-db.js's
+     listApprovedReviews). Pending/rejected reviews are never returned by
+     that endpoint, so there's nothing to filter here — whatever comes back
+     is safe to render as-is. -->
 <section class="reviews" aria-labelledby="reviewsTitle" data-screen-label="Reviews">
   <div class="reviews-inner">
     <header class="reviews-head">
       <h2 id="reviewsTitle">Reviews</h2>
-      <span class="reviews-count" aria-label="Zero reviews">Reviews (0)</span>
+      <span class="reviews-count" id="reviewsCount" aria-label="Zero reviews">Reviews (0)</span>
     </header>
-    <div class="reviews-empty" role="status">
+    <div class="reviews-empty" id="reviewsEmpty" role="status">
       <p class="reviews-empty-title">No reviews yet.</p>
       <p class="reviews-empty-copy">Verified customer reviews will appear here after launch.</p>
     </div>
+    <div class="reviews-list" id="reviewsList" style="display:none"></div>
   </div>
 </section>
-
-TODO: Real reviews require a Cloudflare D1 reviews table, a verified order/review
-token, pending moderation status, approved-reviews-only rendering, and a verified
-purchase label. Do not enable public submission before those controls exist.
--->
 
 <!-- Vote on next drop — hidden for now, per owner request. Re-enable by
      un-commenting this block. -->
@@ -1701,6 +1708,48 @@ purchase label. Do not enable public submission before those controls exist.
         }).join('');
       }
     }
+
+    // ── Reviews — fetch approved reviews for this product ────────────────
+    (function loadReviews() {
+      var countEl = document.getElementById('reviewsCount');
+      var emptyEl = document.getElementById('reviewsEmpty');
+      var listEl = document.getElementById('reviewsList');
+      if (!countEl || !listEl) return;
+
+      function starGlyphs(rating) {
+        var full = Math.round(rating);
+        var html = '';
+        for (var i = 1; i <= 5; i++) html += '<span' + (i > full ? ' class="dim"' : '') + '>&#9733;</span>';
+        return html;
+      }
+      function escapeHtml(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+      }
+
+      fetch('/api/product-reviews?slug=' + encodeURIComponent(key))
+        .then(function (res) { return res.ok ? res.json() : null; })
+        .then(function (data) {
+          if (!data || !data.count) return; // leave the existing "No reviews yet" empty state as-is
+
+          countEl.textContent = 'Reviews (' + data.count + ')';
+          countEl.setAttribute('aria-label', data.count + (data.count === 1 ? ' review' : ' reviews') + ', average ' + data.averageRating.toFixed(1) + ' of 5 stars');
+
+          listEl.innerHTML = data.reviews.map(function (r) {
+            return '<article class="review-card">' +
+              '<div class="stars" aria-hidden="true">' + starGlyphs(r.rating) + '</div>' +
+              (r.title ? '<p class="review-title">' + escapeHtml(r.title) + '</p>' : '') +
+              '<p class="review-body">' + escapeHtml(r.body) + '</p>' +
+              '<p class="review-meta">' + escapeHtml(r.displayName) + '</p>' +
+            '</article>';
+          }).join('');
+
+          emptyEl.style.display = 'none';
+          listEl.style.display = '';
+        })
+        .catch(function () { /* leave the empty state — a failed fetch is not worth surfacing an error for */ });
+    })();
   })();
 </script>
 
