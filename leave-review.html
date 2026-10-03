@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Leave a review — The DeAngelo Series.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0A0A0A">
+<link rel="apple-touch-icon" href="deangeloseries-favicon.png">
+<link rel="canonical" href="https://thedeangeloseries.com/leave-review.html">
+<title>Leave a Review — The DeAngelo Series</title>
+<link rel="icon" href="deangeloseries-favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;0,600;1,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#0A0A0A;
+    --white:#FFFFFF;
+    --paper:#FBFBF8;
+    --bone:#F5F5F1;
+    --ink:#0A0A0A;
+    --ink-dim:rgba(10,10,10,.6);
+    --ink-mute:rgba(10,10,10,.45);
+    --ink-hair:rgba(10,10,10,.12);
+    --ink-hair-soft:rgba(10,10,10,.06);
+    --font-serif:'Cormorant Garamond',serif;
+    --font-sans:'Inter',sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{background:var(--paper);color:var(--ink);font-family:var(--font-sans);-webkit-font-smoothing:antialiased;line-height:1.55}
+  body{min-height:100vh}
+  a{color:inherit;text-decoration:none;transition:opacity 220ms ease}
+  a:hover{opacity:.6}
+  button{font:inherit}
+  button:not(:disabled){cursor:pointer}
+
+  nav.rv-nav{
+    display:flex;justify-content:center;padding:28px 24px;
+    border-bottom:1px solid var(--ink-hair-soft);
+    font-size:13px;letter-spacing:.4em;font-weight:400;
+  }
+
+  main{max-width:560px;margin:0 auto;padding:80px 24px 120px}
+  .eyebrow{font-size:11px;letter-spacing:.5em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:20px}
+  h1{font-family:var(--font-serif);font-weight:500;font-size:clamp(2.4rem,5vw,3.2rem);line-height:1;letter-spacing:-.01em;margin-bottom:16px}
+  .sub{font-weight:300;font-size:1rem;color:var(--ink-dim);max-width:46ch;margin-bottom:56px}
+
+  .field-group{display:grid;gap:28px}
+  .field{display:flex;flex-direction:column;gap:10px}
+  .field label{font-size:10px;letter-spacing:.35em;text-transform:uppercase;color:var(--ink-mute)}
+  .field input,.field textarea{
+    appearance:none;background:transparent;color:var(--ink);
+    border:0;border-bottom:1px solid var(--ink-hair);
+    padding:14px 0;font-family:var(--font-sans);font-size:.95rem;font-weight:300;
+    outline:none;transition:border-color 200ms ease;border-radius:0;resize:vertical;
+  }
+  .field textarea{min-height:140px;line-height:1.6}
+  .field input::placeholder,.field textarea::placeholder{color:rgba(10,10,10,.28)}
+  .field input:focus,.field textarea:focus{border-bottom-color:var(--ink)}
+
+  .stars{display:flex;gap:10px}
+  .star{
+    width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+    background:none;border:1px solid var(--ink-hair);color:var(--ink-mute);
+    transition:border-color 180ms ease,color 180ms ease,background 180ms ease;
+    font-size:16px;
+  }
+  .star.is-active{background:var(--ink);border-color:var(--ink);color:var(--bone)}
+
+  .submit-row{margin-top:48px;display:flex;flex-direction:column;gap:18px}
+  .submit{
+    background:var(--ink);color:var(--bone);border:1px solid var(--ink);
+    padding:22px 28px;text-align:center;
+    font-size:11px;letter-spacing:.4em;text-transform:uppercase;font-weight:500;
+    transition:background 200ms ease,color 200ms ease;
+  }
+  .submit:hover{background:transparent;color:var(--ink)}
+  .submit:disabled{cursor:not-allowed;opacity:.6}
+  .fine{font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--ink-mute);text-align:center}
+  .msg{font-size:.9rem;font-weight:300;padding:16px 0;display:none}
+  .msg.is-error{color:#a33}
+  .msg.is-visible{display:block}
+
+  .state-card{text-align:center;padding:48px 0}
+  .state-card p.title{font-family:var(--font-serif);font-style:italic;font-weight:300;font-size:1.6rem;margin-bottom:16px}
+  .state-card p.copy{font-weight:300;color:var(--ink-dim);max-width:46ch;margin:0 auto}
+</style>
+</head>
+<body>
+
+<nav class="rv-nav"><a href="index.html">THE DEANGELO SERIES</a></nav>
+
+<main>
+  <div id="rvForm">
+    <div class="eyebrow">Your Piece // A Few Words</div>
+    <h1>Leave a <em>review</em></h1>
+    <p class="sub">Unique to your order — this link can only be used once.</p>
+
+    <div class="field-group">
+      <div class="field">
+        <label>Rating</label>
+        <div class="stars" id="rvStars" role="radiogroup" aria-label="Rating, 1 to 5 stars">
+          <button type="button" class="star" data-value="1" aria-label="1 star">★</button>
+          <button type="button" class="star" data-value="2" aria-label="2 stars">★</button>
+          <button type="button" class="star" data-value="3" aria-label="3 stars">★</button>
+          <button type="button" class="star" data-value="4" aria-label="4 stars">★</button>
+          <button type="button" class="star" data-value="5" aria-label="5 stars">★</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Title <span style="opacity:.6">Optional</span></label>
+        <input type="text" id="rvTitle" placeholder="Sum it up in a few words" maxlength="200">
+      </div>
+      <div class="field">
+        <label>Review</label>
+        <textarea id="rvBody" placeholder="What did you think?" maxlength="4000"></textarea>
+      </div>
+      <div class="field">
+        <label>Display name</label>
+        <input type="text" id="rvName" placeholder="How should we show your name?" maxlength="100">
+      </div>
+    </div>
+
+    <div class="submit-row">
+      <p class="msg" id="rvMsg" role="alert"></p>
+      <button class="submit" type="button" id="rvSubmit">Submit Review</button>
+      <p class="fine">Reviewed pieces are moderated before appearing publicly.</p>
+    </div>
+  </div>
+
+  <div class="state-card" id="rvSuccess" style="display:none">
+    <p class="title">Thank you.</p>
+    <p class="copy">Your review has been submitted and is awaiting approval. We appreciate you taking the time.</p>
+  </div>
+
+  <div class="state-card" id="rvInvalid" style="display:none">
+    <p class="title">This link isn't valid.</p>
+    <p class="copy">It may have already been used, or it's expired. If you'd still like to leave a review, email <a href="mailto:support@thedeangeloseries.com">support@thedeangeloseries.com</a>.</p>
+  </div>
+</main>
+
+<script>
+(function () {
+  var token = new URLSearchParams(location.search).get('token');
+  var formEl = document.getElementById('rvForm');
+  var successEl = document.getElementById('rvSuccess');
+  var invalidEl = document.getElementById('rvInvalid');
+
+  if (!token) {
+    formEl.style.display = 'none';
+    invalidEl.style.display = '';
+    return;
+  }
+
+  var rating = 0;
+  var starsEl = document.getElementById('rvStars');
+  var stars = Array.prototype.slice.call(starsEl.querySelectorAll('.star'));
+  function renderStars() {
+    stars.forEach(function (s) {
+      s.classList.toggle('is-active', +s.getAttribute('data-value') <= rating);
+    });
+  }
+  starsEl.addEventListener('click', function (e) {
+    var btn = e.target.closest('.star');
+    if (!btn) return;
+    rating = +btn.getAttribute('data-value');
+    renderStars();
+  });
+
+  var msgEl = document.getElementById('rvMsg');
+  function showError(text) {
+    msgEl.textContent = text;
+    msgEl.classList.add('is-error', 'is-visible');
+  }
+  function clearError() {
+    msgEl.classList.remove('is-visible');
+    msgEl.textContent = '';
+  }
+
+  var submitBtn = document.getElementById('rvSubmit');
+  submitBtn.addEventListener('click', function () {
+    clearError();
+
+    var body = document.getElementById('rvBody').value.trim();
+    var displayName = document.getElementById('rvName').value.trim();
+    var title = document.getElementById('rvTitle').value.trim();
+
+    if (!rating) { showError('Please choose a star rating.'); return; }
+    if (!body) { showError('Please write a short review.'); return; }
+    if (!displayName) { showError('Please enter a name to display with your review.'); return; }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+
+    fetch('/api/submit-review', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: token, rating: rating, title: title || undefined, body: body, displayName: displayName }),
+    })
+      .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+      .then(function (result) {
+        if (!result.ok) {
+          showError(result.data.error || 'Something went wrong. Please try again.');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit Review';
+          return;
+        }
+        formEl.style.display = 'none';
+        successEl.style.display = '';
+      })
+      .catch(function () {
+        showError('Could not reach the server. Please try again.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Review';
+      });
+  });
+})();
+</script>
+
+</body>
+</html>

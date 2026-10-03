@@ -10,6 +10,8 @@ export function createFakeD1() {
     email_events: [],
     shipments: [],
     subscribers: [],
+    reviews: [],
+    review_tokens: [],
   };
 
   function prepare(sql) {
@@ -97,6 +99,31 @@ export function createFakeD1() {
               if (row) { row.subscribed = 0; row.updated_at = updated_at; }
               return { meta: { changes: row ? 1 : 0 } };
             }
+            if (sql.startsWith('INSERT INTO review_tokens')) {
+              const [token_hash, order_id, order_item_id, expires_at, created_at] = args;
+              tables.review_tokens.push({ token_hash, order_id, order_item_id, expires_at, used_at: null, created_at });
+              return { meta: { changes: 1 } };
+            }
+            if (sql.startsWith('UPDATE review_tokens SET used_at')) {
+              const [used_at, token_hash, now] = args;
+              const row = tables.review_tokens.find((r) => r.token_hash === token_hash && r.used_at === null && r.expires_at > now);
+              if (!row) return { meta: { changes: 0 } };
+              row.used_at = used_at;
+              return { meta: { changes: 1 } };
+            }
+            if (sql.startsWith('INSERT INTO reviews')) {
+              const [id, order_id, order_item_id, product_slug, rating, title, body, display_name, created_at] = args;
+              tables.reviews.push({ id, order_id, order_item_id, product_slug, rating, title, body, display_name, verified_purchase: 1, status: 'pending', created_at, approved_at: null });
+              return { meta: { changes: 1 } };
+            }
+            if (sql.startsWith('UPDATE reviews SET status')) {
+              const [status, approved_at, id] = args;
+              const row = tables.reviews.find((r) => r.id === id && r.status === 'pending');
+              if (!row) return { meta: { changes: 0 } };
+              row.status = status;
+              row.approved_at = approved_at;
+              return { meta: { changes: 1 } };
+            }
             throw new Error('Unrecognized run() SQL: ' + sql.slice(0, 80));
           },
           async first() {
@@ -124,6 +151,16 @@ export function createFakeD1() {
               const [email, token] = args;
               return tables.subscribers.find((r) => r.email === email && r.unsubscribe_token === token) || null;
             }
+            if (sql.includes('FROM review_tokens WHERE token_hash')) {
+              const row = tables.review_tokens.find((r) => r.token_hash === args[0]);
+              return row ? { order_id: row.order_id, order_item_id: row.order_item_id } : null;
+            }
+            if (sql.includes('FROM order_items WHERE id')) {
+              return tables.order_items.find((r) => r.id === args[0]) || null;
+            }
+            if (sql.includes('FROM reviews WHERE id')) {
+              return tables.reviews.find((r) => r.id === args[0]) || null;
+            }
             throw new Error('Unrecognized first() SQL: ' + sql.slice(0, 80));
           },
           async all() {
@@ -147,6 +184,29 @@ export function createFakeD1() {
             }
             if (sql.startsWith('SELECT email, unsubscribe_token FROM subscribers WHERE subscribed = 1')) {
               return { results: tables.subscribers.filter((r) => r.subscribed === 1).map((r) => ({ email: r.email, unsubscribe_token: r.unsubscribe_token })) };
+            }
+            if (sql.includes('FROM reviews WHERE product_slug')) {
+              const results = tables.reviews
+                .filter((r) => r.product_slug === args[0] && r.status === 'approved')
+                .sort((a, b) => (a.created_at < b.created_at ? 1 : a.created_at > b.created_at ? -1 : 0))
+                .map((r) => ({ rating: r.rating, title: r.title, body: r.body, display_name: r.display_name, created_at: r.created_at }));
+              return { results };
+            }
+            if (sql.includes('FROM orders o') && sql.includes("fulfillment_status = 'delivered'") && sql.includes('review_request')) {
+              const [deliveredBeforeIso, limit] = args;
+              const results = tables.orders
+                .filter((o) => o.fulfillment_status === 'delivered' && o.customer_email != null)
+                .filter((o) => !tables.email_events.some((e) => e.order_id === o.id && e.email_type === 'review_request'))
+                .filter((o) => {
+                  const delivered = tables.shipments.filter((s) => s.order_id === o.id && s.status === 'delivered');
+                  if (delivered.length === 0) return false;
+                  const maxUpdatedAt = delivered.reduce((max, s) => (s.updated_at > max ? s.updated_at : max), delivered[0].updated_at);
+                  return maxUpdatedAt <= deliveredBeforeIso;
+                })
+                .sort((a, b) => (a.created_at < b.created_at ? -1 : a.created_at > b.created_at ? 1 : 0))
+                .slice(0, limit)
+                .map((o) => ({ id: o.id, public_order_number: o.public_order_number, customer_email: o.customer_email, customer_name: o.customer_name }));
+              return { results };
             }
             throw new Error('Unrecognized all() SQL: ' + sql.slice(0, 80));
           },

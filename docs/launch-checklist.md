@@ -54,6 +54,14 @@ REPLY_TO_EMAIL=                                 # Optional — overrides SUPPORT
 
 ---
 
+## Product Reviews
+
+- [x] **Full review submission/moderation/display flow (code)** — the `reviews` and `review_tokens` D1 tables (`migrations/0001`) existed with nothing built on top until this pass. Now: `workers/send-review-requests.js` (scheduled Worker, see below) mints one one-time token per order item and emails a review link once an order's been delivered `REVIEW_REQUEST_DELAY_DAYS` days (default 10) → `leave-review.html` → `POST /api/submit-review` (claims the token, saves the review as `pending`, alerts `SUPPORT_EMAIL` with signed one-click Approve/Reject links) → `GET /api/moderate-review` (verifies the signature, flips status to `approved`/`rejected`, fails closed without `REVIEW_MODERATION_SECRET`) → `GET /api/product-reviews?slug=` (approved-only, no customer/order data exposed) → product.html's Reviews section (previously commented-out static placeholder, now fetches real data).
+- [ ] **Deploy the review-request Worker** — same situation as `wrangler.reconcile.toml` below: `wrangler.review-requests.toml` exists and is ready, but nothing is deployed yet, so the Cron Trigger (daily) is not active. Deploy with `npx wrangler deploy --config wrangler.review-requests.toml`, then `wrangler secret put RESEND_API_KEY --config wrangler.review-requests.toml`.
+- [ ] **Add `REVIEW_MODERATION_SECRET` to Cloudflare** — a secret WE generate (`openssl rand -hex 32`), not provided by anything external. Needed by the main Pages project (both `submit-review.js` and `moderate-review.js` run there, not in the Worker). Currently unset — review submission still works and saves as `pending` without it, but no moderation alert email can be sent (no secret to sign the Approve/Reject links with), so reviews would pile up silently until this is set.
+
+---
+
 ## Payment & Checkout
 
 - [ ] **Stripe account setup** — Create/verify Stripe account at stripe.com

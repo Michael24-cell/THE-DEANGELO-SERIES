@@ -1,0 +1,46 @@
+# Separate Worker config for the standalone review-request Worker
+# (workers/send-review-requests.js) — kept independent from the Pages
+# project's wrangler.toml on purpose:
+#   - This is a Worker (scheduled() only, no fetch() handler, never HTTP
+#     reachable), not a Pages Function — different deploy target entirely.
+#   - Keeping it separate means an accidental `wrangler deploy` here can never
+#     touch the Pages project, and vice versa. Same reasoning as
+#     wrangler.reconcile.toml, which this file mirrors.
+#
+# Deploy with: npx wrangler deploy --config wrangler.review-requests.toml
+# NOT deployed yet, and the Cron Trigger below is NOT active until deployed.
+
+name = "the-deangelo-series-send-review-requests"
+main = "workers/send-review-requests.js"
+compatibility_date = "2024-12-18"
+compatibility_flags = ["nodejs_compat"]
+
+# Same D1 database the Pages project uses (wrangler.toml), same binding name
+# (DB) so functions/_lib/orders-db.js's env.DB.prepare() calls work
+# unchanged — this Worker reads orders/shipments/email_events and writes
+# review_tokens + email_events, the exact same tables the live site uses.
+[[d1_databases]]
+binding = "DB"
+database_name = "deangelo-series-orders"
+database_id = "89676fb8-49c5-4824-9b1c-3dacc59c0455"
+
+# Once a day at 14:00 UTC (a low-traffic hour, avoids colliding with the
+# shipment-reconciliation Worker's every-15-minutes schedule). NOT ACTIVE
+# until this Worker is deployed.
+[triggers]
+crons = ["0 14 * * *"]
+
+[vars]
+FROM_EMAIL = "The DeAngelo Series <orders@thedeangeloseries.com>"
+SUPPORT_EMAIL = "support@thedeangeloseries.com"
+REPLY_TO_EMAIL = "support@thedeangeloseries.com"
+SITE_URL = "https://thedeangeloseries.com"
+# Optional — see DEFAULT_DELAY_DAYS in workers/send-review-requests.js for
+# the default (10) and rationale if this is left unset.
+# REVIEW_REQUEST_DELAY_DAYS = "10"
+# Optional — see DEFAULT_ORDER_LIMIT in workers/send-review-requests.js.
+# REVIEW_REQUEST_ORDER_LIMIT = "200"
+
+# Secrets (never committed — set via `wrangler secret put <NAME> --config
+# wrangler.review-requests.toml` before first deploy):
+#   RESEND_API_KEY
