@@ -5,6 +5,10 @@ node_modules/
 .env.local
 .env.*.local
 .dev.vars
+printifytoken.txt
+stripesecret.txt
+stripesecret.txt.sb-*
+Reviews-api-resend.txt
 
 # Vercel build output
 .vercel/
