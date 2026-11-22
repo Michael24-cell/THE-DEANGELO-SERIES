@@ -91,19 +91,19 @@
   /* ---- menu information architecture (expandable dropdown groups) ------- */
   var MENU_GROUPS = [
     { label: "Shop", items: [
-      { label: "Shop Series 01", href: "collection.html" },
-      { label: "The Archive", href: "archive.html" }
+      { label: "Shop Series 01", href: "collection" },
+      { label: "The Archive", href: "archive" }
     ]},
     { label: "The Source", items: [
-      { label: "The Artwork", href: "art.html" },
-      { label: "Statement", href: "statement.html" },
-      { label: "The Artist", href: "artist.html" }
+      { label: "The Artwork", href: "art" },
+      { label: "Statement", href: "statement" },
+      { label: "The Artist", href: "artist" }
     ]},
     { label: "Information", items: [
-      { label: "Shipping", href: "shipping-policy.html" },
-      { label: "Returns", href: "refund-policy.html" },
+      { label: "Shipping", href: "shipping-policy" },
+      { label: "Returns", href: "refund-policy" },
       { label: "Size Guide", href: "#", sizeGuide: true },
-      { label: "Contact", href: "contact.html" }
+      { label: "Contact", href: "contact" }
     ]}
   ];
   var MENU_DIRECT = [];
@@ -438,7 +438,7 @@
       "</div>" +
       "<div class=\"du-mnav\">" + groups + '<div class="du-mdirect-wrap">' + direct + "</div></div>" +
       '<div class="du-foot">' +
-        '<a href="contact.html">Contact</a>' +
+        '<a href="contact">Contact</a>' +
         '<a href="mailto:support@thedeangeloseries.com">Support</a>' +
         '<span class="loc">California</span>' +
       "</div>";
@@ -562,7 +562,7 @@
       body.className = "du-cart-empty";
       body.innerHTML =
         "<p>Your collection is empty.</p>" +
-        '<a href="collection.html">Browse the series \u2192</a>';
+        '<a href="collection">Browse the series \u2192</a>';
       foot.style.display = "none";
       return;
     }
@@ -594,7 +594,7 @@
     foot.innerHTML =
       '<div class="du-cart-sub"><span class="lbl">Subtotal</span><span class="val">' + money(cartSubtotal()) + "</span></div>" +
       '<p class="du-cart-note">Shipping and tax calculated at checkout.</p>' +
-      '<a class="du-cart-checkout" href="checkout.html">Proceed to Checkout</a>' +
+      '<a class="du-cart-checkout" href="checkout">Proceed to Checkout</a>' +
       '<button class="du-cart-cont" data-cart-close>Continue browsing</button>';
   }
 
@@ -773,7 +773,7 @@
       // on the page. Merges into whatever's already in the cart rather
       // than replacing it, same as every other add-to-cart path here.
       var buyNow = t.closest("[data-buy-now]");
-      if (buyNow) { e.preventDefault(); addToCart(readProduct(buyNow)); location.href = "checkout.html"; return; }
+      if (buyNow) { e.preventDefault(); addToCart(readProduct(buyNow)); location.href = "checkout"; return; }
 
       if (t.closest("[data-menu-close]")) { closeMenu(); return; }
       if (t.closest("[data-cart-close]")) { closeCart(); return; }

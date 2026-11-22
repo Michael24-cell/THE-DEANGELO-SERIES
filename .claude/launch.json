@@ -6,6 +6,12 @@
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "8899", "--directory", "/Users/michaeldeangelo/Desktop/THE DEANGELO SERIES"],
       "port": 8899
+    },
+    {
+      "name": "pages-dev",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["wrangler", "pages", "dev", ".", "--port", "8788"],
+      "port": 8788
     }
   ]
 }

@@ -1,113 +1,99 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url><loc>https://thedeangeloseries.com/</loc></url>
+  <url><loc>https://thedeangeloseries.com/collection</loc></url>
+  <url><loc>https://thedeangeloseries.com/art</loc></url>
+  <url><loc>https://thedeangeloseries.com/artist</loc></url>
+  <url><loc>https://thedeangeloseries.com/statement</loc></url>
+  <url><loc>https://thedeangeloseries.com/contact</loc></url>
+  <url><loc>https://thedeangeloseries.com/archive</loc></url>
+  <url><loc>https://thedeangeloseries.com/shipping-policy</loc></url>
+  <url><loc>https://thedeangeloseries.com/refund-policy</loc></url>
+  <url><loc>https://thedeangeloseries.com/privacy-policy</loc></url>
+  <url><loc>https://thedeangeloseries.com/terms</loc></url>
   <url>
-    <loc>https://thedeangeloseries.com/</loc>
-    <priority>1.0</priority>
-    <changefreq>weekly</changefreq>
+    <loc>https://thedeangeloseries.com/product?p=tee</loc>
+    <image:image><image:loc>https://thedeangeloseries.com/img/venezia-tee-white-model.webp</image:loc></image:image>
+    <image:image><image:loc>https://thedeangeloseries.com/img/venezia-tee-white.webp</image:loc></image:image>
   </url>
   <url>
-    <loc>https://thedeangeloseries.com/collection.html</loc>
-    <priority>0.9</priority>
-    <changefreq>weekly</changefreq>
+    <loc>https://thedeangeloseries.com/product?p=crew</loc>
+    <image:image><image:loc>https://thedeangeloseries.com/img/venezia-crew-model-front.webp</image:loc></image:image>
+    <image:image><image:loc>https://thedeangeloseries.com/img/venezia-crewneck.webp</image:loc></image:image>
   </url>
   <url>
-    <loc>https://thedeangeloseries.com/product.html?p=tee</loc>
-    <priority>0.8</priority>
-    <changefreq>monthly</changefreq>
+    <loc>https://thedeangeloseries.com/product?p=arhus-old-town-tee</loc>
+    <image:image><image:loc>https://thedeangeloseries.com/img/the-old-town-model.webp</image:loc></image:image>
+    <image:image><image:loc>https://thedeangeloseries.com/img/arhus-the-old-town-tee.webp</image:loc></image:image>
   </url>
   <url>
-    <loc>https://thedeangeloseries.com/product.html?p=crew</loc>
-    <priority>0.8</priority>
-    <changefreq>monthly</changefreq>
+    <loc>https://thedeangeloseries.com/product?p=wind-sea-tee</loc>
+    <image:image><image:loc>https://thedeangeloseries.com/img/wind-and-sea-tee-model.webp</image:loc></image:image>
+    <image:image><image:loc>https://thedeangeloseries.com/img/wind-and-sea-tee.webp</image:loc></image:image>
   </url>
   <url>
-    <loc>https://thedeangeloseries.com/product.html?p=arhus-old-town-tee</loc>
-    <priority>0.8</priority>
-    <changefreq>monthly</changefreq>
+    <loc>https://thedeangeloseries.com/product?p=waves-of-life-tee</loc>
+    <image:image><image:loc>https://thedeangeloseries.com/img/waves-of-life-tee-model.webp</image:loc></image:image>
+    <image:image><image:loc>https://thedeangeloseries.com/img/waves-of-life-tee.webp</image:loc></image:image>
   </url>
   <url>
-    <loc>https://thedeangeloseries.com/product.html?p=wind-sea-tee</loc>
-    <priority>0.8</priority>
-    <changefreq>monthly</changefreq>
+    <loc>https://thedeangeloseries.com/product?p=villa-d-este-tee</loc>
+    <image:image><image:loc>https://thedeangeloseries.com/img/villa-d-este-model.webp</image:loc></image:image>
+    <image:image><image:loc>https://thedeangeloseries.com/img/villa-d-este-tee.webp</image:loc></image:image>
   </url>
   <url>
-    <loc>https://thedeangeloseries.com/product.html?p=waves-of-life-tee</loc>
-    <priority>0.8</priority>
-    <changefreq>monthly</changefreq>
+    <loc>https://thedeangeloseries.com/product?p=the-wedge-tee</loc>
+    <image:image><image:loc>https://thedeangeloseries.com/img/the-wedge-tee-model.webp</image:loc></image:image>
+    <image:image><image:loc>https://thedeangeloseries.com/img/the-wedge-tee.webp</image:loc></image:image>
   </url>
   <url>
-    <loc>https://thedeangeloseries.com/product.html?p=villa-d-este-tee</loc>
-    <priority>0.8</priority>
-    <changefreq>monthly</changefreq>
+    <loc>https://thedeangeloseries.com/product?p=leaning-tower-of-pisa-tee</loc>
+    <image:image><image:loc>https://thedeangeloseries.com/img/leaning-tower-of-pisa-tee-model.webp</image:loc></image:image>
+    <image:image><image:loc>https://thedeangeloseries.com/img/leaning-tower-of-pisa-tee.webp</image:loc></image:image>
   </url>
   <url>
-    <loc>https://thedeangeloseries.com/product.html?p=the-wedge-tee</loc>
-    <priority>0.8</priority>
-    <changefreq>monthly</changefreq>
+    <loc>https://thedeangeloseries.com/product?p=piazza-san-marco-tee</loc>
+    <image:image><image:loc>https://thedeangeloseries.com/img/piazza-san-marco-tee-model.webp</image:loc></image:image>
+    <image:image><image:loc>https://thedeangeloseries.com/img/piazza-san-marco-tee-flat.webp</image:loc></image:image>
   </url>
   <url>
-    <loc>https://thedeangeloseries.com/product.html?p=leaning-tower-of-pisa-tee</loc>
-    <priority>0.8</priority>
-    <changefreq>monthly</changefreq>
+    <loc>https://thedeangeloseries.com/product?p=palatine-hill-tee</loc>
+    <image:image><image:loc>https://thedeangeloseries.com/img/palatine-hill-tee-model.webp</image:loc></image:image>
+    <image:image><image:loc>https://thedeangeloseries.com/img/palatine-hill-tee.webp</image:loc></image:image>
   </url>
   <url>
-    <loc>https://thedeangeloseries.com/product.html?p=piazza-san-marco-tee</loc>
-    <priority>0.8</priority>
-    <changefreq>monthly</changefreq>
+    <loc>https://thedeangeloseries.com/product?p=ostia-antica-tee</loc>
+    <image:image><image:loc>https://thedeangeloseries.com/img/ostia-antica-tee-model.webp</image:loc></image:image>
+    <image:image><image:loc>https://thedeangeloseries.com/img/ostia-antica-tee.webp</image:loc></image:image>
   </url>
   <url>
-    <loc>https://thedeangeloseries.com/product.html?p=palatine-hill-tee</loc>
-    <priority>0.8</priority>
-    <changefreq>monthly</changefreq>
+    <loc>https://thedeangeloseries.com/product?p=waves-of-life-crew</loc>
+    <image:image><image:loc>https://thedeangeloseries.com/img/waves-of-life-white-crew-model.webp</image:loc></image:image>
+    <image:image><image:loc>https://thedeangeloseries.com/img/waves-of-life-white-crew.webp</image:loc></image:image>
   </url>
   <url>
-    <loc>https://thedeangeloseries.com/product.html?p=ostia-antica-tee</loc>
-    <priority>0.8</priority>
-    <changefreq>monthly</changefreq>
+    <loc>https://thedeangeloseries.com/product?p=villa-d-este-crew</loc>
+    <image:image><image:loc>https://thedeangeloseries.com/img/villa-d-este-crew-model.webp</image:loc></image:image>
+    <image:image><image:loc>https://thedeangeloseries.com/img/villa-d-este-crew.webp</image:loc></image:image>
   </url>
   <url>
-    <loc>https://thedeangeloseries.com/art.html</loc>
-    <priority>0.7</priority>
-    <changefreq>monthly</changefreq>
+    <loc>https://thedeangeloseries.com/product?p=palatine-hill-crew</loc>
+    <image:image><image:loc>https://thedeangeloseries.com/img/palatine-hill-crew-bone-model.webp</image:loc></image:image>
+    <image:image><image:loc>https://thedeangeloseries.com/img/palatine-hill-crew-bone.webp</image:loc></image:image>
   </url>
   <url>
-    <loc>https://thedeangeloseries.com/statement.html</loc>
-    <priority>0.5</priority>
-    <changefreq>yearly</changefreq>
+    <loc>https://thedeangeloseries.com/product?p=wind-sea-crew</loc>
+    <image:image><image:loc>https://thedeangeloseries.com/img/wind-and-sea-crew-model.webp</image:loc></image:image>
+    <image:image><image:loc>https://thedeangeloseries.com/img/wind-and-sea-crew.webp</image:loc></image:image>
   </url>
   <url>
-    <loc>https://thedeangeloseries.com/artist.html</loc>
-    <priority>0.6</priority>
-    <changefreq>yearly</changefreq>
+    <loc>https://thedeangeloseries.com/product?p=arhus-old-town-crew</loc>
+    <image:image><image:loc>https://thedeangeloseries.com/img/arhus-the-old-town-crew-model.webp</image:loc></image:image>
+    <image:image><image:loc>https://thedeangeloseries.com/img/arhus-the-old-town-crew.webp</image:loc></image:image>
   </url>
   <url>
-    <loc>https://thedeangeloseries.com/contact.html</loc>
-    <priority>0.5</priority>
-    <changefreq>yearly</changefreq>
-  </url>
-  <url>
-    <loc>https://thedeangeloseries.com/archive.html</loc>
-    <priority>0.4</priority>
-    <changefreq>monthly</changefreq>
-  </url>
-  <url>
-    <loc>https://thedeangeloseries.com/shipping-policy.html</loc>
-    <priority>0.3</priority>
-    <changefreq>yearly</changefreq>
-  </url>
-  <url>
-    <loc>https://thedeangeloseries.com/refund-policy.html</loc>
-    <priority>0.3</priority>
-    <changefreq>yearly</changefreq>
-  </url>
-  <url>
-    <loc>https://thedeangeloseries.com/privacy-policy.html</loc>
-    <priority>0.3</priority>
-    <changefreq>yearly</changefreq>
-  </url>
-  <url>
-    <loc>https://thedeangeloseries.com/terms.html</loc>
-    <priority>0.3</priority>
-    <changefreq>yearly</changefreq>
+    <loc>https://thedeangeloseries.com/product?p=new-york-crew</loc>
+    <image:image><image:loc>https://thedeangeloseries.com/img/new-york-crew-model.webp</image:loc></image:image>
+    <image:image><image:loc>https://thedeangeloseries.com/img/new-york-crew.webp</image:loc></image:image>
   </url>
 </urlset>

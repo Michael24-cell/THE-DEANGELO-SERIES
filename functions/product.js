@@ -1,23 +1,23 @@
 // Cloudflare Pages Function — Route: GET /product
 //
-// product.html is a single static file that renders per-product content
-// (title, images, price) entirely client-side via JS, keyed off ?p=. That
-// left every product's *server-delivered* HTML — title, meta description,
-// canonical, OG/Twitter tags — identical for all six products (all read
-// "Venezia Tee"), which collapses their canonicals together in Google's
-// eyes and breaks social-share previews. See thedeangeloseries.com-audit/
-// FULL-AUDIT-REPORT.md, finding #1.
+// product.html is one static file that renders per-product content in the
+// browser, keyed off ?p=. Crawlers and link-preview scrapers that don't run
+// JS would otherwise see Venezia for every product, so this rewrites the
+// static HTML server-side with the same data the browser uses
+// (product-data.js), plus per-product meta tags and JSON-LD. The client
+// script still runs and sets the same values, so the two can't disagree.
 //
-// This intercepts the static response and rewrites just those tags to be
-// correct per product before the HTML reaches the browser/crawler. The
-// client-side JS is untouched and still does its own DOM updates for the
-// in-page experience.
+// Unknown slugs get a real 404; "coming soon" previews are served but
+// marked noindex (no confirmed price or details yet).
 
-import { CATALOG } from './_lib/catalog.js';
+import '../product-data.js';
+import { CATALOG, printifyMappingForColor, resolveProductImage } from './_lib/catalog.js';
+import { listApprovedReviews } from './_lib/orders-db.js';
 
-// Marketing copy, not trusted pricing/fulfillment data — kept here rather
-// than in catalog.js, and intentionally mirrors the EDITION_DESC map in
-// product.html's own client-side JS (the ?p= product-switch script).
+const D = globalThis.DEANGELO_DATA;
+const SITE = 'https://thedeangeloseries.com';
+
+// Meta-description copy (marketing, not trusted pricing data).
 const DESCRIPTIONS = {
   tee: 'Series 01 — Venezia Tee. An original watercolor translated onto a heavyweight cotton t-shirt.',
   crew: 'Series 01 — Venezia Crewneck. An original watercolor translated onto a heavyweight fleece crewneck.',
@@ -35,95 +35,291 @@ const DESCRIPTIONS = {
   'palatine-hill-crew': 'Series 01 — Palatine Hill Crewneck. A 1980 vintage Kodak slide of Rome, Italy, printed on a heavyweight fleece crewneck.',
   'wind-sea-crew': 'Series 01 — Wind & Sea Crewneck. "Valley Vista to the Ocean," painted by Tony DeAngelo in New York, 1999, printed on a heavyweight fleece crewneck.',
   'arhus-old-town-crew': 'Series 01 — Århus, The Old Town Crewneck. A 1980 vintage Kodak slide from Århus, Denmark, printed on a heavyweight fleece crewneck.',
-  'new-york-crew': 'Series 01 — New York Crewneck. The Chrysler Building and Empire State Building, painted by Tony DeAngelo in New York, 2019, printed on a heavyweight fleece crewneck.',
+  'new-york-crew': 'Series 01 — New York Crewneck. The Chrysler Building and Empire State Building, painted by Tony DeAngelo in New York, 2019, on heavyweight fleece.',
 };
 
-class SetAttribute {
-  constructor(attr, value) {
-    this.attr = attr;
-    this.value = value;
-  }
-  element(element) {
-    element.setAttribute(this.attr, this.value);
-  }
+const RETURN_POLICY = {
+  '@type': 'MerchantReturnPolicy',
+  applicableCountry: 'US',
+  returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted',
+};
+
+export const canonicalFor = (key) => `${SITE}/product?p=${key}`;
+const abs = (path) => `${SITE}/${path.split('/').map(encodeURIComponent).join('/')}`;
+const stripTags = (html) => html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+
+export function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
-class SetText {
-  constructor(value) {
-    this.value = value;
-  }
-  element(element) {
-    element.setInnerContent(this.value);
-  }
+export function metaDescription(key) {
+  const entry = CATALOG[key];
+  const base = DESCRIPTIONS[key] || `Artwear from The DeAngelo Series. ${entry.name}.`;
+  const price = ` From $${entry.basePrice / 100}.`;
+  return (base + price).length <= 160 ? base + price : base.replace(/^Series 01 — /, '') + price;
 }
 
-class AppendHtml {
-  constructor(html) {
-    this.html = html;
-  }
-  element(element) {
-    element.append(this.html, { html: true });
-  }
-}
+const priceFor = (entry, size) =>
+  ((entry.upchargeSizes || []).includes(size) ? entry.upchargePrice : entry.basePrice) / 100;
 
-// Product schema — gives Google an explicit, structured signal that this
-// is a shirt/apparel product sold by "The DeAngelo Series", independent
-// of body copy. availability reflects hasCompletePrintifyMapping's own
-// logic (functions/_lib/catalog.js): no confirmed Printify mapping means
-// it can't actually be fulfilled right now.
-function productSchema(product, description, canonicalUrl) {
-  const lowPrice = product.basePrice / 100;
-  const highPrice = (product.upchargePrice || product.basePrice) / 100;
+/** ProductGroup JSON-LD: one Product + Offer per color/size, with real Printify SKUs. */
+export function productGroupSchema(key, reviews = []) {
+  const entry = CATALOG[key];
+  const prod = D.PRODS[key];
+  const src = D.SOURCE[key];
+  const name = D.pageTitle(prod).split(' | ')[0];
+  const url = canonicalFor(key);
+  const colors = entry.colors?.length ? entry.colors : [undefined];
+
+  const variants = [];
+  for (const color of colors) {
+    const mapping = printifyMappingForColor(entry, color);
+    for (const size of entry.sizes) {
+      const inStock = Boolean(mapping?.variantIdBySize?.[size]);
+      variants.push({
+        '@type': 'Product',
+        sku: mapping?.skuBySize?.[size] || `${key}-${color || 'default'}-${size}`.toLowerCase(),
+        name: `${name} — ${color ? color + ', ' : ''}${size}`,
+        image: resolveProductImage(entry, color),
+        size,
+        ...(color && { color }),
+        offers: {
+          '@type': 'Offer',
+          url,
+          priceCurrency: (entry.currency || 'usd').toUpperCase(),
+          price: priceFor(entry, size).toFixed(2),
+          availability: inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+          itemCondition: 'https://schema.org/NewCondition',
+          hasMerchantReturnPolicy: RETURN_POLICY,
+        },
+      });
+    }
+  }
+
+  const images = [entry.image, abs(prod.model), abs(prod.flat)];
   const schema = {
     '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: product.name.replace(' — ', ' '),
-    image: product.image,
-    description,
+    '@type': 'ProductGroup',
+    name,
+    description: src?.bodyHtml ? stripTags(src.bodyHtml) : DESCRIPTIONS[key],
+    url,
+    productGroupID: key,
     brand: { '@type': 'Brand', name: 'The DeAngelo Series' },
-    url: canonicalUrl,
-    offers: {
-      '@type': 'AggregateOffer',
-      priceCurrency: (product.currency || 'usd').toUpperCase(),
-      lowPrice,
-      highPrice,
-      offerCount: product.sizes.length,
-      availability: product.printify ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-    },
+    image: [...new Set(images)],
+    material: D.DETAILS[key]?.material,
+    variesBy: entry.colors?.length > 1
+      ? ['https://schema.org/size', 'https://schema.org/color']
+      : ['https://schema.org/size'],
+    hasVariant: variants,
   };
-  return `<script type="application/ld+json">${JSON.stringify(schema)}</script>`;
+  if (reviews.length) {
+    const avg = reviews.reduce((a, r) => a + r.rating, 0) / reviews.length;
+    schema.aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: avg.toFixed(1),
+      reviewCount: reviews.length,
+      bestRating: 5,
+      worstRating: 1,
+    };
+    schema.review = reviews.slice(0, 5).map((r) => ({
+      '@type': 'Review',
+      author: { '@type': 'Person', name: r.display_name },
+      reviewRating: { '@type': 'Rating', ratingValue: r.rating, bestRating: 5 },
+      ...(r.title && { name: r.title }),
+      reviewBody: r.body,
+      datePublished: String(r.created_at).slice(0, 10),
+    }));
+  }
+  return schema;
+}
+
+export function breadcrumbSchema(key) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` },
+      { '@type': 'ListItem', position: 2, name: 'The Collection', item: `${SITE}/collection` },
+      { '@type': 'ListItem', position: 3, name: D.pageTitle(D.PRODS[key]).split(' | ')[0], item: canonicalFor(key) },
+    ],
+  };
+}
+
+// JSON.stringify doesn't escape "</script>"; review text is user-supplied.
+const jsonLd = (obj) => `<script type="application/ld+json">${JSON.stringify(obj).replace(/</g, '\\u003c')}</script>`;
+
+function starGlyphs(rating) {
+  let html = '';
+  for (let i = 1; i <= 5; i++) html += `<span${i > Math.round(rating) ? ' class="dim"' : ''}>&#9733;</span>`;
+  return html;
+}
+
+// ── HTMLRewriter element handlers ──────────────────────────────────────────
+const text = (value) => ({ element: (el) => el.setInnerContent(value) });
+const html = (value) => ({ element: (el) => el.setInnerContent(value, { html: true }) });
+const attrs = (map) => ({
+  element: (el) => { for (const [k, v] of Object.entries(map)) if (v != null) el.setAttribute(k, String(v)); },
+});
+const shown = (visible) => ({
+  element: (el) => (visible ? el.removeAttribute('style') : el.setAttribute('style', 'display:none')),
+});
+const thumbStyle = (src) => `background-image:url('${src}');background-size:cover;background-position:center;`;
+
+function headRewriter(rw, { title, description, canonical, image, extraHead }) {
+  return rw
+    .on('title', text(title))
+    .on('meta[name="description"]', attrs({ content: description }))
+    .on('link[rel="canonical"]', attrs({ href: canonical }))
+    .on('meta[property="og:title"]', attrs({ content: title }))
+    .on('meta[property="og:description"]', attrs({ content: description }))
+    .on('meta[property="og:image"]', attrs({ content: image }))
+    .on('meta[property="og:url"]', attrs({ content: canonical }))
+    .on('meta[name="twitter:title"]', attrs({ content: title }))
+    .on('meta[name="twitter:description"]', attrs({ content: description }))
+    .on('meta[name="twitter:image"]', attrs({ content: image }))
+    .on('head', { element: (el) => el.append(extraHead, { html: true }) });
+}
+
+async function notFound(context, url) {
+  const page = await context.env.ASSETS.fetch(new URL('/404', url));
+  return new Response(page.body, { status: 404, headers: { 'content-type': 'text/html; charset=utf-8' } });
+}
+
+async function approvedReviews(env, key) {
+  if (!env.DB) return [];
+  try {
+    return await listApprovedReviews(env, key);
+  } catch (err) {
+    console.error('[product] review lookup failed:', err.message);
+    return [];
+  }
 }
 
 export async function onRequestGet(context) {
+  const url = new URL(context.request.url);
+  const key = url.searchParams.get('p') || 'tee';
+  const own = (obj) => (Object.hasOwn(obj, key) ? obj[key] : undefined);
+  const prod = own(D.PRODS);
+  const entry = own(CATALOG);
+  const preview = own(D.PREVIEWS);
+
+  if (!preview && !(prod && entry)) return notFound(context, url);
+
   const response = await context.next();
+  if (!(response.headers.get('content-type') || '').includes('text/html')) return response;
 
-  const contentType = response.headers.get('content-type') || '';
-  if (!contentType.includes('text/html')) return response;
+  if (preview) {
+    const title = `${preview.title}${preview.sub ? ' ' + preview.sub : ''} — Coming Soon | The DeAngelo Series`;
+    return headRewriter(new HTMLRewriter(), {
+      title,
+      description: `${preview.title} — in development at The DeAngelo Series. Artwork, pricing, and details to be announced.`,
+      canonical: canonicalFor(key),
+      image: abs(preview.img),
+      extraHead: '<meta name="robots" content="noindex">',
+    })
+      .on('#productTitle', html(preview.sub ? `${escapeHtml(preview.title)}<br><em>${escapeHtml(preview.sub)}</em>` : escapeHtml(preview.title)))
+      .transform(response);
+  }
 
-  const key = new URL(context.request.url).searchParams.get('p');
-  const product = key && CATALOG[key];
-  // Unknown slug, or a "coming soon" preview piece with no catalog entry
-  // yet (no confirmed price/fulfillment) — leave the static defaults
-  // rather than inventing metadata for a product that isn't real yet.
-  if (!product) return response;
+  const reviews = await approvedReviews(context.env, key);
+  const src = D.SOURCE[key] || D.VENEZIA_SOURCE;
+  const details = D.DETAILS[key] || D.DETAILS.tee;
+  const chartId = D.SIZE_CHART_ID[key];
+  const multiColor = prod.colors && prod.colors.length > 1;
+  const third = D.thirdImageFor(prod, multiColor ? prod.colors[0].name : prod.frontColor, key);
+  const label = `${prod.title} ${prod.garment}`;
+  const cta = {
+    'data-price': prod.priceNum,
+    'data-name': label,
+    'data-img': prod.model,
+    'data-plate': `Piece ${prod.plate}`,
+    'data-slug': key,
+    'data-color': multiColor ? prod.colors[0].name : null,
+  };
 
-  // Matches the exact string product.html's own client JS sets via
-  // `document.title = p.title + ' ' + p.garment + ' — The DeAngelo Series'`.
-  const title = `${product.name.replace(' — ', ' ')} — The DeAngelo Series`;
-  const description = DESCRIPTIONS[key] || `Artwear from The DeAngelo Series. ${product.name}.`;
-  const canonicalUrl = `https://thedeangeloseries.com/product?p=${key}`;
+  const extraHead = jsonLd(productGroupSchema(key, reviews)) + jsonLd(breadcrumbSchema(key));
+  let rw = headRewriter(new HTMLRewriter(), {
+    title: D.pageTitle(prod),
+    description: metaDescription(key),
+    canonical: canonicalFor(key),
+    image: entry.image,
+    extraHead,
+  })
+    .on('#crumbPlate', text(`Piece ${prod.plate}`))
+    .on('#eyebrowPlate', text(`${prod.artwork} · Piece ${prod.plate}`))
+    .on('#productTitle', html(`${escapeHtml(prod.title)}<br><em>${escapeHtml(prod.garment)}</em>`))
+    .on('#productPrice', text(`${prod.price} USD`))
+    .on('#ctaBtn', { element: (el) => { attrs(cta).element(el); el.setInnerContent(`Add to Collection — ${prod.price}`); } })
+    .on('#buyNowBtn', attrs(cta))
+    .on('#frameModel', attrs({ src: prod.model, alt: `${label} — Model` }))
+    .on('#frameFlat', attrs({ src: prod.flat, alt: `${label} — Flat` }))
+    .on('#thumbModel', attrs({ style: thumbStyle(prod.model) }))
+    .on('#thumbFlat', attrs({ style: thumbStyle(prod.flat) }))
+    .on('#counter', text(third ? '01 / 03' : '01 / 02'))
+    .on('#sizes', {
+      element: (el) => {
+        el.setAttribute('data-base', String(prod.priceNum));
+        el.setAttribute('data-2xl', String(prod.priceNum2xl));
+        el.setAttribute('style', `grid-template-columns:repeat(${prod.sizes.length},1fr)`);
+        el.setInnerContent(prod.sizes.map((s, i) => `<button class="size${i === 1 ? ' is-active' : ''}">${s}</button>`).join(''), { html: true });
+      },
+    })
+    .on('#sgTee', shown(chartId === 'sgTee'))
+    .on('#sgCrew', shown(chartId === 'sgCrew'))
+    .on('#editionDesc', text(D.EDITION_DESC[key] || D.EDITION_DESC.tee))
+    .on('#detailMaterial', text(details.material))
+    .on('#detailFit', text(details.fit))
+    .on('#detailPrint', text(details.print))
+    .on('#sourceArtImg', attrs({ src: src.artImg, alt: src.artAlt }))
+    .on('#sourceCaptionMedium', text(src.captionMedium))
+    .on('#sourceCaptionYear', text(src.captionYear))
+    .on('#sourceEyebrow', text(src.eyebrow))
+    .on('#sourceTitle', html(src.titleHtml))
+    .on('#sourceMedium', { element: (el) => { el.setInnerContent(src.medium); shown(Boolean(src.medium)).element(el); } })
+    .on('#sourcePull', text(src.pull))
+    .on('#sourceBody', { element: (el) => { el.setInnerContent(src.bodyHtml, { html: true }); shown(Boolean(src.bodyHtml)).element(el); } })
+    .on('#sourceSign', {
+      element: (el) => {
+        if (!src.signName) return el.setAttribute('style', 'display:none');
+        el.setInnerContent(src.signatureImg
+          ? `<img class="sign-img" src="${src.signatureImg}" alt="${escapeHtml(src.signName)} signature" loading="lazy" decoding="async">`
+          : `<span>By</span><span class="name">${escapeHtml(src.signName)}</span>`, { html: true });
+      },
+    })
+    .on('#provArtworkValue', html(src.provArtworkValueHtml))
+    .on('#provArtworkAside', text(src.provArtworkAside))
+    .on('#provPrintedAside', text(src.provPrintedAside))
+    .on('#alsoGrid', html(D.alsoGridHTML(key)));
 
-  return new HTMLRewriter()
-    .on('title', new SetText(title))
-    .on('meta[name="description"]', new SetAttribute('content', description))
-    .on('link[rel="canonical"]', new SetAttribute('href', canonicalUrl))
-    .on('meta[property="og:title"]', new SetAttribute('content', title))
-    .on('meta[property="og:description"]', new SetAttribute('content', description))
-    .on('meta[property="og:image"]', new SetAttribute('content', product.image))
-    .on('meta[property="og:url"]', new SetAttribute('content', canonicalUrl))
-    .on('meta[name="twitter:title"]', new SetAttribute('content', title))
-    .on('meta[name="twitter:description"]', new SetAttribute('content', description))
-    .on('meta[name="twitter:image"]', new SetAttribute('content', product.image))
-    .on('head', new AppendHtml(productSchema(product, description, canonicalUrl)))
-    .transform(response);
+  rw = third
+    ? rw.on('#frameFront', attrs({ src: third.src, alt: `${label} — ${third.label}` }))
+      .on('#thumbFront', attrs({ style: thumbStyle(third.src) }))
+      .on('#thumbFront .thumb-label', text(third.label))
+    : rw.on('#frameFrontWrap', attrs({ style: 'display:none' }))
+      .on('#thumbFront', attrs({ style: 'display:none' }));
+
+  if (reviews.length) {
+    const avg = reviews.reduce((a, r) => a + r.rating, 0) / reviews.length;
+    rw = rw
+      .on('#reviewsCount', {
+        element: (el) => {
+          el.setInnerContent(`Reviews (${reviews.length})`);
+          el.setAttribute('aria-label', `${reviews.length} ${reviews.length === 1 ? 'review' : 'reviews'}, average ${avg.toFixed(1)} of 5 stars`);
+        },
+      })
+      .on('#reviewsEmpty', attrs({ style: 'display:none' }))
+      .on('#reviewsList', {
+        element: (el) => {
+          el.removeAttribute('style');
+          el.setInnerContent(reviews.map((r) => '<article class="review-card">' +
+            `<div class="stars" aria-hidden="true">${starGlyphs(r.rating)}</div>` +
+            (r.title ? `<p class="review-title">${escapeHtml(r.title)}</p>` : '') +
+            `<p class="review-body">${escapeHtml(r.body)}</p>` +
+            `<p class="review-meta">${escapeHtml(r.display_name)}</p>` +
+          '</article>').join(''), { html: true });
+        },
+      });
+  }
+
+  return rw.transform(response);
 }
